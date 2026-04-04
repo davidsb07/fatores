@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Avaliacao por Fatores</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Nunito+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Projeto Fatores</p>
+          <h1>Avaliacao por fatores</h1>
+          <p class="lead">
+            Versao inicial baseada na planilha. Defina o tipo do bem, escolha os fatores que entram
+            no calculo e preencha quantas linhas quiser. A primeira linha e sempre o avaliando.
+          </p>
+        </div>
+
+        <div class="hero-panel">
+          <label>
+            Tipo do bem
+            <select id="assetType"></select>
+          </label>
+          <button id="loadExampleButton" type="button" class="secondary">
+            Carregar exemplo
+          </button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow small">Passo 1</p>
+            <h2>Fatores ativos</h2>
+          </div>
+          <div class="actions">
+            <label class="dictionary-picker">
+              <span class="muted">Area para o calculo</span>
+              <select id="referenceMode"></select>
+            </label>
+            <p class="muted" id="factorHint"></p>
+          </div>
+        </div>
+        <div id="factorList" class="factor-grid"></div>
+        <div id="dictionaryPanel" class="dictionary-panel hidden">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow small">Ajuste Opcional</p>
+              <h2>Dicionarios e coeficientes</h2>
+            </div>
+            <div class="actions">
+              <label class="dictionary-picker">
+                <span class="muted">Tabela ativa</span>
+                <select id="dictionarySelect"></select>
+              </label>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Opcao</th>
+                  <th>Coeficiente</th>
+                </tr>
+              </thead>
+              <tbody id="dictionaryBody"></tbody>
+            </table>
+          </div>
+          <div class="custom-factor-box">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow small">Fator Novo</p>
+                <h2>Adicionar fator personalizado</h2>
+              </div>
+            </div>
+            <div class="custom-factor-grid">
+              <label>
+                <span>Nome do fator</span>
+                <input id="customFactorLabel" type="text" placeholder="Ex.: Fachada" />
+              </label>
+              <label>
+                <span>Aplica em</span>
+                <select id="customFactorAppliesTo">
+                  <option value="current">Somente tipologia atual</option>
+                  <option value="all">Todas as tipologias</option>
+                </select>
+              </label>
+              <label class="full-line">
+                <span>Opções e coeficientes</span>
+                <textarea
+                  id="customFactorOptions"
+                  rows="5"
+                  placeholder="Uma linha por opção, no formato: Nome=1.05"
+                ></textarea>
+              </label>
+            </div>
+            <div class="table-actions">
+              <button id="saveCustomFactorButton" type="button" class="secondary">
+                Salvar fator
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow small">Passo 2</p>
+            <h2>Linhas da amostra</h2>
+          </div>
+          <div class="actions">
+            <button id="toggleDictionariesButton" type="button" class="secondary">
+              Ajustar coeficientes
+            </button>
+            <button id="addRowButton" type="button" class="secondary">Adicionar linha</button>
+          </div>
+        </div>
+        <p id="errorBox" class="error hidden"></p>
+        <div class="table-wrap">
+          <table>
+            <thead id="editorHead"></thead>
+            <tbody id="editorBody"></tbody>
+          </table>
+        </div>
+        <div class="table-actions">
+          <button id="calculateButton" type="button">Calcular</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow small">Passo 3</p>
+            <h2>Resultado por linha</h2>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Linha</th>
+                <th>Papel</th>
+                <th>VU</th>
+                <th>VU * fon</th>
+                <th>Fator final</th>
+                <th>VU homogenizado</th>
+                <th>Z-score</th>
+                <th>Status</th>
+                <th>Coeficientes</th>
+              </tr>
+            </thead>
+            <tbody id="resultBody">
+              <tr>
+                <td colspan="9" class="empty-cell">Nenhum calculo executado ainda.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow small">Passo 4</p>
+            <h2>Resumo consolidado</h2>
+          </div>
+          <div class="actions">
+            <button id="exportReportButton" type="button" class="secondary">
+              Exportar relatorio
+            </button>
+          </div>
+        </div>
+        <div id="summaryGrid" class="summary-grid empty-block">
+          Preencha a grade e clique em calcular.
+        </div>
+        <div class="table-wrap technical-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Indicador técnico</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody id="technicalSummaryBody">
+              <tr>
+                <td colspan="2" class="empty-cell">Nenhum calculo executado ainda.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+  </html>
