@@ -13,23 +13,12 @@
   <body>
     <main class="page">
       <section class="hero">
-        <div>
-          <p class="eyebrow">Projeto Fatores</p>
-          <h1>Avaliacao por fatores</h1>
-          <p class="lead">
-            Versao inicial baseada na planilha. Defina o tipo do bem, escolha os fatores que entram
-            no calculo e preencha quantas linhas quiser. A primeira linha e sempre o avaliando.
-          </p>
+        <div class="hero-brand">
+          <img class="hero-logo" src="./RodaModelo-cortado.png" alt="RodaModelo" />
         </div>
-
-        <div class="hero-panel">
-          <label>
-            Tipo do bem
-            <select id="assetType"></select>
-          </label>
-          <button id="loadExampleButton" type="button" class="secondary">
-            Carregar exemplo
-          </button>
+        <div class="hero-copy">
+          <h1>Tratamento por Fatores</h1>
+          <p class="hero-subtitle">NBR 14.653-2 - item 8.2.1.4.2</p>
         </div>
       </section>
 
@@ -37,16 +26,65 @@
         <div class="section-head">
           <div>
             <p class="eyebrow small">Passo 1</p>
+            <h2>Inicio</h2>
+          </div>
+        </div>
+        <input id="loadModelInput" type="file" accept=".fat,application/json" hidden />
+        <div class="start-grid">
+          <div class="start-item">
+            <p class="start-label">Nova avaliacao</p>
+            <label>
+              <select id="assetType"></select>
+            </label>
+          </div>
+
+          <div class="start-item">
+            <p class="start-label">Carregar avaliacao</p>
+            <button id="loadModelButton" type="button" class="secondary">Carregar modelo</button>
+          </div>
+
+          <div class="start-item">
+            <p class="start-label">Carregar exemplo</p>
+            <div class="start-example">
+              <select id="exampleSelect">
+                <option value="">Selecione um exemplo</option>
+                <option value="apartamento">Apartamento</option>
+                <option value="terreno">Terreno</option>
+              </select>
+              <button id="loadExampleButton" type="button" class="subtle-button">Carregar</button>
+            </div>
+          </div>
+
+          <div class="start-item">
+            <p class="start-label">Reiniciar app</p>
+            <button id="resetAppButton" type="button" class="secondary">Reiniciar</button>
+          </div>
+        </div>
+        <p id="loadedModelNotice" class="loaded-model hidden"></p>
+        <p id="appNotice" class="app-notice hidden"></p>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow small">Passo 2</p>
             <h2>Fatores ativos</h2>
           </div>
           <div class="actions">
-            <label class="dictionary-picker">
+            <button id="toggleDictionariesButton" type="button" class="secondary">
+              Ajustar coeficientes
+            </button>
+            <div class="reference-switch">
               <span class="muted">Area para o calculo</span>
-              <select id="referenceMode"></select>
-            </label>
+              <div class="reference-options">
+                <button id="referenceConstruida" type="button" class="reference-option">Area construida</button>
+                <button id="referenceTerreno" type="button" class="reference-option">Area territorial</button>
+              </div>
+            </div>
             <p class="muted" id="factorHint"></p>
           </div>
         </div>
+        <p id="dictionaryStatus" class="dictionary-status hidden"></p>
         <div id="factorList" class="factor-grid"></div>
         <div id="dictionaryPanel" class="dictionary-panel hidden">
           <div class="section-head">
@@ -60,6 +98,39 @@
                 <select id="dictionarySelect"></select>
               </label>
             </div>
+          </div>
+          <div class="formula-box">
+            <p class="formula-title">Metodos de calculo fixos</p>
+            <div class="formula-grid">
+              <div class="formula-item">
+                <strong>Area construida / Area territorial</strong>
+                <p>O fator de area usa a razao entre amostra e avaliando.</p>
+                <p><code>fator = (maior / menor)^expoente</code></p>
+                <p><code>expoente = 0,25</code> quando a diferenca estiver ate 30%.</p>
+                <p><code>expoente = 0,125</code> quando a diferenca ultrapassar 30%.</p>
+              </div>
+              <div class="formula-item">
+                <strong>Localizacao</strong>
+                <p>Usa a relacao direta entre os coeficientes informados para o avaliando e para o dado.</p>
+                <p><code>fator = coef_avaliando / coef_dado</code></p>
+                <p>Se o dado estiver em localizacao superior, o fator tende a reduzir o valor unitario homogenizado.</p>
+              </div>
+              <div class="formula-item">
+                <strong>Vagas</strong>
+                <p>O ajuste de vagas segue uma regra linear simples, comparando a quantidade do dado com a do avaliando.</p>
+                <p><code>fator = 1 - 0,067 x (vagas_dado - vagas_avaliando)</code></p>
+                <p>Quando o dado tem mais vagas que o avaliando, o fator reduz; quando tem menos, o fator aumenta.</p>
+              </div>
+              <div class="formula-item">
+                <strong>Prof. equivalente</strong>
+                <p>Primeiro o motor precisa obter a profundidade equivalente de cada linha. Se ela nao for informada, tenta calcular por area territorial dividida pela testada.</p>
+                <p><code>prof = area_territorial / testada</code> quando a profundidade nao vier preenchida.</p>
+                <p>Com essa profundidade, o app determina um coeficiente proprio para cada imovel, em faixas: <code>sqrt(prof/20)</code> abaixo de 20 m; <code>1</code> entre 20 m e 33 m; <code>sqrt(33/prof)</code> entre 33 m e 90 m; e <code>0,6</code> acima disso.</p>
+                <p>Para grandes areas, quando a area territorial ultrapassa 5.000 m2 e a profundidade passa de 90 m, entra a formula especial <code>4,8 x testada² x area^-0,4</code>.</p>
+                <p>O fator de homogeneizacao final nao e a profundidade em si, mas <code>coef_avaliando / coef_dado</code>.</p>
+              </div>
+            </div>
+            <p class="muted">Essas formulas sao fixas no motor de calculo. O que pode ser alterado aqui sao os dicionarios e coeficientes tabelados.</p>
           </div>
           <div class="table-wrap">
             <table>
@@ -92,11 +163,11 @@
                 </select>
               </label>
               <label class="full-line">
-                <span>Opções e coeficientes</span>
+                <span>Opcoes e coeficientes</span>
                 <textarea
                   id="customFactorOptions"
                   rows="5"
-                  placeholder="Uma linha por opção, no formato: Nome=1.05"
+                  placeholder="Uma linha por opcao, no formato: Nome=1.05"
                 ></textarea>
               </label>
             </div>
@@ -112,18 +183,15 @@
       <section class="panel">
         <div class="section-head">
           <div>
-            <p class="eyebrow small">Passo 2</p>
-            <h2>Linhas da amostra</h2>
+            <p class="eyebrow small">Passo 3</p>
+            <h2>Linhas de dados</h2>
           </div>
           <div class="actions">
-            <button id="toggleDictionariesButton" type="button" class="secondary">
-              Ajustar coeficientes
-            </button>
             <button id="addRowButton" type="button" class="secondary">Adicionar linha</button>
           </div>
         </div>
         <p id="errorBox" class="error hidden"></p>
-        <div class="table-wrap">
+        <div class="table-wrap table-wrap-editor">
           <table>
             <thead id="editorHead"></thead>
             <tbody id="editorBody"></tbody>
@@ -137,54 +205,54 @@
       <section class="panel">
         <div class="section-head">
           <div>
-            <p class="eyebrow small">Passo 3</p>
+            <p class="eyebrow small">Passo 4</p>
             <h2>Resultado por linha</h2>
           </div>
         </div>
-        <div class="table-wrap">
+        <p id="resultHint" class="result-hint muted"></p>
+        <div class="table-wrap table-wrap-results">
           <table>
             <thead>
               <tr>
                 <th>Linha</th>
                 <th>Papel</th>
+                <th>Incluir</th>
                 <th>VU</th>
                 <th>VU * fon</th>
                 <th>Fator final</th>
                 <th>VU homogenizado</th>
                 <th>Z-score</th>
                 <th>Status</th>
-                <th>Coeficientes</th>
+                <th>Fatores</th>
               </tr>
             </thead>
             <tbody id="resultBody">
               <tr>
-                <td colspan="9" class="empty-cell">Nenhum calculo executado ainda.</td>
+                <td colspan="10" class="empty-cell">Nenhum calculo executado ainda.</td>
               </tr>
             </tbody>
           </table>
+        </div>
+        <div class="table-actions">
+          <button id="recalculateButton" type="button">Recalcular com selecao atual</button>
         </div>
       </section>
 
       <section class="panel">
         <div class="section-head">
           <div>
-            <p class="eyebrow small">Passo 4</p>
+            <p class="eyebrow small">Passo 5</p>
             <h2>Resumo consolidado</h2>
-          </div>
-          <div class="actions">
-            <button id="exportReportButton" type="button" class="secondary">
-              Exportar relatorio
-            </button>
           </div>
         </div>
         <div id="summaryGrid" class="summary-grid empty-block">
           Preencha a grade e clique em calcular.
         </div>
-        <div class="table-wrap technical-wrap">
+        <div id="technicalSummaryWrap" class="table-wrap technical-wrap hidden">
           <table>
             <thead>
               <tr>
-                <th>Indicador técnico</th>
+                <th>Indicador tecnico</th>
                 <th>Valor</th>
               </tr>
             </thead>
@@ -196,8 +264,51 @@
           </table>
         </div>
       </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow small">Passo 6</p>
+            <h2>Valor adotado</h2>
+          </div>
+        </div>
+        <div class="adopted-grid">
+          <label>
+            <span>Valor adotado</span>
+            <input id="adoptedValue" type="number" step="0.01" placeholder="Ex.: 850000,00" />
+          </label>
+          <label class="full-line">
+            <span>Justificativa</span>
+            <textarea
+              id="adoptedJustification"
+              rows="4"
+              placeholder="Descreva a justificativa para o valor adotado."
+            ></textarea>
+          </label>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow small">Passo 7</p>
+            <h2>Salvar e exportar</h2>
+          </div>
+          <div class="actions">
+            <button id="saveWorkButton" type="button" class="secondary">Salvar trabalho</button>
+            <button id="exportReportButton" type="button" class="secondary">Exportar relatorio</button>
+          </div>
+        </div>
+        <div class="actions">
+          <label class="dictionary-picker">
+            <span class="muted">Nome do trabalho</span>
+            <input id="workName" type="text" placeholder="Ex.: apto-centro" />
+          </label>
+        </div>
+        <p class="muted">O trabalho e salvo em arquivo <code>.fat</code> usando o nome informado neste passo.</p>
+      </section>
     </main>
 
     <script src="./app.js"></script>
   </body>
-  </html>
+</html>

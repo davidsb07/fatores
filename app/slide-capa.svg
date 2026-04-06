@@ -1,0 +1,17 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" fill="#F5F7F8"/>
+  <rect x="42" y="42" width="1516" height="816" rx="28" fill="white" stroke="#D9E2EC" stroke-width="2"/>
+  <rect x="42" y="42" width="1516" height="150" rx="28" fill="#162A44"/>
+  <path d="M42 164C42 148.536 54.536 136 70 136H1530C1545.46 136 1558 148.536 1558 164V192H42V164Z" fill="#162A44"/>
+  <circle cx="1430" cy="122" r="130" fill="#1F3A5F" fill-opacity="0.10"/>
+  <circle cx="118" cy="790" r="170" fill="#B38A3D" fill-opacity="0.10"/>
+  <rect x="92" y="248" width="1416" height="560" rx="24" fill="#FBFCFD" stroke="#EAF0F6" stroke-width="2"/>
+  <text x="112" y="122" fill="white" font-family="Sora, Arial, sans-serif" font-size="46" font-weight="700">RodaModelo</text>
+  <text x="430" y="360" fill="#162A44" font-family="Sora, Arial, sans-serif" font-size="54" font-weight="700">Titulo da Apresentacao</text>
+  <text x="430" y="422" fill="#B38A3D" font-family="JetBrains Mono, Consolas, monospace" font-size="24" font-weight="700">Subtitulo ou identificacao do trabalho</text>
+  <text x="430" y="504" fill="#3E4C59" font-family="Nunito Sans, Arial, sans-serif" font-size="28">Insira aqui um resumo inicial, endereco do imovel, data, cliente ou objetivo.</text>
+  <rect x="430" y="568" width="520" height="2" fill="#D6BF8A"/>
+  <text x="430" y="640" fill="#1F3A5F" font-family="Nunito Sans, Arial, sans-serif" font-size="26" font-weight="700">Metodo Comparativo Direto de Dados de Mercado</text>
+  <text x="430" y="682" fill="#5A6B7C" font-family="Nunito Sans, Arial, sans-serif" font-size="24">Tratamento por Fatores | Regressao Linear | Metodo Evolutivo</text>
+  <text x="112" y="790" fill="#6B7C93" font-family="Nunito Sans, Arial, sans-serif" font-size="22">Modelo de slide de capa</text>
+</svg>

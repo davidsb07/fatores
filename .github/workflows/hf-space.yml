@@ -9,6 +9,8 @@ on:
 jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
+    env:
+      HF_SPACE_REPO: ESJL/fatores
 
     steps:
       - name: Checkout repository
@@ -16,36 +18,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Git LFS
-        run: |
-          git lfs install
-
-      - name: Install Git Xet
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/huggingface/xet-core/refs/heads/main/git_xet/install.sh | sh
-          git xet install
-
-      - name: Publish current snapshot to Hugging Face Space
+      - name: Push current snapshot to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          rsync -av --delete \
-            --exclude '.git' \
-            --exclude '.github' \
-            ./ /tmp/hf-space/
-
-          cd /tmp/hf-space
-          git init
-          git checkout -b main
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git lfs track "*.png"
-          git lfs track "*.jpg"
-          git lfs track "*.jpeg"
-          git lfs track "*.webp"
-          git lfs track "*.xlsx"
-          git add .gitattributes
-          git remote add origin https://ESJL:$HF_TOKEN@huggingface.co/spaces/ESJL/fatores
-          git add .
-          git commit -m "Sync from GitHub ${GITHUB_SHA}"
-          git push --force origin main
+          git remote add space "https://huggingface.co/spaces/${HF_SPACE_REPO}"
+          git push --force "https://oauth2:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE_REPO}" main

@@ -1,17 +1,30 @@
 ---
-title: fatores
-emoji: 📐
-colorFrom: orange
-colorTo: blue
-sdk: docker
-app_port: 7860
+title: Tratamento por Fatores
+emoji: "📐"
+colorFrom: blue
+colorTo: gray
+sdk: static
+app_file: app/index.html
 ---
 
-# App de Avaliacao Por Fatores
+# Tratamento por Fatores
 
-Projeto inicial criado na pasta `fatores/app`.
+Aplicativo estático de avaliação imobiliária por fatores, com:
 
-## Como testar localmente
+- seleção dinâmica de fatores
+- linhas dinâmicas de dados de mercado
+- homogeneização
+- saneamento com apoio de Chauvenet
+- valor adotado e relatório exportável
+- salvamento de trabalhos em `.fat`
+
+## Estrutura
+
+- `app/`: interface HTML/CSS/JS
+- `Planilha_tratamento_fatores.xlsx`: planilha de referência
+- `.github/workflows/hf-space.yml`: sincronização do GitHub para o Hugging Face Space
+
+## Teste local
 
 No PowerShell:
 
@@ -24,38 +37,21 @@ Depois abra:
 
 `http://localhost:4173`
 
-## Estrutura
+## Hugging Face Space
 
-- `app/`: interface standalone em HTML/CSS/JS
-- `Planilha_tratamento_fatores.xlsx`: planilha de referencia
-- `.github/workflows/hf-space.yml`: sync automatico para o Space
-- `Dockerfile`: execucao no Hugging Face Space
+Este projeto está preparado para um Space `static`.
 
-## Estado atual
+Configuração atual do workflow:
 
-- app standalone em HTML/CSS/JS
-- linhas dinamicas
-- tipologias adicionais
-- primeira linha fixa como avaliando
-- dicionarios editaveis
-- calculo alinhado com o exemplo da planilha de apartamentos
-- exportacao de relatorio HTML
+- Space alvo: `ESJL/fatores`
+- segredo esperado no GitHub: `HF_TOKEN`
 
-## Deploy
+Se o nome final do seu Space for outro, ajuste em:
 
-Este projeto esta preparado para o mesmo fluxo do `cda`:
+- `.github/workflows/hf-space.yml`
 
-- repositorio git com branch `main`
-- workflow `hf-space.yml`
-- segredo `HF_TOKEN` no GitHub
-- Space de destino configurado no workflow
+## Token
 
-## Observacao
+Depois de criar o Space, gere um token no Hugging Face com permissão de escrita no repositório/Space e salve-o no GitHub como:
 
-O fluxo do Space foi configurado assumindo o destino:
-
-`https://huggingface.co/spaces/ESJL/fatores`
-
-Se o nome final do Space for outro, ajuste o arquivo:
-
-`.github/workflows/hf-space.yml`
+- `HF_TOKEN`

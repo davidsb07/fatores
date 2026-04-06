@@ -168,31 +168,58 @@ const DEFAULT_FACTORS = {
   predio: ["localizacao", "area_construida", "area_territorial", "padrao_construtivo", "aproveitamento"],
 };
 
-const APARTMENT_EXAMPLE = {
+const APARTMENT_CAROL_DEMO = {
   assetType: "apartamento",
   referenceMode: "Construida",
-  activeFactors: ["localizacao", "area_construida", "padrao_construtivo", "vaga", "andar"],
+  activeFactors: ["localizacao", "area_construida", "padrao_construtivo", "andar"],
   rows: [
-    { endereco: "Imovel avaliando", valor_total: "", fon: "1", incluir: false, campos: { localizacao: "1.1", area_construida: "90", padrao_construtivo: "alto res", vaga: "2", andar: "2o" } },
-    { endereco: "Rua B, 761", valor_total: "636000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_construida: "92.09", padrao_construtivo: "normal res", vaga: "1", andar: "1o" } },
-    { endereco: "Rua E, 698", valor_total: "670000", fon: "0.9", incluir: true, campos: { localizacao: "1.1", area_construida: "96.05", padrao_construtivo: "normal res", vaga: "2", andar: "2o" } },
-    { endereco: "Rua A", valor_total: "636000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_construida: "87.11", padrao_construtivo: "normal res", vaga: "1", andar: "1o" } },
-    { endereco: "Rua G, 66", valor_total: "742000", fon: "0.9", incluir: true, campos: { localizacao: "1.1", area_construida: "95.02", padrao_construtivo: "alto res", vaga: "1", andar: "3o" } },
-    { endereco: "Rua C, 161", valor_total: "696150", fon: "0.9", incluir: true, campos: { localizacao: "1.1", area_construida: "88.14", padrao_construtivo: "alto res", vaga: "1", andar: "3o" } },
-    { endereco: "Rua B, 00", valor_total: "650000", fon: "0.9", incluir: true, campos: { localizacao: "1.1", area_construida: "81.43", padrao_construtivo: "alto res", vaga: "1", andar: "2o" } },
-    { endereco: "Rua C, 161", valor_total: "703800", fon: "0.9", incluir: true, campos: { localizacao: "1.1", area_construida: "88.14", padrao_construtivo: "alto res", vaga: "1", andar: "4o" } },
-    { endereco: "Rua C, 161", valor_total: "710736", fon: "0.9", incluir: true, campos: { localizacao: "1.1", area_construida: "88.14", padrao_construtivo: "alto res", vaga: "1", andar: "4o" } },
-    { endereco: "Rua C, 161", valor_total: "728222.8", fon: "0.9", incluir: true, campos: { localizacao: "1.1", area_construida: "88.14", padrao_construtivo: "alto res", vaga: "1", andar: "5o" } },
-    { endereco: "Rua D, 475", valor_total: "710200", fon: "0.9", incluir: true, campos: { localizacao: "1.1", area_construida: "84.93", padrao_construtivo: "alto res", vaga: "1", andar: "2o" } },
-    { endereco: "Rua F, 550", valor_total: "480000", fon: "0.9", incluir: false, campos: { localizacao: "1", area_construida: "97.94", padrao_construtivo: "alto res", vaga: "1", andar: "3o" } },
-    { endereco: "Rua F, 550", valor_total: "799000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_construida: "91.44", padrao_construtivo: "alto res", vaga: "1", andar: "4o" } },
-    { endereco: "Rua C, 161", valor_total: "771120", fon: "0.9", incluir: true, campos: { localizacao: "1.1", area_construida: "88.14", padrao_construtivo: "normal res", vaga: "1", andar: "5o" } },
-    { endereco: "Rua F, 550", valor_total: "848000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_construida: "91.44", padrao_construtivo: "alto res", vaga: "1", andar: "5o" } },
-    { endereco: "Rua F, 550", valor_total: "850000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_construida: "91.44", padrao_construtivo: "alto res", vaga: "2", andar: "4o" } },
+    { endereco: "Imovel avaliando", valor_total: "", fon: "1", incluir: false, campos: { localizacao: "1.1", area_construida: "150", padrao_construtivo: "normal res", andar: "4o" } },
+    { endereco: "Rua Vinte Quatro De Outubro", valor_total: "1720000", fon: "0.9", incluir: true, campos: { localizacao: "1.3", area_construida: "209.07", padrao_construtivo: "alto res", andar: "1o" } },
+    { endereco: "Rua Vinte Quatro De Outubro", valor_total: "1550000", fon: "0.9", incluir: true, campos: { localizacao: "1.2", area_construida: "195.01", padrao_construtivo: "alto res", andar: "4o" } },
+    { endereco: "Rua Vinte Quatro De Outubro", valor_total: "620000", fon: "0.9", incluir: true, campos: { localizacao: "1.1", area_construida: "67.66", padrao_construtivo: "alto res", andar: "2o" } },
+    { endereco: "Rua Vinte Quatro De Outubro", valor_total: "672500", fon: "1", incluir: true, campos: { localizacao: "1.1", area_construida: "99.83", padrao_construtivo: "alto res", andar: "4o" } },
+    { endereco: "Rua Vinte Quatro De Outubro", valor_total: "830000", fon: "0.9", incluir: true, campos: { localizacao: "1.2", area_construida: "99.83", padrao_construtivo: "alto res", andar: "1o" } },
+    { endereco: "Rua Vinte Quatro De Outubro", valor_total: "720000", fon: "0.9", incluir: true, campos: { localizacao: "1.2", area_construida: "75", padrao_construtivo: "alto res", andar: "1o" } },
+    { endereco: "Rua Vinte Quatro De Outubro", valor_total: "790000", fon: "0.9", incluir: true, campos: { localizacao: "1.1", area_construida: "106.725", padrao_construtivo: "normal res", andar: "1o" } },
+    { endereco: "Rua Vinte Quatro De Outubro", valor_total: "780000", fon: "1", incluir: true, campos: { localizacao: "1.2", area_construida: "127.25", padrao_construtivo: "alto res", andar: "5o" } },
+    { endereco: "Rua Vinte Quatro De Outubro", valor_total: "890000", fon: "0.9", incluir: false, campos: { localizacao: "1.1", area_construida: "97", padrao_construtivo: "normal res", andar: "2o" } },
+    { endereco: "Rua Vinte Quatro De Outubro", valor_total: "990000", fon: "1", incluir: true, campos: { localizacao: "1.2", area_construida: "147", padrao_construtivo: "alto res", andar: "7o" } },
+    { endereco: "Rua Vinte Quatro De Outubro", valor_total: "1490000", fon: "0.9", incluir: true, campos: { localizacao: "1.3", area_construida: "226", padrao_construtivo: "alto res", andar: "1o" } },
+    { endereco: "Rua Vinte Quatro De Outubro", valor_total: "740000", fon: "1", incluir: true, campos: { localizacao: "1.1", area_construida: "120.04", padrao_construtivo: "alto res", andar: "2o" } },
+    { endereco: "Rua Vinte Quatro De Outubro", valor_total: "1300000", fon: "0.9", incluir: true, campos: { localizacao: "1.2", area_construida: "142.7", padrao_construtivo: "alto res", andar: "2o" } },
+    { endereco: "Rua Vinte Quatro De Outubro", valor_total: "850000", fon: "0.9", incluir: true, campos: { localizacao: "1.1", area_construida: "168.37", padrao_construtivo: "normal res", andar: "3o" } },
+  ],
+};
+
+const TERRAIN_CAROL_DEMO = {
+  assetType: "terreno",
+  referenceMode: "Terreno",
+  activeFactors: ["localizacao", "area_territorial", "testada", "prof_equivalente", "topografia"],
+  rows: [
+    { endereco: "Imovel avaliando", valor_total: "", fon: "1", incluir: false, campos: { localizacao: "1", area_territorial: "500", testada: "10", prof_equivalente: "50", topografia: "plano <5%" } },
+    { endereco: "AV UM, 900", valor_total: "750000", fon: "1", incluir: true, campos: { localizacao: "1", area_territorial: "456", testada: "12", prof_equivalente: "38", topografia: "plano <5%" } },
+    { endereco: "R DOIS, 107", valor_total: "540000", fon: "1", incluir: true, campos: { localizacao: "1", area_territorial: "456", testada: "12", prof_equivalente: "38", topografia: "plano <5%" } },
+    { endereco: "R DOIS, 110", valor_total: "850000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "456", testada: "12", prof_equivalente: "38", topografia: "plano <5%" } },
+    { endereco: "R DOIS, 127", valor_total: "530000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "422", testada: "12", prof_equivalente: "35.166666666666664", topografia: "plano <5%" } },
+    { endereco: "R DOIS, 255", valor_total: "745000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "705", testada: "16", prof_equivalente: "44.0625", topografia: "plano <5%" } },
+    { endereco: "R TRES, 80", valor_total: "630000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "432", testada: "18", prof_equivalente: "24", topografia: "plano <5%" } },
+    { endereco: "R TRES, LD 92", valor_total: "630000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "420", testada: "18", prof_equivalente: "23.333333333333332", topografia: "plano <5%" } },
+    { endereco: "R SETE, 570", valor_total: "520000", fon: "1", incluir: true, campos: { localizacao: "1", area_territorial: "519", testada: "12", prof_equivalente: "43.25", topografia: "plano <5%" } },
+    { endereco: "R QUATRO, 1100", valor_total: "914500", fon: "1", incluir: true, campos: { localizacao: "1", area_territorial: "624.94", testada: "12", prof_equivalente: "52.07833333333334", topografia: "plano <5%" } },
+    { endereco: "R QUATRO, 520", valor_total: "750000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "612.67", testada: "13.5", prof_equivalente: "45.38296296296296", topografia: "plano <5%" } },
+    { endereco: "R QUATRO, 930", valor_total: "500000", fon: "1", incluir: true, campos: { localizacao: "1", area_territorial: "426.32", testada: "8.5", prof_equivalente: "50.15529411764706", topografia: "plano <5%" } },
+    { endereco: "R QUATRO, 950", valor_total: "730000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "426", testada: "8.5", prof_equivalente: "50.11764705882353", topografia: "plano <5%" } },
+    { endereco: "R CINCO, 555", valor_total: "730000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "478", testada: "12", prof_equivalente: "39.833333333333336", topografia: "plano <5%" } },
+    { endereco: "R SEIS, 315", valor_total: "705000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "565", testada: "12", prof_equivalente: "47.083333333333336", topografia: "plano <5%" } },
+    { endereco: "R SEIS, 339", valor_total: "750000", fon: "1", incluir: true, campos: { localizacao: "1", area_territorial: "684", testada: "18", prof_equivalente: "38", topografia: "plano <5%" } },
   ],
 };
 
 const state = {
+  workName: "",
+  loadedModelName: "",
+  adoptedValue: "",
+  adoptedJustification: "",
   assetType: "apartamento",
   referenceMode: "Construida",
   activeFactors: [...DEFAULT_FACTORS.apartamento],
@@ -205,12 +232,23 @@ const state = {
 };
 
 const el = {
+  workName: document.querySelector("#workName"),
+  adoptedValue: document.querySelector("#adoptedValue"),
+  adoptedJustification: document.querySelector("#adoptedJustification"),
   assetType: document.querySelector("#assetType"),
-  referenceMode: document.querySelector("#referenceMode"),
   factorHint: document.querySelector("#factorHint"),
   factorList: document.querySelector("#factorList"),
+  referenceConstruida: document.querySelector("#referenceConstruida"),
+  referenceTerreno: document.querySelector("#referenceTerreno"),
+  loadModelButton: document.querySelector("#loadModelButton"),
+  loadModelInput: document.querySelector("#loadModelInput"),
+  resetAppButton: document.querySelector("#resetAppButton"),
+  loadedModelNotice: document.querySelector("#loadedModelNotice"),
+  appNotice: document.querySelector("#appNotice"),
+  exampleSelect: document.querySelector("#exampleSelect"),
   loadExampleButton: document.querySelector("#loadExampleButton"),
   toggleDictionariesButton: document.querySelector("#toggleDictionariesButton"),
+  dictionaryStatus: document.querySelector("#dictionaryStatus"),
   dictionaryPanel: document.querySelector("#dictionaryPanel"),
   editorHead: document.querySelector("#editorHead"),
   editorBody: document.querySelector("#editorBody"),
@@ -221,10 +259,14 @@ const el = {
   customFactorOptions: document.querySelector("#customFactorOptions"),
   saveCustomFactorButton: document.querySelector("#saveCustomFactorButton"),
   summaryGrid: document.querySelector("#summaryGrid"),
+  technicalSummaryWrap: document.querySelector("#technicalSummaryWrap"),
   technicalSummaryBody: document.querySelector("#technicalSummaryBody"),
   resultBody: document.querySelector("#resultBody"),
+  resultHint: document.querySelector("#resultHint"),
+  recalculateButton: document.querySelector("#recalculateButton"),
   addRowButton: document.querySelector("#addRowButton"),
   calculateButton: document.querySelector("#calculateButton"),
+  saveWorkButton: document.querySelector("#saveWorkButton"),
   exportReportButton: document.querySelector("#exportReportButton"),
   errorBox: document.querySelector("#errorBox"),
 };
@@ -252,6 +294,60 @@ function setError(message = "") {
   el.errorBox.classList.toggle("hidden", !message);
 }
 
+let appNoticeTimer = null;
+
+function setAppNotice(message = "") {
+  el.appNotice.textContent = message;
+  el.appNotice.classList.toggle("hidden", !message);
+  if (appNoticeTimer) {
+    window.clearTimeout(appNoticeTimer);
+    appNoticeTimer = null;
+  }
+  if (message) {
+    appNoticeTimer = window.setTimeout(() => {
+      el.appNotice.textContent = "";
+      el.appNotice.classList.add("hidden");
+    }, 3200);
+  }
+}
+
+function getDictionaryAdjustmentCount() {
+  let count = state.customFactors.length;
+  Object.entries(state.dictionaries).forEach(([name, options]) => {
+    const baseOptions = BASE_DICTIONARIES[name] || {};
+    Object.entries(options).forEach(([label, value]) => {
+      if (!(label in baseOptions) || baseOptions[label] !== value) {
+        count += 1;
+      }
+    });
+  });
+  return count;
+}
+
+function getAssetTypeLabel(value) {
+  return {
+    apartamento: "Apartamento",
+    terreno: "Terreno",
+    gleba: "Gleba",
+    sala: "Sala",
+    casa: "Casa",
+    loja: "Loja",
+    predio: "Predio",
+  }[value] || value;
+}
+
+function renderContextNotices() {
+  el.loadedModelNotice.textContent = state.loadedModelName
+    ? `Modelo carregado: ${state.loadedModelName}`
+    : "";
+  el.loadedModelNotice.classList.toggle("hidden", !state.loadedModelName);
+  const adjustmentCount = getDictionaryAdjustmentCount();
+  el.dictionaryStatus.textContent = adjustmentCount
+    ? `Este trabalho usa ajustes proprios: ${adjustmentCount} alteracao(oes) em dicionarios/fatores.`
+    : "";
+  el.dictionaryStatus.classList.toggle("hidden", !adjustmentCount);
+}
+
 function makeRow(index) {
   return {
     id: String(index + 1),
@@ -268,11 +364,35 @@ function resetRows() {
   state.rows = Array.from({ length: 5 }, (_, index) => makeRow(index));
 }
 
-function loadApartmentExample() {
-  state.assetType = APARTMENT_EXAMPLE.assetType;
-  state.referenceMode = APARTMENT_EXAMPLE.referenceMode;
-  state.activeFactors = [...APARTMENT_EXAMPLE.activeFactors];
-  state.rows = APARTMENT_EXAMPLE.rows.map((source, index) => ({
+function resetAppState() {
+  state.workName = "";
+  state.loadedModelName = "";
+  state.adoptedValue = "";
+  state.adoptedJustification = "";
+  state.assetType = "apartamento";
+  state.referenceMode = getSuggestedReferenceMode(state.assetType);
+  state.activeFactors = [...DEFAULT_FACTORS[state.assetType]];
+  state.selectedDictionary = "padrao_construtivo";
+  state.dictionaries = clone(BASE_DICTIONARIES);
+  state.customFactors = [];
+  state.dictionariesOpen = false;
+  resetRows();
+  resetResults();
+  renderAll();
+  bindFactorEvents();
+  bindDictionaryInputEvents();
+  bindEditorEvents();
+}
+
+function applyDemoScenario(demo) {
+  state.loadedModelName = "";
+  state.adoptedValue = "";
+  state.adoptedJustification = "";
+  state.assetType = demo.assetType;
+  state.referenceMode = demo.referenceMode;
+  state.activeFactors = [...demo.activeFactors];
+  state.dictionariesOpen = false;
+  state.rows = demo.rows.map((source, index) => ({
     id: String(index + 1),
     papel: index === 0 ? "avaliando" : "amostra",
     endereco: source.endereco,
@@ -286,6 +406,20 @@ function loadApartmentExample() {
   bindFactorEvents();
   bindDictionaryInputEvents();
   bindEditorEvents();
+}
+
+function loadSelectedExample() {
+  if (el.exampleSelect.value === "apartamento") {
+    applyDemoScenario(APARTMENT_CAROL_DEMO);
+    setAppNotice("Exemplo carregado: Apartamento.");
+    return;
+  }
+  if (el.exampleSelect.value === "terreno") {
+    applyDemoScenario(TERRAIN_CAROL_DEMO);
+    setAppNotice("Exemplo carregado: Terreno.");
+    return;
+  }
+  setError("Selecione um exemplo para carregar.");
 }
 
 function getEssentialFactor() {
@@ -312,6 +446,8 @@ function resetResults() {
   state.lastCalculation = null;
   el.summaryGrid.className = "summary-grid empty-block";
   el.summaryGrid.textContent = "Preencha a grade e clique em calcular.";
+  el.resultHint.textContent = "Calcule para revisar os fatores e decidir a selecao final dos dados.";
+  el.technicalSummaryWrap.classList.add("hidden");
   el.technicalSummaryBody.innerHTML = `
     <tr>
       <td colspan="2" class="empty-cell">Nenhum calculo executado ainda.</td>
@@ -319,12 +455,116 @@ function resetResults() {
   `;
   el.resultBody.innerHTML = `
     <tr>
-      <td colspan="9" class="empty-cell">Nenhum calculo executado ainda.</td>
+      <td colspan="10" class="empty-cell">Nenhum calculo executado ainda.</td>
     </tr>
   `;
 }
 
+function renderSavedCalculation() {
+  if (!state.lastCalculation) {
+    resetResults();
+    return;
+  }
+  renderSummary(state.lastCalculation.summary);
+  renderResults(state.lastCalculation.lines);
+  bindResultEvents();
+}
+
+function getSerializedState() {
+  return {
+    version: 1,
+    workName: state.workName,
+    adoptedValue: state.adoptedValue,
+    adoptedJustification: state.adoptedJustification,
+    assetType: state.assetType,
+    referenceMode: state.referenceMode,
+    activeFactors: clone(state.activeFactors),
+    selectedDictionary: state.selectedDictionary,
+    dictionaries: clone(state.dictionaries),
+    rows: clone(state.rows),
+    dictionariesOpen: state.dictionariesOpen,
+    customFactors: clone(state.customFactors),
+    lastCalculation: clone(state.lastCalculation),
+  };
+}
+
+function sanitizeFileName(value) {
+  const normalized = (value || "trabalho")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9_-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return normalized || "trabalho";
+}
+
+function saveWorkFile() {
+  const payload = getSerializedState();
+  const fileName = `${sanitizeFileName(state.workName || "trabalho")}.fat`;
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {
+    type: "application/json;charset=utf-8",
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  setAppNotice(`Trabalho salvo: ${fileName}`);
+}
+
+function loadWorkFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const payload = JSON.parse(String(reader.result || "{}"));
+      state.workName = payload.workName || "";
+      state.loadedModelName = payload.workName || file.name.replace(/\.fat$/i, "");
+      state.adoptedValue = payload.adoptedValue ?? "";
+      state.adoptedJustification = payload.adoptedJustification || "";
+      state.assetType = payload.assetType || "apartamento";
+      state.referenceMode = payload.referenceMode || getSuggestedReferenceMode(state.assetType);
+      state.activeFactors = Array.isArray(payload.activeFactors)
+        ? payload.activeFactors
+        : [...DEFAULT_FACTORS[state.assetType]];
+      state.selectedDictionary = payload.selectedDictionary || "padrao_construtivo";
+      state.dictionaries = payload.dictionaries ? clone(payload.dictionaries) : clone(BASE_DICTIONARIES);
+      state.rows = Array.isArray(payload.rows) && payload.rows.length
+        ? payload.rows.map((row, index) => ({
+            id: String(index + 1),
+            papel: index === 0 ? "avaliando" : "dado",
+            endereco: row.endereco || "",
+            valor_total: row.valor_total ?? "",
+            fon: row.fon ?? "1",
+            incluir: index === 0 ? false : Boolean(row.incluir),
+            campos: row.campos || {},
+          }))
+        : Array.from({ length: 5 }, (_, index) => makeRow(index));
+      state.dictionariesOpen = false;
+      state.customFactors = Array.isArray(payload.customFactors) ? payload.customFactors : [];
+      state.lastCalculation = payload.lastCalculation ? clone(payload.lastCalculation) : null;
+
+      renderAll();
+      bindFactorEvents();
+      bindDictionaryInputEvents();
+      bindEditorEvents();
+      renderSavedCalculation();
+      setError("");
+      setAppNotice(`Modelo carregado: ${(payload.workName || file.name.replace(/\.fat$/i, ""))}.`);
+    } catch (error) {
+      setError(`Falha ao carregar o arquivo .fat: ${error instanceof Error ? error.message : error}`);
+    }
+  };
+  reader.readAsText(file);
+}
+
 function renderSelectors() {
+  el.workName.value = state.workName;
+  el.adoptedValue.value = state.adoptedValue;
+  el.adoptedJustification.value = state.adoptedJustification;
   el.assetType.innerHTML = `
     <option value="apartamento">Apartamento</option>
     <option value="terreno">Terreno</option>
@@ -335,37 +575,50 @@ function renderSelectors() {
     <option value="predio">Predio</option>
   `;
   el.assetType.value = state.assetType;
-
-  el.referenceMode.innerHTML = `
-    <option value="Construida">Area construida</option>
-    <option value="Terreno">Area territorial</option>
-  `;
-  el.referenceMode.value = state.referenceMode;
+  el.referenceConstruida.classList.toggle("active", state.referenceMode === "Construida");
+  el.referenceTerreno.classList.toggle("active", state.referenceMode === "Terreno");
+  renderContextNotices();
 }
 
 function renderFactors() {
   const essential = getEssentialFactor();
   const available = getAvailableFactors();
-  el.factorHint.textContent = `${state.rows.length} linhas configuradas`;
+  el.factorHint.textContent = "";
   el.factorList.innerHTML = available
     .map((factor) => {
       const checked = state.activeFactors.includes(factor.id) || factor.id === essential;
-      const disabled = factor.id === essential ? "disabled" : "";
       return `
-        <label class="factor-card ${checked ? "active" : ""}">
-          <input type="checkbox" data-factor="${factor.id}" ${checked ? "checked" : ""} ${disabled} />
-          <strong>${factor.label}</strong>
+        <div class="factor-card ${checked ? "active" : ""}" data-factor-card="${factor.id}">
+          <label class="factor-toggle">
+            <input type="checkbox" class="${factor.id === essential ? "reference-checkbox" : ""}" data-factor="${factor.id}" ${checked ? "checked" : ""} />
+            <strong>${factor.label}</strong>
+          </label>
           <span>${factor.kind === "option" ? "dicionario" : "numerico"}</span>
-        </label>
+        </div>
       `;
     })
     .join("");
+}
+
+function updateFactorSelection(factorId, checked) {
+  if (!factorId || factorId === getEssentialFactor()) return;
+  if (checked) {
+    if (!state.activeFactors.includes(factorId)) {
+      state.activeFactors.push(factorId);
+    }
+  } else {
+    state.activeFactors = state.activeFactors.filter((id) => id !== factorId);
+  }
+  renderEditor();
+  bindEditorEvents();
+  renderFactors();
 }
 
 function renderEditor() {
   const visibleFactors = getVisibleFactors();
   el.editorHead.innerHTML = `
     <tr>
+      <th>Linha</th>
       <th>Papel</th>
       <th>Endereco</th>
       <th>Valor total</th>
@@ -381,11 +634,13 @@ function renderEditor() {
       const roleBadge =
         index === 0
           ? '<span class="fixed-role">Avaliando</span>'
-          : '<span class="fixed-role">Amostra</span>';
-      const rowClass = index > 0 && !row.incluir ? "row-off" : "";
+          : '<span class="fixed-role">Dado</span>';
+      const rowClass = index === 0 ? "row-evaluating" : index > 0 && !row.incluir ? "row-off" : "";
       const cells = visibleFactors
         .map((factor) => {
           const current = row.campos[factor.id] ?? "";
+          const compactField = ["localizacao", "area_construida", "area_territorial", "vaga", "testada", "prof_equivalente"].includes(factor.id);
+          const integerField = factor.id === "vaga";
           if (factor.kind === "option") {
             const options = Object.keys(state.dictionaries[factor.id] || {});
             return `
@@ -404,7 +659,7 @@ function renderEditor() {
           }
           return `
             <td>
-              <input type="number" step="0.01" data-row-id="${row.id}" data-factor-id="${factor.id}" value="${current}" />
+              <input type="${integerField ? "number" : "text"}" ${integerField ? 'step="1" min="0" inputmode="numeric"' : 'inputmode="decimal"'} class="${compactField ? "compact-factor-field" : ""}" data-row-id="${row.id}" data-factor-id="${factor.id}" value="${current}" />
             </td>
           `;
         })
@@ -412,10 +667,11 @@ function renderEditor() {
 
       return `
         <tr class="${rowClass}">
+          <td class="line-index">${index === 0 ? "-" : index}</td>
           <td>${roleBadge}</td>
           <td><input data-row-id="${row.id}" data-basic="endereco" value="${row.endereco}" /></td>
-          <td><input type="number" step="0.01" data-row-id="${row.id}" data-basic="valor_total" value="${row.valor_total}" ${index === 0 ? "disabled" : ""} /></td>
-          <td><input type="number" step="0.01" data-row-id="${row.id}" data-basic="fon" value="${row.fon}" /></td>
+          <td><input type="text" inputmode="decimal" data-row-id="${row.id}" data-basic="valor_total" value="${row.valor_total}" ${index === 0 ? "disabled" : ""} /></td>
+          <td><input type="text" inputmode="decimal" class="compact-factor-field" data-row-id="${row.id}" data-basic="fon" value="${row.fon}" /></td>
           <td>
             <label class="checkbox-cell">
               <input type="checkbox" data-row-id="${row.id}" data-basic="incluir" ${row.incluir ? "checked" : ""} ${index === 0 ? "disabled" : ""} />
@@ -455,35 +711,96 @@ function renderDictionaries() {
 }
 
 function renderSummary(summary) {
+  const areaBase =
+    summary.areaAvaliando ??
+    (summary.mediaSaneada && summary.valorEstimado ? summary.valorEstimado / summary.mediaSaneada : null);
+  const arbitrioInferiorTotal =
+    summary.arbitrioInferiorTotal ?? (areaBase != null ? summary.arbitrioInferior * areaBase : null);
+  const arbitrioSuperiorTotal =
+    summary.arbitrioSuperiorTotal ?? (areaBase != null ? summary.arbitrioSuperior * areaBase : null);
+  const icInferiorTotal =
+    summary.icInferiorTotal ?? (areaBase != null ? summary.icInferior * areaBase : null);
+  const icSuperiorTotal =
+    summary.icSuperiorTotal ?? (areaBase != null ? summary.icSuperior * areaBase : null);
+
   el.summaryGrid.className = "summary-grid";
+  el.technicalSummaryWrap.classList.add("hidden");
   el.summaryGrid.innerHTML = `
-    <article class="summary-card"><span>Media saneada</span><strong>R$ ${formatNumber(summary.mediaSaneada)}</strong></article>
-    <article class="summary-card"><span>Valor estimado total</span><strong>R$ ${formatNumber(summary.valorEstimado)}</strong></article>
-    <article class="summary-card"><span>Campo de arbitrio</span><strong>${formatNumber(summary.arbitrioInferior)} a ${formatNumber(summary.arbitrioSuperior)}</strong></article>
-    <article class="summary-card"><span>IC 80%</span><strong>${formatNumber(summary.icInferior)} a ${formatNumber(summary.icSuperior)}</strong></article>
-    <article class="summary-card"><span>Amostras aceitas</span><strong>${summary.amostras}</strong></article>
+    <article class="summary-card summary-card-wide">
+      <span>Estatisticas iniciais</span>
+      <div class="summary-list">
+        <div><b>Numero de dados</b><strong>${summary.numeroDadosInicial}</strong></div>
+        <div><b>Media</b><strong>${formatNumber(summary.mediaInicial)}</strong></div>
+        <div><b>Graus de liberdade (n-1)</b><strong>${Math.max(summary.numeroDadosInicial - 1, 1)}</strong></div>
+        <div><b>Valor maximo</b><strong>${formatNumber(summary.valorMaximoInicial)}</strong></div>
+        <div><b>Valor minimo</b><strong>${formatNumber(summary.valorMinimoInicial)}</strong></div>
+        <div><b>Limite superior (1,15 x media)</b><strong>${formatNumber(summary.limiteSuperiorInicial)}</strong></div>
+        <div><b>Limite inferior (0,85 x media)</b><strong>${formatNumber(summary.limiteInferiorInicial)}</strong></div>
+        <div><b>Desvio padrao</b><strong>${formatNumber(summary.desvioInicial)}</strong></div>
+        <div><b>Coeficiente de variacao</b><strong>${formatNumber(summary.coeficienteVariacaoInicial)}%</strong></div>
+      </div>
+    </article>
+    <article class="summary-card summary-card-wide">
+      <span>Estatisticas apos o saneamento</span>
+      <div class="summary-list">
+        <div><b>Numero de dados utilizados</b><strong>${summary.numeroDadosSaneados}</strong></div>
+        <div><b>Media saneada</b><strong>${formatNumber(summary.mediaSaneada)}</strong></div>
+        <div><b>Desvio padrao</b><strong>${formatNumber(summary.desvioSaneado)}</strong></div>
+        <div><b>Graus de liberdade (n-1)</b><strong>${summary.grausLiberdade}</strong></div>
+        <div><b>Limite superior (1,15 x media)</b><strong>${formatNumber(summary.arbitrioSuperior)}</strong></div>
+        <div><b>Limite inferior (0,85 x media)</b><strong>${formatNumber(summary.arbitrioInferior)}</strong></div>
+        <div><b>t-valor critico (conf. 80%)</b><strong>${formatNumber(summary.tCritico, 3)}</strong></div>
+        <div><b>Limite inferior IC</b><strong>${formatNumber(summary.icInferior)}</strong></div>
+        <div><b>Limite superior IC</b><strong>${formatNumber(summary.icSuperior)}</strong></div>
+        <div><b>Amplitude</b><strong>${formatNumber(summary.amplitudeIC)}</strong></div>
+        <div><b>Amplitude percentual</b><strong>${formatNumber(summary.amplitudePercentual)}%</strong></div>
+      </div>
+    </article>
+    <article class="summary-card summary-card-wide">
+      <span>Valores calculados</span>
+      <div class="summary-subsection">
+        <div><b>Area avaliando (m²)</b><strong>${formatNumber(areaBase)}</strong></div>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-subtitle">Valores Unitarios (R$/m²)</div>
+      <div class="summary-list">
+        <div><b>Medio estimado</b><strong>${formatNumber(summary.mediaSaneada)}</strong></div>
+        <div><b>LI Campo de Arbitrio (-15%)</b><strong>${formatNumber(summary.arbitrioInferior)}</strong></div>
+        <div><b>LS Campo de Arbitrio (+15%)</b><strong>${formatNumber(summary.arbitrioSuperior)}</strong></div>
+        <div><b>LI Intervalo de Confianca 80%</b><strong>${formatNumber(summary.icInferior)}</strong></div>
+        <div><b>LS Intervalo de Confianca 80%</b><strong>${formatNumber(summary.icSuperior)}</strong></div>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-subtitle">Valores Totais (R$)</div>
+      <div class="summary-list">
+        <div><b>Medio estimado</b><strong>R$ ${formatNumber(summary.valorEstimado)}</strong></div>
+        <div><b>LI Campo de Arbitrio (-15%)</b><strong>R$ ${formatNumber(arbitrioInferiorTotal)}</strong></div>
+        <div><b>LS Campo de Arbitrio (+15%)</b><strong>R$ ${formatNumber(arbitrioSuperiorTotal)}</strong></div>
+        <div><b>LI Intervalo de Confianca 80%</b><strong>R$ ${formatNumber(icInferiorTotal)}</strong></div>
+        <div><b>LS Intervalo de Confianca 80%</b><strong>R$ ${formatNumber(icSuperiorTotal)}</strong></div>
+      </div>
+    </article>
   `;
-  el.technicalSummaryBody.innerHTML = `
-    <tr><td>Media inicial</td><td>${formatNumber(summary.mediaInicial)}</td></tr>
-    <tr><td>Desvio padrao inicial</td><td>${formatNumber(summary.desvioInicial)}</td></tr>
-    <tr><td>Media saneada</td><td>${formatNumber(summary.mediaSaneada)}</td></tr>
-    <tr><td>Desvio padrao saneado</td><td>${formatNumber(summary.desvioSaneado)}</td></tr>
-    <tr><td>Graus de liberdade</td><td>${summary.grausLiberdade}</td></tr>
-    <tr><td>Chauvenet critico</td><td>${formatNumber(summary.chauvenetCritico, 3)}</td></tr>
-    <tr><td>t critico 80%</td><td>${formatNumber(summary.tCritico, 3)}</td></tr>
-    <tr><td>Margem do IC</td><td>${formatNumber(summary.margemIC)}</td></tr>
-    <tr><td>Amplitude do IC</td><td>${formatNumber(summary.amplitudeIC)}</td></tr>
-    <tr><td>Area adotada</td><td>${formatNumber(summary.areaAvaliando)}</td></tr>
-  `;
+  el.technicalSummaryBody.innerHTML = "";
 }
 
 function renderResults(lines) {
+  const flaggedCount = lines.filter((line) => line.status === "REJEITAR").length;
+  el.resultHint.textContent = flaggedCount
+    ? `A selecao abaixo atualiza a planilha de dados. O sistema sugere ${flaggedCount} dado(s) atipico(s), mas a decisao final e do avaliador.`
+    : "A selecao abaixo atualiza a planilha de dados. Use este passo para revisar e recalcular com a selecao atual.";
   el.resultBody.innerHTML = lines
     .map(
-      (line) => `
-        <tr>
-          <td>${line.id}</td>
+      (line, index) => `
+        <tr class="${line.papel === "AVALIANDO" ? "row-evaluating" : ""}">
+          <td>${index === 0 ? "-" : index}</td>
           <td>${line.papel}</td>
+          <td>
+            <label class="checkbox-cell">
+              <input type="checkbox" data-result-include-id="${line.id}" ${line.papel === "DADO" && line.participa ? "checked" : ""} ${line.papel === "AVALIANDO" ? "disabled" : ""} />
+              <span>${line.papel === "AVALIANDO" ? "Nao" : line.participa ? "Sim" : "Nao"}</span>
+            </label>
+          </td>
           <td>${formatNumber(line.valorUnitario)}</td>
           <td>${formatNumber(line.valorUnitarioFon)}</td>
           <td>${formatNumber(line.fatorFinal, 4)}</td>
@@ -508,7 +825,7 @@ function exportReport() {
   const visibleFactors = getVisibleFactors();
   const step2Headers = ["Papel", "Endereco", "Valor total", "fon", "Incluir", ...visibleFactors.map((factor) => factor.label)];
   const step2Rows = state.rows.map((row, index) => [
-    index === 0 ? "Avaliando" : "Amostra",
+    index === 0 ? "Avaliando" : "Dado",
     row.endereco || "",
     row.valor_total || "",
     row.fon || "",
@@ -529,12 +846,73 @@ function exportReport() {
   ]);
 
   const summary = state.lastCalculation.summary;
-  const step4Rows = [
+  const areaBase =
+    summary.areaAvaliando ??
+    (summary.mediaSaneada && summary.valorEstimado ? summary.valorEstimado / summary.mediaSaneada : null);
+  const arbitrioInferiorTotal =
+    summary.arbitrioInferiorTotal ?? (areaBase != null ? summary.arbitrioInferior * areaBase : null);
+  const arbitrioSuperiorTotal =
+    summary.arbitrioSuperiorTotal ?? (areaBase != null ? summary.arbitrioSuperior * areaBase : null);
+  const icInferiorTotal =
+    summary.icInferiorTotal ?? (areaBase != null ? summary.icInferior * areaBase : null);
+  const icSuperiorTotal =
+    summary.icSuperiorTotal ?? (areaBase != null ? summary.icSuperior * areaBase : null);
+  const adoptedValueFormatted =
+    toNumber(state.adoptedValue) != null ? `R$ ${formatNumber(toNumber(state.adoptedValue))}` : "-";
+  const adoptedJustification = state.adoptedJustification || "-";
+  const exportedAt = new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(new Date());
+  const reportHighlights = [
     ["Media saneada", `R$ ${formatNumber(summary.mediaSaneada)}`],
     ["Valor estimado total", `R$ ${formatNumber(summary.valorEstimado)}`],
-    ["Campo de arbitrio", `${formatNumber(summary.arbitrioInferior)} a ${formatNumber(summary.arbitrioSuperior)}`],
+    ["Valor adotado", adoptedValueFormatted],
+    ["Campo de arbitrio total", `R$ ${formatNumber(arbitrioInferiorTotal)} a R$ ${formatNumber(arbitrioSuperiorTotal)}`],
     ["IC 80%", `${formatNumber(summary.icInferior)} a ${formatNumber(summary.icSuperior)}`],
-    ["Amostras aceitas", summary.amostras],
+    ["IC 80% total", `R$ ${formatNumber(icInferiorTotal)} a R$ ${formatNumber(icSuperiorTotal)}`],
+    ["Dados aceitos", summary.amostras],
+  ];
+  const initialStatsRows = [
+    ["Numero de dados", summary.numeroDadosInicial],
+    ["Media", formatNumber(summary.mediaInicial)],
+    ["Graus de liberdade (n-1)", Math.max(summary.numeroDadosInicial - 1, 1)],
+    ["Valor maximo", formatNumber(summary.valorMaximoInicial)],
+    ["Valor minimo", formatNumber(summary.valorMinimoInicial)],
+    ["Limite superior (1,15 x media)", formatNumber(summary.limiteSuperiorInicial)],
+    ["Limite inferior (0,85 x media)", formatNumber(summary.limiteInferiorInicial)],
+    ["Desvio padrao", formatNumber(summary.desvioInicial)],
+    ["Coeficiente de variacao", `${formatNumber(summary.coeficienteVariacaoInicial)}%`],
+  ];
+  const sanitizedStatsRows = [
+    ["Numero de dados utilizados", summary.numeroDadosSaneados],
+    ["Media saneada", formatNumber(summary.mediaSaneada)],
+    ["Desvio padrao", formatNumber(summary.desvioSaneado)],
+    ["Graus de liberdade (n-1)", summary.grausLiberdade],
+    ["Limite superior (1,15 x media)", formatNumber(summary.arbitrioSuperior)],
+    ["Limite inferior (0,85 x media)", formatNumber(summary.arbitrioInferior)],
+    ["t-valor critico (conf. 80%)", formatNumber(summary.tCritico, 3)],
+    ["Limite inferior IC", formatNumber(summary.icInferior)],
+    ["Limite superior IC", formatNumber(summary.icSuperior)],
+    ["Amplitude", formatNumber(summary.amplitudeIC)],
+    ["Amplitude percentual", `${formatNumber(summary.amplitudePercentual)}%`],
+  ];
+  const calculatedValueRows = [
+    ["Area avaliando (m²)", formatNumber(areaBase)],
+    ["", ""],
+    ["Valores Unitarios (R$/m²)", ""],
+    ["Medio estimado", formatNumber(summary.mediaSaneada)],
+    ["LI Campo de Arbitrio (-15%)", formatNumber(summary.arbitrioInferior)],
+    ["LS Campo de Arbitrio (+15%)", formatNumber(summary.arbitrioSuperior)],
+    ["LI Intervalo de Confianca 80%", formatNumber(summary.icInferior)],
+    ["LS Intervalo de Confianca 80%", formatNumber(summary.icSuperior)],
+    ["", ""],
+    ["Valores Totais (R$)", ""],
+    ["Medio estimado", `R$ ${formatNumber(summary.valorEstimado)}`],
+    ["LI Campo de Arbitrio (-15%)", `R$ ${formatNumber(arbitrioInferiorTotal)}`],
+    ["LS Campo de Arbitrio (+15%)", `R$ ${formatNumber(arbitrioSuperiorTotal)}`],
+    ["LI Intervalo de Confianca 80%", `R$ ${formatNumber(icInferiorTotal)}`],
+    ["LS Intervalo de Confianca 80%", `R$ ${formatNumber(icSuperiorTotal)}`],
   ];
 
   function table(headers, rows) {
@@ -557,33 +935,82 @@ function exportReport() {
     <html lang="pt-BR">
       <head>
         <meta charset="UTF-8" />
-        <title>Relatorio de Avaliacao por Fatores</title>
+        <title>${state.workName ? `${state.workName} - ` : ""}Tratamento por Fatores</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 24px; color: #1f2933; }
           h1, h2 { margin-bottom: 8px; }
           p { margin: 4px 0 14px; }
           section { margin-bottom: 28px; }
+          .report-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+          .report-card { border: 1px solid #d8e1ea; border-radius: 12px; padding: 12px 14px; background: #f9fbfd; }
+          .report-card strong { display: block; margin-top: 6px; font-size: 1rem; color: #1f3a5f; }
+          .report-card span { color: #5a6b7c; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+          .summary-report { display: grid; gap: 16px; margin-top: 14px; }
+          .summary-report-card { border: 1px solid #d8e1ea; border-radius: 14px; padding: 14px 16px; background: #fbfcfd; }
+          .summary-report-card h3 { margin: 0 0 12px; color: #162a44; font-size: 0.98rem; text-transform: uppercase; letter-spacing: 0.04em; }
+          .summary-report-card table { margin-top: 0; }
+          .summary-report-card td:first-child { width: 68%; color: #526577; }
+          .summary-report-card tr.separator td { padding: 5px 10px; background: #fff; border-left-color: #fff; border-right-color: #fff; }
+          .summary-report-card tr.section td { background: #f5f8fb; font-weight: 700; color: #1f3a5f; }
           table { width: 100%; border-collapse: collapse; margin-top: 12px; }
           th, td { border: 1px solid #cfd8e3; padding: 8px 10px; text-align: left; vertical-align: top; }
           th { background: #f3f7fb; }
         </style>
       </head>
       <body>
-        <h1>Relatorio de Avaliacao por Fatores</h1>
-        <p>Tipologia: ${state.assetType}</p>
+        <h1>${state.workName || "Tratamento por Fatores"}</h1>
+        <p>Metodo Comparativo Direto de Dados de Mercado - Tratamento por Fatores</p>
+        <p>NBR 14.653-2 - item 8.2.1.4.2</p>
+        <p>Tipologia: ${getAssetTypeLabel(state.assetType)}</p>
         <p>Area de calculo: ${state.referenceMode === "Terreno" ? "Area territorial" : "Area construida"}</p>
         <p>Fatores ativos: ${visibleFactors.map((factor) => factor.label).join(", ")}</p>
+        <p>Emitido em: ${exportedAt}</p>
         <section>
-          <h2>Passo 2 - Linhas da amostra</h2>
+          <h2>Planilha de dados de mercado</h2>
           ${table(step2Headers, step2Rows)}
         </section>
         <section>
-          <h2>Passo 3 - Resultado por linha</h2>
+          <h2>Homogeneizacao</h2>
           ${table(step3Headers, step3Rows)}
         </section>
         <section>
-          <h2>Passo 4 - Resumo consolidado</h2>
-          ${table(["Indicador", "Valor"], step4Rows)}
+          <h2>Resultados</h2>
+          <div class="summary-report">
+            <div class="summary-report-card">
+              <h3>Estatisticas iniciais</h3>
+              ${table(["Indicador", "Valor"], initialStatsRows)}
+            </div>
+            <div class="summary-report-card">
+              <h3>Estatisticas apos o saneamento</h3>
+              ${table(["Indicador", "Valor"], sanitizedStatsRows)}
+            </div>
+            <div class="summary-report-card">
+              <h3>Valores calculados</h3>
+              <table>
+                <tbody>
+                  ${calculatedValueRows
+                    .map(([label, value]) => {
+                      if (!label && !value) return '<tr class="separator"><td colspan="2"></td></tr>';
+                      if (label.includes("Valores Unitarios") || label.includes("Valores Totais")) {
+                        return `<tr class="section"><td colspan="2">${label}</td></tr>`;
+                      }
+                      return `<tr><td>${label}</td><td>${value}</td></tr>`;
+                    })
+                    .join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h2>Valor adotado</h2>
+          ${table(
+            ["Campo", "Conteudo"],
+            [
+              ["Valor adotado", adoptedValueFormatted],
+              ["Justificativa", adoptedJustification],
+            ],
+          )}
         </section>
       </body>
     </html>
@@ -593,11 +1020,12 @@ function exportReport() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = "relatorio_avaliacao_fatores.html";
+  link.download = `${sanitizeFileName(state.workName || "trabalho")}-relatorio.html`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+  setAppNotice(`Relatorio exportado: ${sanitizeFileName(state.workName || "trabalho")}-relatorio.html`);
 }
 
 function depthCoefficient(area, testada, profEquivalente) {
@@ -698,7 +1126,7 @@ function calculate() {
 
       return {
         id: row.id,
-        papel: index === 0 ? "AVALIANDO" : "AMOSTRA",
+        papel: index === 0 ? "AVALIANDO" : "DADO",
         coeficientes,
         fatorFinal,
         valorUnitario,
@@ -706,57 +1134,59 @@ function calculate() {
         valorHomogeneizado,
         participa: index > 0 && row.incluir,
         zScore: null,
-        status: index === 0 ? "AVALIANDO" : "PENDENTE",
+        status: index === 0 ? "AVALIANDO" : row.incluir ? "PENDENTE" : "REJEITADO",
       };
     });
 
-    const sampleValues = lines
-      .filter((line) => line.participa && line.valorHomogeneizado != null)
+    const initialValues = lines
+      .filter((line) => line.papel === "DADO" && line.valorHomogeneizado != null)
       .map((line) => line.valorHomogeneizado);
 
-    if (sampleValues.length === 0) {
-      setError("Inclua ao menos uma amostra com valor total e area preenchidos.");
+    if (initialValues.length === 0) {
+      setError("Inclua ao menos um dado com valor total e area preenchidos.");
       return;
     }
 
     const mediaInicial =
-      sampleValues.reduce((sum, value) => sum + value, 0) / sampleValues.length;
+      initialValues.reduce((sum, value) => sum + value, 0) / initialValues.length;
     const desvioInicial =
-      sampleValues.length > 1
+      initialValues.length > 1
         ? Math.sqrt(
-            sampleValues.reduce((sum, value) => sum + (value - mediaInicial) ** 2, 0) /
-              (sampleValues.length - 1),
+            initialValues.reduce((sum, value) => sum + (value - mediaInicial) ** 2, 0) /
+              (initialValues.length - 1),
           )
         : 0;
-    const grausChauvenet = Math.max(sampleValues.length - 1, 2);
+    const grausChauvenet = Math.max(initialValues.length - 1, 2);
     const chauvenetCritico = CHAUVENET[grausChauvenet] ?? 2.31;
 
-    const aceitos = [];
     lines.forEach((line) => {
-      if (!line.participa || line.valorHomogeneizado == null) return;
-      line.zScore = desvioInicial
-        ? Math.abs((line.valorHomogeneizado - mediaInicial) / desvioInicial)
-        : 0;
-      line.status = line.zScore <= chauvenetCritico ? "ACEITO" : "REJEITADO";
-      if (line.status === "ACEITO") {
-        aceitos.push(line.valorHomogeneizado);
+      if (line.papel !== "DADO" || line.valorHomogeneizado == null) return;
+      line.zScore = desvioInicial ? Math.abs((line.valorHomogeneizado - mediaInicial) / desvioInicial) : 0;
+      if (!line.participa) {
+        line.status = "REJEITADO";
+        return;
       }
+      line.status = line.zScore > chauvenetCritico ? "REJEITAR" : "ACEITO";
     });
 
-    if (aceitos.length === 0) {
-      setError("Todas as amostras foram rejeitadas.");
+    const saneados = lines
+      .filter((line) => line.participa && line.valorHomogeneizado != null)
+      .map((line) => line.valorHomogeneizado);
+
+    if (saneados.length === 0) {
+      setError("Inclua ao menos um dado marcado para participar do modelo.");
       return;
     }
 
-    const mediaSaneada = aceitos.reduce((sum, value) => sum + value, 0) / aceitos.length;
+    const mediaSaneada = saneados.reduce((sum, value) => sum + value, 0) / saneados.length;
     const desvioSaneado =
-      aceitos.length > 1
+      saneados.length > 1
         ? Math.sqrt(
-            aceitos.reduce((sum, value) => sum + (value - mediaSaneada) ** 2, 0) /
-              (aceitos.length - 1),
+            saneados.reduce((sum, value) => sum + (value - mediaSaneada) ** 2, 0) /
+              (saneados.length - 1),
           )
         : 0;
-    const quantidadeUsada = aceitos.length;
+    const quantidadeUsada = saneados.length;
     const grausLiberdade = Math.max(quantidadeUsada - 1, 1);
     const tCritico = T_STUDENT_80[grausLiberdade] ?? 1.319;
     const denominadorIC = Math.sqrt(Math.max(quantidadeUsada - 1, 1));
@@ -766,25 +1196,38 @@ function calculate() {
     const valorEstimado = mediaSaneada * areaAvaliando;
 
     const summary = {
+      numeroDadosInicial: initialValues.length,
       mediaInicial,
       desvioInicial,
+      valorMaximoInicial: Math.max(...initialValues),
+      valorMinimoInicial: Math.min(...initialValues),
+      limiteSuperiorInicial: mediaInicial * 1.15,
+      limiteInferiorInicial: mediaInicial * 0.85,
+      coeficienteVariacaoInicial: mediaInicial ? (desvioInicial / mediaInicial) * 100 : 0,
+      numeroDadosSaneados: saneados.length,
       mediaSaneada,
       desvioSaneado,
       valorEstimado,
       arbitrioInferior: mediaSaneada * 0.85,
       arbitrioSuperior: mediaSaneada * 1.15,
+      arbitrioInferiorTotal: mediaSaneada * 0.85 * areaAvaliando,
+      arbitrioSuperiorTotal: mediaSaneada * 1.15 * areaAvaliando,
       icInferior,
       icSuperior,
+      icInferiorTotal: icInferior * areaAvaliando,
+      icSuperiorTotal: icSuperior * areaAvaliando,
       areaAvaliando,
       grausLiberdade,
       chauvenetCritico,
       tCritico,
       margemIC: margem,
       amplitudeIC: icSuperior - icInferior,
-      amostras: `${aceitos.length} de ${sampleValues.length}`,
+      amplitudePercentual: mediaSaneada ? ((icSuperior - icInferior) / mediaSaneada) * 100 : 0,
+      amostras: `${saneados.length} de ${initialValues.length}`,
     };
     renderSummary(summary);
     renderResults(lines);
+    bindResultEvents();
     state.lastCalculation = {
       lines: clone(lines),
       summary,
@@ -796,17 +1239,29 @@ function calculate() {
 }
 
 function bindTopControls() {
+  el.workName.addEventListener("input", (event) => {
+    state.workName = event.target.value;
+  });
+
+  el.adoptedValue.addEventListener("input", (event) => {
+    state.adoptedValue = event.target.value;
+  });
+
+  el.adoptedJustification.addEventListener("input", (event) => {
+    state.adoptedJustification = event.target.value;
+  });
+
   el.assetType.addEventListener("change", (event) => {
+    state.loadedModelName = "";
+    state.adoptedValue = "";
+    state.adoptedJustification = "";
     state.assetType = event.target.value;
     state.referenceMode = getSuggestedReferenceMode(state.assetType);
     state.activeFactors = [...DEFAULT_FACTORS[state.assetType]];
+    state.dictionariesOpen = false;
     resetRows();
     resetResults();
     renderAll();
-  });
-
-  el.referenceMode.addEventListener("change", (event) => {
-    state.referenceMode = event.target.value;
   });
 
   el.addRowButton.addEventListener("click", () => {
@@ -815,7 +1270,38 @@ function bindTopControls() {
     bindEditorEvents();
   });
 
-  el.loadExampleButton.addEventListener("click", loadApartmentExample);
+  el.referenceConstruida.addEventListener("click", () => {
+    state.referenceMode = "Construida";
+    renderSelectors();
+    renderFactors();
+    renderEditor();
+    bindFactorEvents();
+    bindEditorEvents();
+  });
+
+  el.referenceTerreno.addEventListener("click", () => {
+    state.referenceMode = "Terreno";
+    renderSelectors();
+    renderFactors();
+    renderEditor();
+    bindFactorEvents();
+    bindEditorEvents();
+  });
+
+  el.loadModelButton.addEventListener("click", () => {
+    el.loadModelInput.click();
+  });
+  el.loadModelInput.addEventListener("change", (event) => {
+    loadWorkFile(event.target.files?.[0]);
+    event.target.value = "";
+  });
+  el.loadExampleButton.addEventListener("click", loadSelectedExample);
+  el.resetAppButton.addEventListener("click", () => {
+    if (!window.confirm("Deseja reiniciar o app e limpar a avaliacao atual?")) return;
+    resetAppState();
+    setError("");
+    setAppNotice("App reiniciado.");
+  });
 
   el.toggleDictionariesButton.addEventListener("click", () => {
     state.dictionariesOpen = !state.dictionariesOpen;
@@ -826,27 +1312,31 @@ function bindTopControls() {
   });
 
   el.calculateButton.addEventListener("click", calculate);
+  el.recalculateButton.addEventListener("click", calculate);
+  el.saveWorkButton.addEventListener("click", saveWorkFile);
   el.exportReportButton.addEventListener("click", exportReport);
   el.saveCustomFactorButton.addEventListener("click", saveCustomFactor);
 }
 
 function bindFactorEvents() {
-  el.factorList.querySelectorAll("[data-factor]").forEach((input) => {
-    input.addEventListener("change", (event) => {
-      const factorId = event.target.dataset.factor;
-      if (!factorId || factorId === getEssentialFactor()) return;
-      if (event.target.checked) {
-        if (!state.activeFactors.includes(factorId)) {
-          state.activeFactors.push(factorId);
-        }
-      } else {
-        state.activeFactors = state.activeFactors.filter((id) => id !== factorId);
-      }
-      renderEditor();
-      bindEditorEvents();
-      renderFactors();
-      bindFactorEvents();
-    });
+  if (el.factorList.dataset.bound === "true") return;
+  el.factorList.dataset.bound = "true";
+
+  el.factorList.addEventListener("change", (event) => {
+    const input = event.target.closest("[data-factor]");
+    if (!input) return;
+    updateFactorSelection(input.dataset.factor, input.checked);
+  });
+
+  el.factorList.addEventListener("click", (event) => {
+    if (event.target.closest("input")) return;
+    const card = event.target.closest("[data-factor-card]");
+    if (!card) return;
+    const factorId = card.dataset.factorCard;
+    if (!factorId || factorId === getEssentialFactor()) return;
+    const input = card.querySelector("[data-factor]");
+    if (!input) return;
+    updateFactorSelection(factorId, !input.checked);
   });
 }
 
@@ -867,6 +1357,7 @@ function bindDictionaryInputEvents() {
       const value = toNumber(event.target.value);
       if (!dictionaryName || !optionName || value == null) return;
       state.dictionaries[dictionaryName][optionName] = value;
+      renderContextNotices();
       renderEditor();
       bindEditorEvents();
     });
@@ -883,11 +1374,11 @@ function bindEditorEvents() {
       if (!row) return;
       if (input.type === "checkbox") {
         row[basicKey] = event.target.checked;
+        renderEditor();
+        bindEditorEvents();
       } else {
         row[basicKey] = event.target.value;
       }
-      renderEditor();
-      bindEditorEvents();
     });
   });
 
@@ -910,11 +1401,41 @@ function bindEditorEvents() {
       state.rows = state.rows.map((row, index) => ({
         ...row,
         id: String(index + 1),
-        papel: index === 0 ? "avaliando" : "amostra",
+        papel: index === 0 ? "avaliando" : "dado",
         incluir: index === 0 ? false : row.incluir,
       }));
       renderEditor();
       bindEditorEvents();
+    });
+  });
+}
+
+function bindResultEvents() {
+  el.resultBody.querySelectorAll("[data-result-include-id]").forEach((input) => {
+    input.addEventListener("change", (event) => {
+      const rowId = event.target.dataset.resultIncludeId;
+      const row = state.rows.find((item) => item.id === rowId);
+      if (!row || row.id === "1") return;
+      row.incluir = event.target.checked;
+      renderEditor();
+      bindEditorEvents();
+      if (state.lastCalculation) {
+        state.lastCalculation.lines = state.lastCalculation.lines.map((line) =>
+          line.id === rowId
+            ? {
+                ...line,
+                participa: event.target.checked,
+                status: event.target.checked
+                  ? line.status === "REJEITADO"
+                    ? "REJEITAR"
+                    : line.status
+                  : "REJEITADO",
+              }
+            : line,
+        );
+        renderResults(state.lastCalculation.lines);
+        bindResultEvents();
+      }
     });
   });
 }
@@ -990,6 +1511,8 @@ function saveCustomFactor() {
   el.customFactorLabel.value = "";
   el.customFactorOptions.value = "";
   setError("");
+  renderContextNotices();
+  setAppNotice(`Fator personalizado salvo: ${label}.`);
   renderAll();
   bindFactorEvents();
   bindDictionaryEvents();

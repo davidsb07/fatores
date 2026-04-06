@@ -1,0 +1,27 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" fill="#F5F7F8"/>
+  <rect x="42" y="42" width="1516" height="816" rx="28" fill="white" stroke="#D9E2EC" stroke-width="2"/>
+  <rect x="42" y="42" width="1516" height="118" rx="28" fill="#162A44"/>
+  <path d="M42 132C42 116.536 54.536 104 70 104H1530C1545.46 104 1558 116.536 1558 132V160H42V132Z" fill="#162A44"/>
+  <text x="96" y="116" fill="white" font-family="Sora, Arial, sans-serif" font-size="34" font-weight="700">RodaModelo</text>
+  <text x="96" y="228" fill="#162A44" font-family="Sora, Arial, sans-serif" font-size="42" font-weight="700">Slide com Tabela / Resultados</text>
+  <rect x="96" y="244" width="310" height="4" rx="2" fill="#B38A3D"/>
+  <rect x="96" y="292" width="1410" height="500" rx="22" fill="#FBFCFD" stroke="#EAF0F6" stroke-width="2"/>
+  <rect x="116" y="318" width="1370" height="68" rx="14" fill="#F3F7FB"/>
+  <text x="140" y="360" fill="#1F3A5F" font-family="Sora, Arial, sans-serif" font-size="20" font-weight="700">Coluna 1</text>
+  <text x="370" y="360" fill="#1F3A5F" font-family="Sora, Arial, sans-serif" font-size="20" font-weight="700">Coluna 2</text>
+  <text x="650" y="360" fill="#1F3A5F" font-family="Sora, Arial, sans-serif" font-size="20" font-weight="700">Coluna 3</text>
+  <text x="920" y="360" fill="#1F3A5F" font-family="Sora, Arial, sans-serif" font-size="20" font-weight="700">Coluna 4</text>
+  <text x="1180" y="360" fill="#1F3A5F" font-family="Sora, Arial, sans-serif" font-size="20" font-weight="700">Coluna 5</text>
+  <rect x="116" y="404" width="1370" height="58" rx="10" fill="#FAF4E6"/>
+  <rect x="116" y="474" width="1370" height="58" rx="10" fill="#FFFFFF"/>
+  <rect x="116" y="544" width="1370" height="58" rx="10" fill="#F8FBFD"/>
+  <rect x="116" y="614" width="1370" height="58" rx="10" fill="#FFFFFF"/>
+  <rect x="116" y="684" width="1370" height="58" rx="10" fill="#F8FBFD"/>
+  <text x="140" y="440" fill="#3E4C59" font-family="Nunito Sans, Arial, sans-serif" font-size="22">Avaliando</text>
+  <text x="140" y="510" fill="#3E4C59" font-family="Nunito Sans, Arial, sans-serif" font-size="22">Dado 1</text>
+  <text x="140" y="580" fill="#3E4C59" font-family="Nunito Sans, Arial, sans-serif" font-size="22">Dado 2</text>
+  <text x="140" y="650" fill="#3E4C59" font-family="Nunito Sans, Arial, sans-serif" font-size="22">Dado 3</text>
+  <text x="140" y="720" fill="#3E4C59" font-family="Nunito Sans, Arial, sans-serif" font-size="22">Dado 4</text>
+  <text x="1260" y="830" fill="#6B7C93" font-family="Nunito Sans, Arial, sans-serif" font-size="20">Modelo de slide tecnico</text>
+</svg>
