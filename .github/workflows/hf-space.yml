@@ -10,7 +10,7 @@ jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
     env:
-      HF_SPACE_REPO: ESJL/fatores
+      HF_SPACE_REPO: ESJL/Fatores
 
     steps:
       - name: Checkout repository
