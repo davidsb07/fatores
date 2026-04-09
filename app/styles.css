@@ -592,6 +592,13 @@ button {
   background: #fff;
 }
 
+#editorBody input,
+#editorBody select {
+  height: 38px;
+  min-height: 38px;
+  padding: 8px 10px;
+}
+
 input,
 select,
 textarea {
@@ -816,6 +823,16 @@ td:nth-child(4),
 
 .row-evaluating td {
   background: #faf4e6;
+}
+
+.row-evaluating input:disabled,
+.row-evaluating select:disabled,
+.row-evaluating textarea:disabled {
+  border-color: #dbc998;
+  background: #faf4e6;
+  color: #7a6640;
+  opacity: 1;
+  -webkit-text-fill-color: #7a6640;
 }
 
 .status {
