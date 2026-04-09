@@ -9,8 +9,25 @@
       href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Nunito+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap"
     />
     <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
   </head>
   <body>
+    <div id="processingOverlay" class="processing-overlay hidden" aria-live="polite" aria-busy="true">
+      <div class="processing-card">
+        <div class="processing-spinner" aria-hidden="true"></div>
+        <strong id="processingLabel">Processando...</strong>
+      </div>
+    </div>
+    <aside class="side-dots" aria-label="Navegacao dos passos">
+      <button type="button" class="side-dot active" data-step-target="step-1" data-step-label="Inicio" aria-label="Passo 1 - Inicio">1</button>
+      <button type="button" class="side-dot" data-step-target="step-2" data-step-label="Fatores ativos" aria-label="Passo 2 - Fatores ativos">2</button>
+      <button type="button" class="side-dot" data-step-target="step-3" data-step-label="Linhas de dados" aria-label="Passo 3 - Linhas de dados">3</button>
+      <button type="button" class="side-dot" data-step-target="step-4" data-step-label="Resultado por linha" aria-label="Passo 4 - Resultado por linha">4</button>
+      <button type="button" class="side-dot" data-step-target="step-5" data-step-label="Resumo consolidado" aria-label="Passo 5 - Resumo consolidado">5</button>
+      <button type="button" class="side-dot" data-step-target="step-6" data-step-label="Valor adotado" aria-label="Passo 6 - Valor adotado">6</button>
+      <button type="button" class="side-dot" data-step-target="step-7" data-step-label="Salvar e exportar" aria-label="Passo 7 - Salvar e exportar">7</button>
+    </aside>
     <main class="page">
       <section class="hero">
         <div class="hero-brand">
@@ -22,13 +39,17 @@
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel collapsible-panel" id="step-1" data-step-panel="step-1">
         <div class="section-head">
           <div>
             <p class="eyebrow small">Passo 1</p>
             <h2>Inicio</h2>
           </div>
+          <div class="actions">
+            <button type="button" class="secondary panel-toggle" data-panel-toggle="step-1" aria-expanded="true" aria-label="Recolher passo 1"></button>
+          </div>
         </div>
+        <div class="panel-body" data-panel-body="step-1">
         <input id="loadModelInput" type="file" accept=".fat,application/json" hidden />
         <div class="start-grid">
           <div class="start-item">
@@ -62,15 +83,21 @@
         </div>
         <p id="loadedModelNotice" class="loaded-model hidden"></p>
         <p id="appNotice" class="app-notice hidden"></p>
+        </div>
       </section>
 
-      <section class="panel">
+      <section class="panel collapsible-panel" id="step-2" data-step-panel="step-2">
         <div class="section-head">
           <div>
             <p class="eyebrow small">Passo 2</p>
             <h2>Fatores ativos</h2>
           </div>
           <div class="actions">
+            <button type="button" class="secondary panel-toggle" data-panel-toggle="step-2" aria-expanded="true" aria-label="Recolher passo 2"></button>
+          </div>
+        </div>
+        <div class="panel-body" data-panel-body="step-2">
+          <div class="section-tools">
             <button id="toggleDictionariesButton" type="button" class="secondary">
               Ajustar coeficientes
             </button>
@@ -83,10 +110,9 @@
             </div>
             <p class="muted" id="factorHint"></p>
           </div>
-        </div>
-        <p id="dictionaryStatus" class="dictionary-status hidden"></p>
-        <div id="factorList" class="factor-grid"></div>
-        <div id="dictionaryPanel" class="dictionary-panel hidden">
+          <p id="dictionaryStatus" class="dictionary-status hidden"></p>
+          <div id="factorList" class="factor-grid"></div>
+          <div id="dictionaryPanel" class="dictionary-panel hidden">
           <div class="section-head">
             <div>
               <p class="eyebrow small">Ajuste Opcional</p>
@@ -177,18 +203,23 @@
               </button>
             </div>
           </div>
+          </div>
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel collapsible-panel" id="step-3" data-step-panel="step-3">
         <div class="section-head">
           <div>
             <p class="eyebrow small">Passo 3</p>
-            <h2>Linhas de dados</h2>
+            <h2>Dados de mercado</h2>
           </div>
           <div class="actions">
-            <button id="addRowButton" type="button" class="secondary">Adicionar linha</button>
+            <button type="button" class="secondary panel-toggle" data-panel-toggle="step-3" aria-expanded="true" aria-label="Recolher passo 3"></button>
           </div>
+        </div>
+        <div class="panel-body" data-panel-body="step-3">
+        <div class="section-tools">
+          <button id="addRowButton" type="button" class="secondary">Adicionar linha</button>
         </div>
         <p id="errorBox" class="error hidden"></p>
         <div class="table-wrap table-wrap-editor">
@@ -200,15 +231,20 @@
         <div class="table-actions">
           <button id="calculateButton" type="button">Calcular</button>
         </div>
+        </div>
       </section>
 
-      <section class="panel">
+      <section class="panel collapsible-panel" id="step-4" data-step-panel="step-4">
         <div class="section-head">
           <div>
             <p class="eyebrow small">Passo 4</p>
-            <h2>Resultado por linha</h2>
+            <h2>Homogeneizacao</h2>
+          </div>
+          <div class="actions">
+            <button type="button" class="secondary panel-toggle" data-panel-toggle="step-4" aria-expanded="true" aria-label="Recolher passo 4"></button>
           </div>
         </div>
+        <div class="panel-body" data-panel-body="step-4">
         <p id="resultHint" class="result-hint muted"></p>
         <div class="table-wrap table-wrap-results">
           <table>
@@ -236,15 +272,20 @@
         <div class="table-actions">
           <button id="recalculateButton" type="button">Recalcular com selecao atual</button>
         </div>
+        </div>
       </section>
 
-      <section class="panel">
+      <section class="panel collapsible-panel" id="step-5" data-step-panel="step-5">
         <div class="section-head">
           <div>
             <p class="eyebrow small">Passo 5</p>
-            <h2>Resumo consolidado</h2>
+            <h2>Resultados</h2>
+          </div>
+          <div class="actions">
+            <button type="button" class="secondary panel-toggle" data-panel-toggle="step-5" aria-expanded="true" aria-label="Recolher passo 5"></button>
           </div>
         </div>
+        <div class="panel-body" data-panel-body="step-5">
         <div id="summaryGrid" class="summary-grid empty-block">
           Preencha a grade e clique em calcular.
         </div>
@@ -263,15 +304,20 @@
             </tbody>
           </table>
         </div>
+        </div>
       </section>
 
-      <section class="panel">
+      <section class="panel collapsible-panel" id="step-6" data-step-panel="step-6">
         <div class="section-head">
           <div>
             <p class="eyebrow small">Passo 6</p>
             <h2>Valor adotado</h2>
           </div>
+          <div class="actions">
+            <button type="button" class="secondary panel-toggle" data-panel-toggle="step-6" aria-expanded="true" aria-label="Recolher passo 6"></button>
+          </div>
         </div>
+        <div class="panel-body" data-panel-body="step-6">
         <div class="adopted-grid">
           <label>
             <span>Valor adotado</span>
@@ -286,26 +332,33 @@
             ></textarea>
           </label>
         </div>
+        </div>
       </section>
 
-      <section class="panel">
+      <section class="panel collapsible-panel" id="step-7" data-step-panel="step-7">
         <div class="section-head">
           <div>
             <p class="eyebrow small">Passo 7</p>
             <h2>Salvar e exportar</h2>
           </div>
           <div class="actions">
-            <button id="saveWorkButton" type="button" class="secondary">Salvar trabalho</button>
-            <button id="exportReportButton" type="button" class="secondary">Exportar relatorio</button>
+            <button type="button" class="secondary panel-toggle" data-panel-toggle="step-7" aria-expanded="true" aria-label="Recolher passo 7"></button>
           </div>
         </div>
-        <div class="actions">
-          <label class="dictionary-picker">
-            <span class="muted">Nome do trabalho</span>
-            <input id="workName" type="text" placeholder="Ex.: apto-centro" />
-          </label>
+        <div class="panel-body" data-panel-body="step-7">
+          <div class="section-tools">
+            <button id="saveWorkButton" type="button" class="secondary">Salvar trabalho</button>
+            <button id="exportWordButton" type="button" class="secondary">Exportar Word</button>
+            <button id="exportReportButton" type="button" class="secondary">Exportar relatorio</button>
+          </div>
+          <div class="actions">
+            <label class="dictionary-picker">
+              <span class="muted">Nome do trabalho</span>
+              <input id="workName" type="text" placeholder="Ex.: apto-centro" />
+            </label>
+          </div>
+          <p class="muted">O trabalho e salvo em arquivo <code>.fat</code> usando o nome informado neste passo.</p>
         </div>
-        <p class="muted">O trabalho e salvo em arquivo <code>.fat</code> usando o nome informado neste passo.</p>
       </section>
     </main>
 

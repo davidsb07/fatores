@@ -40,6 +40,65 @@ body {
     linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 35%, #fbfcfd 100%);
 }
 
+.side-dots {
+  position: fixed;
+  top: 164px;
+  left: max(8px, calc((100vw - min(1800px, 98vw)) / 2 - 54px));
+  z-index: 900;
+  display: grid;
+  gap: 10px;
+}
+
+.side-dot {
+  position: relative;
+  width: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  height: 34px;
+  padding: 0;
+  border: 2px solid #9bb0c6;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: none;
+  cursor: pointer;
+  color: #607487;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.side-dot.active {
+  border-color: var(--accent-strong);
+  background: var(--accent-strong);
+  color: #fff;
+}
+
+.side-dot::after {
+  content: attr(data-step-label);
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 10px);
+  transform: translateY(-50%);
+  padding: 7px 10px;
+  border: 1px solid #d5e0e9;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.98);
+  color: var(--accent-strong);
+  font-family: "Sora", sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 10px 24px rgba(20, 28, 36, 0.12);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.16s ease;
+}
+
+.side-dot:hover::after,
+.side-dot:focus-visible::after {
+  opacity: 1;
+}
+
 button,
 input,
 select,
@@ -217,6 +276,32 @@ textarea {
 
 .panel {
   padding: 18px 20px;
+}
+
+.panel-body {
+  display: grid;
+  gap: 0;
+}
+
+.collapsible-panel.is-collapsed .panel-body {
+  display: none;
+}
+
+.panel-toggle {
+  width: auto;
+  min-width: 36px;
+  min-height: 30px;
+  padding: 4px 10px;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.section-tools {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin: -2px 0 14px;
 }
 
 .panel h2 {
@@ -514,8 +599,8 @@ textarea {
 }
 
 .compact-factor-field {
-  width: 132px;
-  min-width: 132px;
+  width: 168px;
+  min-width: 168px;
 }
 
 input:focus,
@@ -539,6 +624,15 @@ button {
   box-shadow:
     0 8px 18px rgba(35, 70, 74, 0.2),
     inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+button.side-dot {
+  width: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  height: 34px;
+  padding: 0;
+  box-shadow: none;
 }
 
 button.secondary {
@@ -781,7 +875,122 @@ td:nth-child(4),
   display: none;
 }
 
+.processing-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(245, 248, 251, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.processing-overlay.hidden {
+  display: none;
+}
+
+.processing-card {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  min-width: min(280px, 92vw);
+  padding: 22px 24px;
+  border: 1px solid #d5e0e9;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 18px 42px rgba(20, 28, 36, 0.14);
+}
+
+.processing-card strong {
+  color: var(--accent-strong);
+  font-family: "Sora", sans-serif;
+  font-size: 0.98rem;
+}
+
+.processing-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid #d8e2ec;
+  border-top-color: var(--accent-strong);
+  border-radius: 999px;
+  animation: spin 0.75s linear infinite;
+}
+
+.factor-alert {
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #fef0ef;
+  color: #8a1c13;
+  font-weight: 800;
+}
+
+.factor-number-alert {
+  color: #a63a3a;
+  font-weight: 800;
+}
+
+.factor-final-cell {
+  display: grid;
+  gap: 4px;
+}
+
+.factor-final-grade {
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.factor-final-grade.grau-iii {
+  background: #eefaf1;
+  color: #2d6a4f;
+}
+
+.factor-final-grade.grau-ii {
+  background: #fbf4df;
+  color: #8a6421;
+}
+
+.factor-final-grade.grau-i {
+  background: #fff1e7;
+  color: #b4571f;
+}
+
+.factor-final-grade.grau-fora {
+  background: #fef0ef;
+  color: #a63a3a;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 900px) {
+  .side-dots {
+    top: 132px;
+    left: 6px;
+    gap: 8px;
+  }
+
+  .side-dot {
+    width: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    height: 30px;
+    font-size: 0.74rem;
+  }
+
+  button.side-dot {
+    width: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    height: 30px;
+  }
+
   .page {
     width: 97vw;
     margin-top: 10px;

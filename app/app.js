@@ -87,6 +87,10 @@ const BASE_DICTIONARIES = {
     "19o": 1.456,
     "20o": 1.485,
   },
+  fon: {
+    Oferta: 0.9,
+    Transacao: 1.0,
+  },
 };
 
 const CHAUVENET = {
@@ -229,6 +233,7 @@ const state = {
   dictionariesOpen: false,
   lastCalculation: null,
   customFactors: [],
+  collapsedSteps: {},
 };
 
 const el = {
@@ -267,8 +272,14 @@ const el = {
   addRowButton: document.querySelector("#addRowButton"),
   calculateButton: document.querySelector("#calculateButton"),
   saveWorkButton: document.querySelector("#saveWorkButton"),
+  exportWordButton: document.querySelector("#exportWordButton"),
   exportReportButton: document.querySelector("#exportReportButton"),
   errorBox: document.querySelector("#errorBox"),
+  processingOverlay: document.querySelector("#processingOverlay"),
+  processingLabel: document.querySelector("#processingLabel"),
+  sideDots: Array.from(document.querySelectorAll(".side-dot")),
+  panelToggles: Array.from(document.querySelectorAll("[data-panel-toggle]")),
+  stepPanels: Array.from(document.querySelectorAll("[data-step-panel]")),
 };
 
 function clone(obj) {
@@ -311,6 +322,49 @@ function setAppNotice(message = "") {
   }
 }
 
+function inferFonType(row = {}) {
+  if (row.fonTipo && state.dictionaries.fon?.[row.fonTipo] != null) {
+    return row.fonTipo;
+  }
+  const fonValue = toNumber(row.fon);
+  if (fonValue === state.dictionaries.fon?.Oferta) return "Oferta";
+  return "Transacao";
+}
+
+function syncFonValue(row) {
+  const fonType = inferFonType(row);
+  row.fonTipo = fonType;
+  row.fon = String(state.dictionaries.fon?.[fonType] ?? 1);
+}
+
+function showProcessing(message = "Processando...") {
+  el.processingLabel.textContent = message;
+  el.processingOverlay.classList.remove("hidden");
+}
+
+function hideProcessing() {
+  el.processingOverlay.classList.add("hidden");
+}
+
+function wait(ms) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+async function withProcessing(message, action, minDuration = 450) {
+  const startedAt = Date.now();
+  showProcessing(message);
+  await new Promise((resolve) => window.requestAnimationFrame(() => resolve()));
+  try {
+    return await action();
+  } finally {
+    const elapsed = Date.now() - startedAt;
+    if (elapsed < minDuration) {
+      await wait(minDuration - elapsed);
+    }
+    hideProcessing();
+  }
+}
+
 function getDictionaryAdjustmentCount() {
   let count = state.customFactors.length;
   Object.entries(state.dictionaries).forEach(([name, options]) => {
@@ -348,16 +402,83 @@ function renderContextNotices() {
   el.dictionaryStatus.classList.toggle("hidden", !adjustmentCount);
 }
 
+function getStepIds() {
+  return el.stepPanels.map((panel) => panel.dataset.stepPanel).filter(Boolean);
+}
+
+function renderPanelStates() {
+  el.stepPanels.forEach((panel) => {
+    const stepId = panel.dataset.stepPanel;
+    const collapsed = Boolean(state.collapsedSteps[stepId]);
+    panel.classList.toggle("is-collapsed", collapsed);
+  });
+  el.panelToggles.forEach((button) => {
+    const stepId = button.dataset.panelToggle;
+    const collapsed = Boolean(state.collapsedSteps[stepId]);
+    button.setAttribute("aria-expanded", String(!collapsed));
+    button.textContent = collapsed ? "▼" : "▲";
+    button.setAttribute(
+      "aria-label",
+      collapsed ? `Expandir ${stepId}` : `Recolher ${stepId}`,
+    );
+  });
+}
+
+function toggleStepPanel(stepId) {
+  if (!stepId) return;
+  state.collapsedSteps[stepId] = !state.collapsedSteps[stepId];
+  renderPanelStates();
+}
+
+function scrollToStep(stepId) {
+  const panel = el.stepPanels.find((item) => item.dataset.stepPanel === stepId);
+  if (!panel) return;
+  if (state.collapsedSteps[stepId]) {
+    state.collapsedSteps[stepId] = false;
+    renderPanelStates();
+  }
+  panel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function updateActiveSideDot() {
+  let activeStep = getStepIds()[0];
+  const threshold = 180;
+  el.stepPanels.forEach((panel) => {
+    const rect = panel.getBoundingClientRect();
+    if (rect.top <= threshold && rect.bottom > threshold) {
+      activeStep = panel.dataset.stepPanel;
+    }
+  });
+  el.sideDots.forEach((dot) => {
+    dot.classList.toggle("active", dot.dataset.stepTarget === activeStep);
+  });
+}
+
+function bindStepNavigation() {
+  el.panelToggles.forEach((button) => {
+    button.addEventListener("click", () => toggleStepPanel(button.dataset.panelToggle));
+  });
+  el.sideDots.forEach((dot) => {
+    dot.addEventListener("click", () => scrollToStep(dot.dataset.stepTarget));
+  });
+  window.addEventListener("scroll", updateActiveSideDot, { passive: true });
+  updateActiveSideDot();
+}
+
 function makeRow(index) {
-  return {
+  const row = {
     id: String(index + 1),
     papel: index === 0 ? "avaliando" : "amostra",
     endereco: index === 0 ? "Imovel avaliando" : "",
+    origem: "",
     valor_total: "",
+    fonTipo: "Transacao",
     fon: "1",
     incluir: index !== 0,
     campos: {},
   };
+  syncFonValue(row);
+  return row;
 }
 
 function resetRows() {
@@ -376,6 +497,7 @@ function resetAppState() {
   state.dictionaries = clone(BASE_DICTIONARIES);
   state.customFactors = [];
   state.dictionariesOpen = false;
+  state.collapsedSteps = {};
   resetRows();
   resetResults();
   renderAll();
@@ -396,11 +518,14 @@ function applyDemoScenario(demo) {
     id: String(index + 1),
     papel: index === 0 ? "avaliando" : "amostra",
     endereco: source.endereco,
+    origem: source.origem || "",
     valor_total: source.valor_total,
+    fonTipo: inferFonType(source),
     fon: source.fon,
     incluir: index === 0 ? false : source.incluir,
     campos: { ...source.campos },
   }));
+  state.rows.forEach(syncFonValue);
   resetResults();
   renderAll();
   bindFactorEvents();
@@ -434,6 +559,12 @@ function getAvailableFactors() {
   return [...FACTORS, ...state.customFactors].filter((factor) =>
     factor.appliesTo.includes(state.assetType),
   );
+}
+
+function ensureRowCount(count) {
+  while (state.rows.length < count) {
+    state.rows.push(makeRow(state.rows.length));
+  }
 }
 
 function getVisibleFactors() {
@@ -517,48 +648,62 @@ function saveWorkFile() {
 
 function loadWorkFile(file) {
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const payload = JSON.parse(String(reader.result || "{}"));
-      state.workName = payload.workName || "";
-      state.loadedModelName = payload.workName || file.name.replace(/\.fat$/i, "");
-      state.adoptedValue = payload.adoptedValue ?? "";
-      state.adoptedJustification = payload.adoptedJustification || "";
-      state.assetType = payload.assetType || "apartamento";
-      state.referenceMode = payload.referenceMode || getSuggestedReferenceMode(state.assetType);
-      state.activeFactors = Array.isArray(payload.activeFactors)
-        ? payload.activeFactors
-        : [...DEFAULT_FACTORS[state.assetType]];
-      state.selectedDictionary = payload.selectedDictionary || "padrao_construtivo";
-      state.dictionaries = payload.dictionaries ? clone(payload.dictionaries) : clone(BASE_DICTIONARIES);
-      state.rows = Array.isArray(payload.rows) && payload.rows.length
-        ? payload.rows.map((row, index) => ({
-            id: String(index + 1),
-            papel: index === 0 ? "avaliando" : "dado",
-            endereco: row.endereco || "",
-            valor_total: row.valor_total ?? "",
-            fon: row.fon ?? "1",
-            incluir: index === 0 ? false : Boolean(row.incluir),
-            campos: row.campos || {},
-          }))
-        : Array.from({ length: 5 }, (_, index) => makeRow(index));
-      state.dictionariesOpen = false;
-      state.customFactors = Array.isArray(payload.customFactors) ? payload.customFactors : [];
-      state.lastCalculation = payload.lastCalculation ? clone(payload.lastCalculation) : null;
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const payload = JSON.parse(String(reader.result || "{}"));
+        state.workName = payload.workName || "";
+        state.loadedModelName = payload.workName || file.name.replace(/\.fat$/i, "");
+        state.adoptedValue = payload.adoptedValue ?? "";
+        state.adoptedJustification = payload.adoptedJustification || "";
+        state.assetType = payload.assetType || "apartamento";
+        state.referenceMode = payload.referenceMode || getSuggestedReferenceMode(state.assetType);
+        state.activeFactors = Array.isArray(payload.activeFactors)
+          ? payload.activeFactors
+          : [...DEFAULT_FACTORS[state.assetType]];
+        state.selectedDictionary = payload.selectedDictionary || "padrao_construtivo";
+        state.dictionaries = payload.dictionaries ? clone(payload.dictionaries) : clone(BASE_DICTIONARIES);
+        state.dictionaries.fon = {
+          ...BASE_DICTIONARIES.fon,
+          ...(payload.dictionaries?.fon || {}),
+        };
+        state.rows = Array.isArray(payload.rows) && payload.rows.length
+          ? payload.rows.map((row, index) => {
+              const loadedRow = {
+                id: String(index + 1),
+                papel: index === 0 ? "avaliando" : "dado",
+                endereco: row.endereco || "",
+                origem: row.origem || "",
+                valor_total: row.valor_total ?? "",
+                fonTipo: inferFonType(row),
+                fon: row.fon ?? "1",
+                incluir: index === 0 ? false : Boolean(row.incluir),
+                campos: row.campos || {},
+              };
+              syncFonValue(loadedRow);
+              return loadedRow;
+            })
+          : Array.from({ length: 5 }, (_, index) => makeRow(index));
+        state.dictionariesOpen = false;
+        state.customFactors = Array.isArray(payload.customFactors) ? payload.customFactors : [];
+        state.lastCalculation = payload.lastCalculation ? clone(payload.lastCalculation) : null;
 
-      renderAll();
-      bindFactorEvents();
-      bindDictionaryInputEvents();
-      bindEditorEvents();
-      renderSavedCalculation();
-      setError("");
-      setAppNotice(`Modelo carregado: ${(payload.workName || file.name.replace(/\.fat$/i, ""))}.`);
-    } catch (error) {
-      setError(`Falha ao carregar o arquivo .fat: ${error instanceof Error ? error.message : error}`);
-    }
-  };
-  reader.readAsText(file);
+        renderAll();
+        bindFactorEvents();
+        bindDictionaryInputEvents();
+        bindEditorEvents();
+        renderSavedCalculation();
+        setError("");
+        setAppNotice(`Modelo carregado: ${(payload.workName || file.name.replace(/\.fat$/i, ""))}.`);
+      } catch (error) {
+        setError(`Falha ao carregar o arquivo .fat: ${error instanceof Error ? error.message : error}`);
+      } finally {
+        resolve();
+      }
+    };
+    reader.readAsText(file);
+  });
 }
 
 function renderSelectors() {
@@ -616,13 +761,15 @@ function updateFactorSelection(factorId, checked) {
 
 function renderEditor() {
   const visibleFactors = getVisibleFactors();
+  const fonOptions = Object.entries(state.dictionaries.fon || {});
   el.editorHead.innerHTML = `
     <tr>
       <th>Linha</th>
       <th>Papel</th>
       <th>Endereco</th>
+      <th>Origem do anuncio</th>
       <th>Valor total</th>
-      <th>fon</th>
+      <th>FON</th>
       <th>Incluir</th>
       ${visibleFactors.map((factor) => `<th>${factor.label}</th>`).join("")}
       <th></th>
@@ -670,8 +817,15 @@ function renderEditor() {
           <td class="line-index">${index === 0 ? "-" : index}</td>
           <td>${roleBadge}</td>
           <td><input data-row-id="${row.id}" data-basic="endereco" value="${row.endereco}" /></td>
+          <td><input data-row-id="${row.id}" data-basic="origem" value="${row.origem || ""}" ${index === 0 ? "disabled" : ""} /></td>
           <td><input type="text" inputmode="decimal" data-row-id="${row.id}" data-basic="valor_total" value="${row.valor_total}" ${index === 0 ? "disabled" : ""} /></td>
-          <td><input type="text" inputmode="decimal" class="compact-factor-field" data-row-id="${row.id}" data-basic="fon" value="${row.fon}" /></td>
+          <td>
+            <select class="compact-factor-field" data-row-id="${row.id}" data-basic="fonTipo">
+              ${fonOptions
+                .map(([label, coefficient]) => `<option value="${label}" ${label === row.fonTipo ? "selected" : ""}>${label} (${formatNumber(coefficient, 2)})</option>`)
+                .join("")}
+            </select>
+          </td>
           <td>
             <label class="checkbox-cell">
               <input type="checkbox" data-row-id="${row.id}" data-basic="incluir" ${row.incluir ? "checked" : ""} ${index === 0 ? "disabled" : ""} />
@@ -684,6 +838,40 @@ function renderEditor() {
       `;
     })
     .join("");
+}
+
+function normalizePastedLines(text) {
+  return String(text || "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line !== "");
+}
+
+function applyColumnPaste(startRowId, targetKey, values, mode) {
+  const startIndex = state.rows.findIndex((row) => row.id === startRowId);
+  if (startIndex === -1 || !values.length) return;
+
+  ensureRowCount(startIndex + values.length);
+
+  values.forEach((value, offset) => {
+    const row = state.rows[startIndex + offset];
+    if (!row) return;
+    if (mode === "basic") {
+      if (targetKey === "fonTipo") {
+        row.fonTipo = value;
+        syncFonValue(row);
+        return;
+      }
+      row[targetKey] = value;
+      return;
+    }
+    row.campos[targetKey] = value;
+  });
+
+  renderEditor();
+  bindEditorEvents();
 }
 
 function renderDictionaries() {
@@ -722,6 +910,7 @@ function renderSummary(summary) {
     summary.icInferiorTotal ?? (areaBase != null ? summary.icInferior * areaBase : null);
   const icSuperiorTotal =
     summary.icSuperiorTotal ?? (areaBase != null ? summary.icSuperior * areaBase : null);
+  const sampleGrade = summary.grauAmostra || getSampleGrade(summary.numeroDadosSaneados);
 
   el.summaryGrid.className = "summary-grid";
   el.technicalSummaryWrap.classList.add("hidden");
@@ -754,6 +943,7 @@ function renderSummary(summary) {
         <div><b>Limite superior IC</b><strong>${formatNumber(summary.icSuperior)}</strong></div>
         <div><b>Amplitude</b><strong>${formatNumber(summary.amplitudeIC)}</strong></div>
         <div><b>Amplitude percentual</b><strong>${formatNumber(summary.amplitudePercentual)}%</strong></div>
+        <div><b>Grau de fundamentacao</b><strong>${sampleGrade}</strong></div>
       </div>
     </article>
     <article class="summary-card summary-card-wide">
@@ -785,13 +975,35 @@ function renderSummary(summary) {
 }
 
 function renderResults(lines) {
+  const factorLabels = new Map(getVisibleFactors().map((factor) => [factor.id, factor.label]));
   const flaggedCount = lines.filter((line) => line.status === "REJEITAR").length;
-  el.resultHint.textContent = flaggedCount
-    ? `A selecao abaixo atualiza a planilha de dados. O sistema sugere ${flaggedCount} dado(s) atipico(s), mas a decisao final e do avaliador.`
-    : "A selecao abaixo atualiza a planilha de dados. Use este passo para revisar e recalcular com a selecao atual.";
+  const acceptedCount = lines.filter((line) => line.status === "ACEITO").length;
+  const sampleGrade = getSampleGrade(acceptedCount);
+  const worstFinalFactorGrade = getWorstFinalFactorGrade(lines);
+  const gradeLabel =
+    sampleGrade === "Sem enquadramento" ? sampleGrade : `Grau ${sampleGrade}`;
+  el.resultHint.innerHTML = `
+    Quantidade minima de dados efetivamente usados: ${acceptedCount} dados - ${gradeLabel}.<br />
+    Intervalo admissivel de ajuste para o conjunto de fatores: ${worstFinalFactorGrade}.
+  `;
   el.resultBody.innerHTML = lines
     .map(
-      (line, index) => `
+      (line, index) => {
+        const finalFactorGrade = getFinalFactorGrade(line.fatorFinal);
+        const finalFactorNumberAlert =
+          line.papel === "DADO" &&
+          line.fatorFinal != null &&
+          finalFactorGrade === "Fora da faixa";
+        const finalFactorMarkup = finalFactorNumberAlert
+          ? `<span class="factor-number-alert">${formatNumber(line.fatorFinal, 4)}</span>`
+          : formatNumber(line.fatorFinal, 4);
+        const finalFactorCell = `
+          <div class="factor-final-cell">
+            <span>${finalFactorMarkup}</span>
+            <span class="factor-final-grade ${getFinalFactorGradeClass(finalFactorGrade)}">${finalFactorGrade === "Fora da faixa" ? finalFactorGrade : `Grau ${finalFactorGrade}`}</span>
+          </div>
+        `;
+        return `
         <tr class="${line.papel === "AVALIANDO" ? "row-evaluating" : ""}">
           <td>${index === 0 ? "-" : index}</td>
           <td>${line.papel}</td>
@@ -803,20 +1015,25 @@ function renderResults(lines) {
           </td>
           <td>${formatNumber(line.valorUnitario)}</td>
           <td>${formatNumber(line.valorUnitarioFon)}</td>
-          <td>${formatNumber(line.fatorFinal, 4)}</td>
+          <td>${finalFactorCell}</td>
           <td>${formatNumber(line.valorHomogeneizado)}</td>
           <td>${formatNumber(line.zScore, 4)}</td>
           <td><span class="status status-${line.status.toLowerCase()}">${line.status}</span></td>
           <td><div class="coef-list">${Object.entries(line.coeficientes)
-            .map(([key, value]) => `<span>${key}: ${formatNumber(value, 4)}</span>`)
+            .map(([key, value]) => {
+              const highlight = value > 2 || value < 0.5;
+              const className = highlight ? ' class="factor-alert"' : "";
+              return `<span${className}>${factorLabels.get(key) || key}: ${formatNumber(value, 4)}</span>`;
+            })
             .join("")}</div></td>
         </tr>
-      `,
+      `;
+      },
     )
     .join("");
 }
 
-function exportReport() {
+function exportWordReport() {
   if (!state.lastCalculation) {
     setError("Execute um calculo antes de exportar o relatorio.");
     return;
@@ -896,6 +1113,7 @@ function exportReport() {
     ["Limite superior IC", formatNumber(summary.icSuperior)],
     ["Amplitude", formatNumber(summary.amplitudeIC)],
     ["Amplitude percentual", `${formatNumber(summary.amplitudePercentual)}%`],
+    ["Grau de fundamentacao", summary.grauAmostra || getSampleGrade(summary.numeroDadosSaneados)],
   ];
   const calculatedValueRows = [
     ["Area avaliando (m²)", formatNumber(areaBase)],
@@ -913,6 +1131,7 @@ function exportReport() {
     ["LS Campo de Arbitrio (+15%)", `R$ ${formatNumber(arbitrioSuperiorTotal)}`],
     ["LI Intervalo de Confianca 80%", `R$ ${formatNumber(icInferiorTotal)}`],
     ["LS Intervalo de Confianca 80%", `R$ ${formatNumber(icSuperiorTotal)}`],
+    ["Grau de fundamentacao", summary.grauAmostra || getSampleGrade(summary.numeroDadosSaneados)],
   ];
 
   function table(headers, rows) {
@@ -937,7 +1156,8 @@ function exportReport() {
         <meta charset="UTF-8" />
         <title>${state.workName ? `${state.workName} - ` : ""}Tratamento por Fatores</title>
         <style>
-          body { font-family: Arial, sans-serif; margin: 24px; color: #1f2933; }
+          @page { size: A4 landscape; margin: 1.2cm; }
+          body { font-family: Arial, sans-serif; margin: 18px; color: #1f2933; }
           h1, h2 { margin-bottom: 8px; }
           p { margin: 4px 0 14px; }
           section { margin-bottom: 28px; }
@@ -947,14 +1167,14 @@ function exportReport() {
           .report-card span { color: #5a6b7c; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
           .summary-report { display: grid; gap: 16px; margin-top: 14px; }
           .summary-report-card { border: 1px solid #d8e1ea; border-radius: 14px; padding: 14px 16px; background: #fbfcfd; }
-          .summary-report-card h3 { margin: 0 0 12px; color: #162a44; font-size: 0.98rem; text-transform: uppercase; letter-spacing: 0.04em; }
+          .summary-report-card h3 { margin: 0 0 12px; color: #162a44; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.04em; }
           .summary-report-card table { margin-top: 0; }
           .summary-report-card td:first-child { width: 68%; color: #526577; }
           .summary-report-card tr.separator td { padding: 5px 10px; background: #fff; border-left-color: #fff; border-right-color: #fff; }
           .summary-report-card tr.section td { background: #f5f8fb; font-weight: 700; color: #1f3a5f; }
           table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-          th, td { border: 1px solid #cfd8e3; padding: 8px 10px; text-align: left; vertical-align: top; }
-          th { background: #f3f7fb; }
+          th, td { border: 1px solid #cfd8e3; padding: 5px 6px; text-align: left; vertical-align: top; font-size: 9pt; }
+          th { background: #f3f7fb; font-size: 8pt; }
         </style>
       </head>
       <body>
@@ -1016,16 +1236,218 @@ function exportReport() {
     </html>
   `;
 
-  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const blob = new Blob(["\ufeff", html], { type: "application/msword;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `${sanitizeFileName(state.workName || "trabalho")}-relatorio.html`;
+  link.download = `${sanitizeFileName(state.workName || "trabalho")}-relatorio.doc`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-  setAppNotice(`Relatorio exportado: ${sanitizeFileName(state.workName || "trabalho")}-relatorio.html`);
+  setAppNotice(`Relatorio exportado: ${sanitizeFileName(state.workName || "trabalho")}-relatorio.doc`);
+}
+
+function exportPdfReport() {
+  if (!state.lastCalculation) {
+    setError("Execute um calculo antes de exportar o relatorio.");
+    return;
+  }
+  if (!window.jspdf?.jsPDF) {
+    setError("Biblioteca de PDF indisponivel no momento.");
+    return;
+  }
+
+  const visibleFactors = getVisibleFactors();
+  const factorLabels = new Map(visibleFactors.map((factor) => [factor.id, factor.label]));
+  const step2Headers = ["Papel", "Endereco", "Origem do anuncio", "Valor total", "Tipo FON", "FON", "Incluir", ...visibleFactors.map((factor) => factor.label)];
+  const step2Rows = state.rows.map((row, index) => [
+    index === 0 ? "Avaliando" : "Dado",
+    row.endereco || "",
+    row.origem || "",
+    row.valor_total || "",
+    row.fonTipo || "",
+    row.fon || "",
+    index === 0 ? "Nao" : row.incluir ? "Sim" : "Nao",
+    ...visibleFactors.map((factor) => row.campos[factor.id] ?? ""),
+  ]);
+
+  const step3Headers = ["Linha", "Papel", "VU", "VU * FON", "Fator final", "VU homogenizado", "Z-score", "Status", "Fatores"];
+  const step3Rows = state.lastCalculation.lines.map((line) => [
+    line.id,
+    line.papel,
+    formatNumber(line.valorUnitario),
+    formatNumber(line.valorUnitarioFon),
+    formatNumber(line.fatorFinal, 4),
+    formatNumber(line.valorHomogeneizado),
+    formatNumber(line.zScore, 4),
+    line.status,
+    Object.entries(line.coeficientes).map(([key, value]) => `${factorLabels.get(key) || key}: ${formatNumber(value, 4)}`).join(" | "),
+  ]);
+
+  const summary = state.lastCalculation.summary;
+  const areaBase =
+    summary.areaAvaliando ??
+    (summary.mediaSaneada && summary.valorEstimado ? summary.valorEstimado / summary.mediaSaneada : null);
+  const arbitrioInferiorTotal =
+    summary.arbitrioInferiorTotal ?? (areaBase != null ? summary.arbitrioInferior * areaBase : null);
+  const arbitrioSuperiorTotal =
+    summary.arbitrioSuperiorTotal ?? (areaBase != null ? summary.arbitrioSuperior * areaBase : null);
+  const icInferiorTotal =
+    summary.icInferiorTotal ?? (areaBase != null ? summary.icInferior * areaBase : null);
+  const icSuperiorTotal =
+    summary.icSuperiorTotal ?? (areaBase != null ? summary.icSuperior * areaBase : null);
+  const adoptedValueFormatted =
+    toNumber(state.adoptedValue) != null ? `R$ ${formatNumber(toNumber(state.adoptedValue))}` : "-";
+  const adoptedJustification = state.adoptedJustification || "-";
+  const exportedAt = new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(new Date());
+  const initialStatsRows = [
+    ["Numero de dados", summary.numeroDadosInicial],
+    ["Media", formatNumber(summary.mediaInicial)],
+    ["Graus de liberdade (n-1)", Math.max(summary.numeroDadosInicial - 1, 1)],
+    ["Valor maximo", formatNumber(summary.valorMaximoInicial)],
+    ["Valor minimo", formatNumber(summary.valorMinimoInicial)],
+    ["Limite superior (1,15 x media)", formatNumber(summary.limiteSuperiorInicial)],
+    ["Limite inferior (0,85 x media)", formatNumber(summary.limiteInferiorInicial)],
+    ["Desvio padrao", formatNumber(summary.desvioInicial)],
+    ["Coeficiente de variacao", `${formatNumber(summary.coeficienteVariacaoInicial)}%`],
+  ];
+  const sanitizedStatsRows = [
+    ["Numero de dados utilizados", summary.numeroDadosSaneados],
+    ["Media saneada", formatNumber(summary.mediaSaneada)],
+    ["Desvio padrao", formatNumber(summary.desvioSaneado)],
+    ["Graus de liberdade (n-1)", summary.grausLiberdade],
+    ["Limite superior (1,15 x media)", formatNumber(summary.arbitrioSuperior)],
+    ["Limite inferior (0,85 x media)", formatNumber(summary.arbitrioInferior)],
+    ["t-valor critico (conf. 80%)", formatNumber(summary.tCritico, 3)],
+    ["Limite inferior IC", formatNumber(summary.icInferior)],
+    ["Limite superior IC", formatNumber(summary.icSuperior)],
+    ["Amplitude", formatNumber(summary.amplitudeIC)],
+    ["Amplitude percentual", `${formatNumber(summary.amplitudePercentual)}%`],
+  ];
+  const calculatedValueRows = [
+    ["Area avaliando (m²)", formatNumber(areaBase)],
+    ["Valores Unitarios (R$/m²)", ""],
+    ["Medio estimado", formatNumber(summary.mediaSaneada)],
+    ["LI Campo de Arbitrio (-15%)", formatNumber(summary.arbitrioInferior)],
+    ["LS Campo de Arbitrio (+15%)", formatNumber(summary.arbitrioSuperior)],
+    ["LI Intervalo de Confianca 80%", formatNumber(summary.icInferior)],
+    ["LS Intervalo de Confianca 80%", formatNumber(summary.icSuperior)],
+    ["Valores Totais (R$)", ""],
+    ["Medio estimado", `R$ ${formatNumber(summary.valorEstimado)}`],
+    ["LI Campo de Arbitrio (-15%)", `R$ ${formatNumber(arbitrioInferiorTotal)}`],
+    ["LS Campo de Arbitrio (+15%)", `R$ ${formatNumber(arbitrioSuperiorTotal)}`],
+    ["LI Intervalo de Confianca 80%", `R$ ${formatNumber(icInferiorTotal)}`],
+    ["LS Intervalo de Confianca 80%", `R$ ${formatNumber(icSuperiorTotal)}`],
+  ];
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  const pageWidth = doc.internal.pageSize.getWidth();
+
+  function addTitleBlock() {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text(state.workName || "Tratamento por Fatores", 14, 14);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(
+      [
+        "Metodo Comparativo Direto de Dados de Mercado - Tratamento por Fatores",
+        "NBR 14.653-2 - item 8.2.1.4.2",
+        `Tipologia: ${getAssetTypeLabel(state.assetType)}`,
+        `Area de calculo: ${state.referenceMode === "Terreno" ? "Area territorial" : "Area construida"}`,
+        `Fatores ativos: ${visibleFactors.map((factor) => factor.label).join(", ")}`,
+        `Emitido em: ${exportedAt}`,
+      ],
+      14,
+      21,
+    );
+  }
+
+  function addSectionTitle(title, y) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text(title, 14, y);
+  }
+
+  addTitleBlock();
+  addSectionTitle("Planilha de dados de mercado", 52);
+  doc.autoTable({
+    startY: 55,
+    head: [step2Headers],
+    body: step2Rows,
+    styles: { fontSize: 7.5, cellPadding: 1.8, overflow: "linebreak" },
+    headStyles: { fillColor: [31, 58, 95] },
+    margin: { left: 14, right: 14 },
+  });
+
+  doc.addPage();
+  let currentY = 16;
+  addSectionTitle("Homogeneizacao", currentY);
+  doc.autoTable({
+    startY: currentY + 3,
+    head: [step3Headers],
+    body: step3Rows,
+    styles: { fontSize: 7.5, cellPadding: 1.8, overflow: "linebreak" },
+    headStyles: { fillColor: [31, 58, 95] },
+    margin: { left: 14, right: 14 },
+  });
+
+  doc.addPage();
+  currentY = 16;
+  addSectionTitle("Resumo tecnico", currentY);
+  doc.autoTable({
+    startY: currentY + 3,
+    head: [["Estatisticas iniciais", "Valor"]],
+    body: initialStatsRows,
+    styles: { fontSize: 8, cellPadding: 2 },
+    headStyles: { fillColor: [31, 58, 95] },
+    margin: { left: 14, right: pageWidth / 2 + 4 },
+    tableWidth: "wrap",
+  });
+  doc.autoTable({
+    startY: currentY + 3,
+    head: [["Apos a homogeneizacao", "Valor"]],
+    body: sanitizedStatsRows,
+    styles: { fontSize: 8, cellPadding: 2 },
+    headStyles: { fillColor: [31, 58, 95] },
+    margin: { left: pageWidth / 2 + 2, right: 14 },
+    tableWidth: "wrap",
+  });
+
+  doc.addPage();
+  currentY = 16;
+  addSectionTitle("Valores calculados", currentY);
+  doc.autoTable({
+    startY: currentY + 3,
+    head: [["Campo", "Conteudo"]],
+    body: calculatedValueRows,
+    styles: { fontSize: 8, cellPadding: 2 },
+    headStyles: { fillColor: [31, 58, 95] },
+    margin: { left: 14, right: 14 },
+  });
+
+  currentY = doc.lastAutoTable.finalY + 10;
+  addSectionTitle("Valor adotado", currentY);
+  doc.autoTable({
+    startY: currentY + 3,
+    head: [["Campo", "Conteudo"]],
+    body: [
+      ["Valor adotado", adoptedValueFormatted],
+      ["Justificativa", adoptedJustification],
+    ],
+    styles: { fontSize: 8, cellPadding: 2 },
+    headStyles: { fillColor: [31, 58, 95] },
+    margin: { left: 14, right: 14 },
+  });
+
+  const fileName = `${sanitizeFileName(state.workName || "trabalho")}-relatorio.pdf`;
+  doc.save(fileName);
+  setAppNotice(`Relatorio exportado: ${fileName}`);
 }
 
 function depthCoefficient(area, testada, profEquivalente) {
@@ -1048,6 +1470,54 @@ function areaFactor(sample, target) {
   const ratio = sample / target;
   const exponent = Math.abs(sample - target) <= target * 0.3 ? 0.25 : 0.125;
   return ratio ** exponent;
+}
+
+function getSampleGrade(sampleCount) {
+  if (sampleCount >= 12) return "III";
+  if (sampleCount >= 5) return "II";
+  if (sampleCount >= 3) return "I";
+  return "Sem enquadramento";
+}
+
+function getFinalFactorRange(sampleCount) {
+  if (sampleCount < 5) {
+    return { min: 0.8, max: 1.25, grade: "III" };
+  }
+  const grade = getSampleGrade(sampleCount);
+  if (grade === "III") {
+    return { min: 0.8, max: 1.25, grade };
+  }
+  if (grade === "II") {
+    return { min: 0.5, max: 2.0, grade };
+  }
+  return { min: 0.4, max: 2.5, grade: "I" };
+}
+
+function getFinalFactorGrade(value) {
+  if (value == null) return "-";
+  if (value >= 0.8 && value <= 1.25) return "III";
+  if (value >= 0.5 && value <= 2.0) return "II";
+  if (value >= 0.4 && value <= 2.5) return "I";
+  return "Fora da faixa";
+}
+
+function getFinalFactorGradeClass(grade) {
+  if (grade === "III") return "grau-iii";
+  if (grade === "II") return "grau-ii";
+  if (grade === "I") return "grau-i";
+  return "grau-fora";
+}
+
+function getWorstFinalFactorGrade(lines) {
+  const grades = lines
+    .filter((line) => line.papel === "DADO" && line.participa && line.fatorFinal != null)
+    .map((line) => getFinalFactorGrade(line.fatorFinal));
+
+  if (grades.includes("Fora da faixa")) return "Fora da faixa";
+  if (grades.includes("I")) return "Grau I";
+  if (grades.includes("II")) return "Grau II";
+  if (grades.includes("III")) return "Grau III";
+  return "-";
 }
 
 function buildCoefficient(factorId, row, evaluating) {
@@ -1111,7 +1581,7 @@ function calculate() {
     const lines = state.rows.map((row, index) => {
       const area = toNumber(row.campos[essentialFactor]);
       const valorTotal = toNumber(row.valor_total);
-      const fon = toNumber(row.fon) ?? 1;
+      const fon = toNumber(row.fon) ?? (state.dictionaries.fon?.[row.fonTipo] ?? 1);
       const coeficientes = {};
 
       factorIds.forEach((factorId) => {
@@ -1169,9 +1639,10 @@ function calculate() {
       line.status = line.zScore > chauvenetCritico ? "REJEITAR" : "ACEITO";
     });
 
-    const saneados = lines
-      .filter((line) => line.participa && line.valorHomogeneizado != null)
-      .map((line) => line.valorHomogeneizado);
+    const acceptedLines = lines.filter(
+      (line) => line.status === "ACEITO" && line.valorHomogeneizado != null,
+    );
+    const saneados = acceptedLines.map((line) => line.valorHomogeneizado);
 
     if (saneados.length === 0) {
       setError("Inclua ao menos um dado marcado para participar do modelo.");
@@ -1224,6 +1695,7 @@ function calculate() {
       amplitudeIC: icSuperior - icInferior,
       amplitudePercentual: mediaSaneada ? ((icSuperior - icInferior) / mediaSaneada) * 100 : 0,
       amostras: `${saneados.length} de ${initialValues.length}`,
+      grauAmostra: getSampleGrade(saneados.length),
     };
     renderSummary(summary);
     renderResults(lines);
@@ -1232,6 +1704,7 @@ function calculate() {
       lines: clone(lines),
       summary,
     };
+    setAppNotice(`Calculo concluido. Grau de fundamentacao: ${summary.grauAmostra}.`);
   } catch (error) {
     console.error(error);
     setError(`Falha no calculo: ${error instanceof Error ? error.message : error}`);
@@ -1291,11 +1764,15 @@ function bindTopControls() {
   el.loadModelButton.addEventListener("click", () => {
     el.loadModelInput.click();
   });
-  el.loadModelInput.addEventListener("change", (event) => {
-    loadWorkFile(event.target.files?.[0]);
+  el.loadModelInput.addEventListener("change", async (event) => {
+    await withProcessing("Carregando trabalho...", () => loadWorkFile(event.target.files?.[0]));
     event.target.value = "";
   });
-  el.loadExampleButton.addEventListener("click", loadSelectedExample);
+  el.loadExampleButton.addEventListener("click", () =>
+    withProcessing("Carregando exemplo...", async () => {
+      loadSelectedExample();
+    }),
+  );
   el.resetAppButton.addEventListener("click", () => {
     if (!window.confirm("Deseja reiniciar o app e limpar a avaliacao atual?")) return;
     resetAppState();
@@ -1311,10 +1788,31 @@ function bindTopControls() {
       : "Ajustar coeficientes";
   });
 
-  el.calculateButton.addEventListener("click", calculate);
-  el.recalculateButton.addEventListener("click", calculate);
-  el.saveWorkButton.addEventListener("click", saveWorkFile);
-  el.exportReportButton.addEventListener("click", exportReport);
+  el.calculateButton.addEventListener("click", () =>
+    withProcessing("Calculando...", async () => {
+      calculate();
+    }),
+  );
+  el.recalculateButton.addEventListener("click", () =>
+    withProcessing("Recalculando...", async () => {
+      calculate();
+    }),
+  );
+  el.saveWorkButton.addEventListener("click", () =>
+    withProcessing("Salvando trabalho...", async () => {
+      saveWorkFile();
+    }),
+  );
+  el.exportWordButton.addEventListener("click", () =>
+    withProcessing("Gerando Word...", async () => {
+      exportWordReport();
+    }),
+  );
+  el.exportReportButton.addEventListener("click", () =>
+    withProcessing("Gerando PDF...", async () => {
+      exportPdfReport();
+    }),
+  );
   el.saveCustomFactorButton.addEventListener("click", saveCustomFactor);
 }
 
@@ -1357,6 +1855,13 @@ function bindDictionaryInputEvents() {
       const value = toNumber(event.target.value);
       if (!dictionaryName || !optionName || value == null) return;
       state.dictionaries[dictionaryName][optionName] = value;
+      if (dictionaryName === "fon") {
+        state.rows.forEach((row) => {
+          if (row.fonTipo === optionName) {
+            syncFonValue(row);
+          }
+        });
+      }
       renderContextNotices();
       renderEditor();
       bindEditorEvents();
@@ -1378,8 +1883,23 @@ function bindEditorEvents() {
         bindEditorEvents();
       } else {
         row[basicKey] = event.target.value;
+        if (basicKey === "fonTipo") {
+          syncFonValue(row);
+          renderEditor();
+          bindEditorEvents();
+        }
       }
     });
+
+    if (input.type !== "checkbox" && !input.disabled) {
+      input.addEventListener("paste", (event) => {
+        const clipboardText = event.clipboardData?.getData("text") || "";
+        const values = normalizePastedLines(clipboardText);
+        if (values.length <= 1) return;
+        event.preventDefault();
+        applyColumnPaste(input.dataset.rowId, input.dataset.basic, values, "basic");
+      });
+    }
   });
 
   el.editorBody.querySelectorAll("[data-factor-id]").forEach((input) => {
@@ -1391,6 +1911,16 @@ function bindEditorEvents() {
       if (!row) return;
       row.campos[factorId] = event.target.value;
     });
+
+    if (!input.disabled) {
+      input.addEventListener("paste", (event) => {
+        const clipboardText = event.clipboardData?.getData("text") || "";
+        const values = normalizePastedLines(clipboardText);
+        if (values.length <= 1) return;
+        event.preventDefault();
+        applyColumnPaste(input.dataset.rowId, input.dataset.factorId, values, "factor");
+      });
+    }
   });
 
   el.editorBody.querySelectorAll("[data-remove-id]").forEach((button) => {
@@ -1441,6 +1971,7 @@ function bindResultEvents() {
 }
 
 function renderAll() {
+  renderPanelStates();
   renderSelectors();
   renderFactors();
   renderEditor();
@@ -1522,6 +2053,7 @@ function saveCustomFactor() {
 function bootstrap() {
   try {
     state.referenceMode = getSuggestedReferenceMode(state.assetType);
+    state.collapsedSteps = {};
     resetRows();
     resetResults();
     renderAll();
@@ -1529,6 +2061,7 @@ function bootstrap() {
     bindFactorEvents();
     bindDictionaryEvents();
     bindEditorEvents();
+    bindStepNavigation();
   } catch (error) {
     console.error(error);
     setError(`Falha ao iniciar o app: ${error instanceof Error ? error.message : error}`);
