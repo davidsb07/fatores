@@ -2080,21 +2080,7 @@ function bindResultEvents() {
       renderEditor();
       bindEditorEvents();
       if (state.lastCalculation) {
-        state.lastCalculation.lines = state.lastCalculation.lines.map((line) =>
-          line.id === rowId
-            ? {
-                ...line,
-                participa: event.target.checked,
-                status: event.target.checked
-                  ? line.status === "REJEITADO"
-                    ? "REJEITAR"
-                    : line.status
-                  : "REJEITADO",
-              }
-            : line,
-        );
-        renderResults(state.lastCalculation.lines, state.lastCalculation.summary);
-        bindResultEvents();
+        calculate();
       }
     });
   });
