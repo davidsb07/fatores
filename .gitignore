@@ -5,3 +5,4 @@ Thumbs.db
 *.tmp
 *.bak
 ~$*.xlsx
+Pasta que não deve ir para o git/
