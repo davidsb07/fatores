@@ -603,7 +603,7 @@ function renderSavedCalculation() {
     return;
   }
   renderSummary(state.lastCalculation.summary);
-  renderResults(state.lastCalculation.lines);
+  renderResults(state.lastCalculation.lines, state.lastCalculation.summary);
   bindResultEvents();
 }
 
@@ -775,7 +775,7 @@ function renderEditor() {
       <th>Endereco</th>
       <th>Origem do anuncio</th>
       <th class="editor-col-valor-total">Valor total</th>
-      <th>FON</th>
+      <th class="editor-col-fon">FON</th>
       <th>Incluir</th>
       ${visibleFactors
         .map(
@@ -833,8 +833,8 @@ function renderEditor() {
           <td><input data-row-id="${row.id}" data-basic="endereco" value="${row.endereco}" /></td>
           <td><input data-row-id="${row.id}" data-basic="origem" value="${row.origem || ""}" ${index === 0 ? "disabled" : ""} /></td>
           <td class="editor-col-valor-total"><input class="editor-field-valor-total" type="text" inputmode="decimal" data-row-id="${row.id}" data-basic="valor_total" value="${row.valor_total}" ${index === 0 ? "disabled" : ""} /></td>
-          <td>
-            <select class="compact-factor-field" data-row-id="${row.id}" data-basic="fonTipo">
+          <td class="editor-col-fon">
+            <select class="editor-field-fon" data-row-id="${row.id}" data-basic="fonTipo">
               ${fonOptions
                 .map(([label, coefficient]) => `<option value="${label}" ${label === row.fonTipo ? "selected" : ""}>${label} (${formatNumber(coefficient, 2)})</option>`)
                 .join("")}
@@ -988,12 +988,56 @@ function renderSummary(summary) {
   el.technicalSummaryBody.innerHTML = "";
 }
 
-function renderResults(lines) {
+function buildResultInfoButton(key, message) {
+  if (!message) return "";
+  return `
+    <span class="inline-info">
+      <button
+        type="button"
+        class="info-chip"
+        data-info-toggle="${key}"
+        aria-expanded="false"
+        aria-label="Ver explicacao"
+      >i</button>
+      <span class="info-popover hidden" data-info-panel="${key}">${message}</span>
+    </span>
+  `;
+}
+
+function getFinalFactorExplanation(value, grade) {
+  if (value == null || grade === "-" || grade === "III") return "";
+  if (grade === "II") {
+    return `Grau II porque o fator final ${formatNumber(value, 4)} saiu da faixa do Grau III (0,8 a 1,25), mas permaneceu entre 0,5 e 2,0.`;
+  }
+  if (grade === "I") {
+    return `Grau I porque o fator final ${formatNumber(value, 4)} saiu da faixa do Grau II (0,5 a 2,0), mas permaneceu entre 0,4 e 2,5.`;
+  }
+  return `Fora da faixa porque o fator final ${formatNumber(value, 4)} ficou fora do intervalo admissivel de 0,4 a 2,5.`;
+}
+
+function getStatusExplanation(line, chauvenetCritico) {
+  if (line.status === "REJEITAR") {
+    if (chauvenetCritico != null && line.zScore != null) {
+      return `Rejeitar porque o z-score ${formatNumber(line.zScore, 4)} ficou maior que o valor critico ${formatNumber(chauvenetCritico, 3)} do VC de Chauvenet.`;
+    }
+    return "Rejeitar por exceder o limite estatistico adotado.";
+  }
+  if (line.status === "REJEITADO") {
+    if (chauvenetCritico != null && line.zScore != null) {
+      return `Rejeitado porque o z-score ${formatNumber(line.zScore, 4)} ficou maior que o valor critico ${formatNumber(chauvenetCritico, 3)} do VC de Chauvenet.`;
+    }
+    return "Rejeitado por exceder o limite estatistico adotado.";
+  }
+  return "";
+}
+
+function renderResults(lines, summary = state.lastCalculation?.summary) {
   const factorLabels = new Map(getVisibleFactors().map((factor) => [factor.id, factor.label]));
   const flaggedCount = lines.filter((line) => line.status === "REJEITAR").length;
   const participatingCount = lines.filter(
     (line) => line.papel === "DADO" && line.participa && line.valorHomogeneizado != null,
   ).length;
+  const chauvenetCritico = summary?.chauvenetCritico ?? null;
   const sampleGrade = getSampleGrade(participatingCount);
   const worstFinalFactorGrade = getWorstFinalFactorGrade(lines, participatingCount);
   const gradeLabel =
@@ -1006,6 +1050,10 @@ function renderResults(lines) {
     .map(
       (line, index) => {
         const finalFactorGrade = getFinalFactorGrade(line.fatorFinal);
+        const finalFactorInfo = buildResultInfoButton(
+          `fator-final-${line.id}`,
+          line.papel === "DADO" ? getFinalFactorExplanation(line.fatorFinal, finalFactorGrade) : "",
+        );
         const finalFactorNumberAlert =
           line.papel === "DADO" &&
           line.fatorFinal != null &&
@@ -1016,9 +1064,40 @@ function renderResults(lines) {
         const finalFactorCell = `
           <div class="factor-final-cell">
             <span>${finalFactorMarkup}</span>
-            <span class="factor-final-grade ${getFinalFactorGradeClass(finalFactorGrade)}">${finalFactorGrade === "Fora da faixa" ? finalFactorGrade : `Grau ${finalFactorGrade}`}</span>
+            <span class="result-info-line">
+              <span class="factor-final-grade ${getFinalFactorGradeClass(finalFactorGrade)}">${finalFactorGrade === "Fora da faixa" ? finalFactorGrade : `Grau ${finalFactorGrade}`}</span>
+              ${finalFactorInfo}
+            </span>
           </div>
         `;
+        const zScoreInfo = buildResultInfoButton(
+          `z-score-${line.id}`,
+          line.papel === "DADO" &&
+            line.participa &&
+            chauvenetCritico != null &&
+            line.zScore != null &&
+            line.zScore > chauvenetCritico
+            ? `Z-score ${formatNumber(line.zScore, 4)} maior que o VC de Chauvenet ${formatNumber(chauvenetCritico, 3)}.`
+            : "",
+        );
+        const highlightedFactors = Object.entries(line.coeficientes).filter(
+          ([, value]) => value > 2 || value < 0.5,
+        );
+        const factorsInfo = buildResultInfoButton(
+          `fatores-${line.id}`,
+          highlightedFactors.length
+            ? `Ha fator(es) fora da faixa 0,5 a 2,0: ${highlightedFactors
+                .map(
+                  ([key, value]) =>
+                    `${factorLabels.get(key) || key} = ${formatNumber(value, 4)}`,
+                )
+                .join("; ")}.`
+            : "",
+        );
+        const statusInfo = buildResultInfoButton(
+          `status-${line.id}`,
+          getStatusExplanation(line, chauvenetCritico),
+        );
         return `
         <tr class="${line.papel === "AVALIANDO" ? "row-evaluating" : ""}">
           <td>${index === 0 ? "-" : index}</td>
@@ -1033,15 +1112,15 @@ function renderResults(lines) {
           <td>${formatNumber(line.valorUnitarioFon)}</td>
           <td>${finalFactorCell}</td>
           <td>${formatNumber(line.valorHomogeneizado)}</td>
-          <td>${formatNumber(line.zScore, 4)}</td>
-          <td><span class="status status-${line.status.toLowerCase()}">${line.status}</span></td>
+          <td><span class="result-info-line"><span>${formatNumber(line.zScore, 4)}</span>${zScoreInfo}</span></td>
+          <td><span class="result-info-line"><span class="status status-${line.status.toLowerCase()}">${line.status}</span>${statusInfo}</span></td>
           <td><div class="coef-list">${Object.entries(line.coeficientes)
             .map(([key, value]) => {
               const highlight = value > 2 || value < 0.5;
               const className = highlight ? ' class="factor-alert"' : "";
               return `<span${className}>${factorLabels.get(key) || key}: ${formatNumber(value, 4)}</span>`;
             })
-            .join("")}</div></td>
+            .join("")}</div>${factorsInfo}</td>
         </tr>
       `;
       },
@@ -1740,7 +1819,7 @@ function calculate() {
       grauAmostra: getSampleGrade(participatingCount),
     };
     renderSummary(summary);
-    renderResults(lines);
+    renderResults(lines, summary);
     bindResultEvents();
     state.lastCalculation = {
       lines: clone(lines),
@@ -2008,10 +2087,44 @@ function bindResultEvents() {
               }
             : line,
         );
-        renderResults(state.lastCalculation.lines);
+        renderResults(state.lastCalculation.lines, state.lastCalculation.summary);
         bindResultEvents();
       }
     });
+  });
+}
+
+function closeInfoPopovers() {
+  document.querySelectorAll("[data-info-panel]").forEach((panel) => {
+    panel.classList.add("hidden");
+  });
+  document.querySelectorAll("[data-info-toggle]").forEach((button) => {
+    button.setAttribute("aria-expanded", "false");
+  });
+}
+
+function bindInfoPopovers() {
+  if (document.body.dataset.infoPopoversBound === "true") return;
+  document.body.dataset.infoPopoversBound = "true";
+
+  document.addEventListener("click", (event) => {
+    const toggle = event.target.closest("[data-info-toggle]");
+    if (toggle) {
+      const key = toggle.dataset.infoToggle;
+      const panel = document.querySelector(`[data-info-panel="${key}"]`);
+      if (!panel) return;
+      const shouldOpen = panel.classList.contains("hidden");
+      closeInfoPopovers();
+      if (shouldOpen) {
+        panel.classList.remove("hidden");
+        toggle.setAttribute("aria-expanded", "true");
+      }
+      return;
+    }
+
+    if (!event.target.closest(".th-info")) {
+      closeInfoPopovers();
+    }
   });
 }
 
@@ -2107,6 +2220,7 @@ function bootstrap() {
     bindDictionaryEvents();
     bindEditorEvents();
     bindStepNavigation();
+    bindInfoPopovers();
   } catch (error) {
     console.error(error);
     setError(`Falha ao iniciar o app: ${error instanceof Error ? error.message : error}`);
