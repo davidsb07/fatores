@@ -610,6 +610,17 @@ textarea {
   min-width: 168px;
 }
 
+.editor-field-valor-total {
+  width: 60%;
+  min-width: 110px;
+}
+
+.editor-col-andar select,
+.editor-field-andar {
+  width: 60%;
+  min-width: 88px;
+}
+
 input:focus,
 select:focus,
 textarea:focus {

@@ -300,6 +300,12 @@ function toNumber(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function formatEditableDecimal(value, digits = 2) {
+  const numericValue = toNumber(value);
+  if (numericValue == null) return value ?? "";
+  return numericValue.toFixed(digits);
+}
+
 function setError(message = "") {
   el.errorBox.textContent = message;
   el.errorBox.classList.toggle("hidden", !message);
@@ -768,10 +774,15 @@ function renderEditor() {
       <th>Papel</th>
       <th>Endereco</th>
       <th>Origem do anuncio</th>
-      <th>Valor total</th>
+      <th class="editor-col-valor-total">Valor total</th>
       <th>FON</th>
       <th>Incluir</th>
-      ${visibleFactors.map((factor) => `<th>${factor.label}</th>`).join("")}
+      ${visibleFactors
+        .map(
+          (factor) =>
+            `<th class="${factor.id === "andar" ? "editor-col-andar" : ""}">${factor.label}</th>`,
+        )
+        .join("")}
       <th></th>
     </tr>
   `;
@@ -785,14 +796,17 @@ function renderEditor() {
       const rowClass = index === 0 ? "row-evaluating" : index > 0 && !row.incluir ? "row-off" : "";
       const cells = visibleFactors
         .map((factor) => {
-          const current = row.campos[factor.id] ?? "";
+          const current =
+            factor.id === "prof_equivalente"
+              ? formatEditableDecimal(row.campos[factor.id], 2)
+              : row.campos[factor.id] ?? "";
           const compactField = ["localizacao", "area_construida", "area_territorial", "vaga", "testada", "prof_equivalente"].includes(factor.id);
           const integerField = factor.id === "vaga";
           if (factor.kind === "option") {
             const options = Object.keys(state.dictionaries[factor.id] || {});
             return `
-              <td>
-                <select data-row-id="${row.id}" data-factor-id="${factor.id}">
+              <td class="${factor.id === "andar" ? "editor-col-andar" : ""}">
+                <select class="${factor.id === "andar" ? "editor-field-andar" : ""}" data-row-id="${row.id}" data-factor-id="${factor.id}">
                   <option value="">Selecione</option>
                   ${options
                     .map(
@@ -818,7 +832,7 @@ function renderEditor() {
           <td>${roleBadge}</td>
           <td><input data-row-id="${row.id}" data-basic="endereco" value="${row.endereco}" /></td>
           <td><input data-row-id="${row.id}" data-basic="origem" value="${row.origem || ""}" ${index === 0 ? "disabled" : ""} /></td>
-          <td><input type="text" inputmode="decimal" data-row-id="${row.id}" data-basic="valor_total" value="${row.valor_total}" ${index === 0 ? "disabled" : ""} /></td>
+          <td class="editor-col-valor-total"><input class="editor-field-valor-total" type="text" inputmode="decimal" data-row-id="${row.id}" data-basic="valor_total" value="${row.valor_total}" ${index === 0 ? "disabled" : ""} /></td>
           <td>
             <select class="compact-factor-field" data-row-id="${row.id}" data-basic="fonTipo">
               ${fonOptions
@@ -1937,7 +1951,10 @@ function bindEditorEvents() {
       const factorId = event.target.dataset.factorId;
       const row = state.rows.find((item) => item.id === rowId);
       if (!row) return;
-      row.campos[factorId] = event.target.value;
+      row.campos[factorId] =
+        factorId === "prof_equivalente"
+          ? formatEditableDecimal(event.target.value, 2)
+          : event.target.value;
     });
 
     if (!input.disabled) {
