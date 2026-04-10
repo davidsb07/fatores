@@ -1026,6 +1026,11 @@ td:nth-child(4),
   font-weight: 800;
 }
 
+.zscore-alert {
+  color: #a63a3a;
+  font-weight: 800;
+}
+
 .factor-final-cell {
   display: grid;
   gap: 4px;

@@ -204,17 +204,17 @@ const TERRAIN_CAROL_DEMO = {
     { endereco: "AV UM, 900", valor_total: "750000", fon: "1", incluir: true, campos: { localizacao: "1", area_territorial: "456", testada: "12", prof_equivalente: "38", topografia: "plano <5%" } },
     { endereco: "R DOIS, 107", valor_total: "540000", fon: "1", incluir: true, campos: { localizacao: "1", area_territorial: "456", testada: "12", prof_equivalente: "38", topografia: "plano <5%" } },
     { endereco: "R DOIS, 110", valor_total: "850000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "456", testada: "12", prof_equivalente: "38", topografia: "plano <5%" } },
-    { endereco: "R DOIS, 127", valor_total: "530000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "422", testada: "12", prof_equivalente: "35.166666666666664", topografia: "plano <5%" } },
-    { endereco: "R DOIS, 255", valor_total: "745000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "705", testada: "16", prof_equivalente: "44.0625", topografia: "plano <5%" } },
+    { endereco: "R DOIS, 127", valor_total: "530000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "422", testada: "12", prof_equivalente: "35.17", topografia: "plano <5%" } },
+    { endereco: "R DOIS, 255", valor_total: "745000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "705", testada: "16", prof_equivalente: "44.06", topografia: "plano <5%" } },
     { endereco: "R TRES, 80", valor_total: "630000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "432", testada: "18", prof_equivalente: "24", topografia: "plano <5%" } },
-    { endereco: "R TRES, LD 92", valor_total: "630000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "420", testada: "18", prof_equivalente: "23.333333333333332", topografia: "plano <5%" } },
+    { endereco: "R TRES, LD 92", valor_total: "630000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "420", testada: "18", prof_equivalente: "23.33", topografia: "plano <5%" } },
     { endereco: "R SETE, 570", valor_total: "520000", fon: "1", incluir: true, campos: { localizacao: "1", area_territorial: "519", testada: "12", prof_equivalente: "43.25", topografia: "plano <5%" } },
-    { endereco: "R QUATRO, 1100", valor_total: "914500", fon: "1", incluir: true, campos: { localizacao: "1", area_territorial: "624.94", testada: "12", prof_equivalente: "52.07833333333334", topografia: "plano <5%" } },
-    { endereco: "R QUATRO, 520", valor_total: "750000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "612.67", testada: "13.5", prof_equivalente: "45.38296296296296", topografia: "plano <5%" } },
-    { endereco: "R QUATRO, 930", valor_total: "500000", fon: "1", incluir: true, campos: { localizacao: "1", area_territorial: "426.32", testada: "8.5", prof_equivalente: "50.15529411764706", topografia: "plano <5%" } },
-    { endereco: "R QUATRO, 950", valor_total: "730000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "426", testada: "8.5", prof_equivalente: "50.11764705882353", topografia: "plano <5%" } },
-    { endereco: "R CINCO, 555", valor_total: "730000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "478", testada: "12", prof_equivalente: "39.833333333333336", topografia: "plano <5%" } },
-    { endereco: "R SEIS, 315", valor_total: "705000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "565", testada: "12", prof_equivalente: "47.083333333333336", topografia: "plano <5%" } },
+    { endereco: "R QUATRO, 1100", valor_total: "914500", fon: "1", incluir: true, campos: { localizacao: "1", area_territorial: "624.94", testada: "12", prof_equivalente: "52.08", topografia: "plano <5%" } },
+    { endereco: "R QUATRO, 520", valor_total: "750000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "612.67", testada: "13.5", prof_equivalente: "45.38", topografia: "plano <5%" } },
+    { endereco: "R QUATRO, 930", valor_total: "500000", fon: "1", incluir: true, campos: { localizacao: "1", area_territorial: "426.32", testada: "8.5", prof_equivalente: "50.16", topografia: "plano <5%" } },
+    { endereco: "R QUATRO, 950", valor_total: "730000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "426", testada: "8.5", prof_equivalente: "50.12", topografia: "plano <5%" } },
+    { endereco: "R CINCO, 555", valor_total: "730000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "478", testada: "12", prof_equivalente: "39.83", topografia: "plano <5%" } },
+    { endereco: "R SEIS, 315", valor_total: "705000", fon: "0.9", incluir: true, campos: { localizacao: "1", area_territorial: "565", testada: "12", prof_equivalente: "47.08", topografia: "plano <5%" } },
     { endereco: "R SEIS, 339", valor_total: "750000", fon: "1", incluir: true, campos: { localizacao: "1", area_territorial: "684", testada: "18", prof_equivalente: "38", topografia: "plano <5%" } },
   ],
 };
@@ -1080,6 +1080,12 @@ function renderResults(lines, summary = state.lastCalculation?.summary) {
             ? `Z-score ${formatNumber(line.zScore, 4)} maior que o VC de Chauvenet ${formatNumber(chauvenetCritico, 3)}.`
             : "",
         );
+        const zScoreAlert =
+          line.papel === "DADO" &&
+          line.participa &&
+          chauvenetCritico != null &&
+          line.zScore != null &&
+          line.zScore > chauvenetCritico;
         const highlightedFactors = Object.entries(line.coeficientes).filter(
           ([, value]) => value > 2 || value < 0.5,
         );
@@ -1112,7 +1118,7 @@ function renderResults(lines, summary = state.lastCalculation?.summary) {
           <td>${formatNumber(line.valorUnitarioFon)}</td>
           <td>${finalFactorCell}</td>
           <td>${formatNumber(line.valorHomogeneizado)}</td>
-          <td><span class="result-info-line"><span>${formatNumber(line.zScore, 4)}</span>${zScoreInfo}</span></td>
+          <td><span class="result-info-line"><span class="${zScoreAlert ? "zscore-alert" : ""}">${formatNumber(line.zScore, 4)}</span>${zScoreInfo}</span></td>
           <td><span class="result-info-line"><span class="status status-${line.status.toLowerCase()}">${line.status}</span>${statusInfo}</span></td>
           <td><div class="coef-list">${Object.entries(line.coeficientes)
             .map(([key, value]) => {
