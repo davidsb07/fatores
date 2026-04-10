@@ -936,6 +936,7 @@ function renderSummary(summary) {
         <div><b>Media saneada</b><strong>${formatNumber(summary.mediaSaneada)}</strong></div>
         <div><b>Desvio padrao</b><strong>${formatNumber(summary.desvioSaneado)}</strong></div>
         <div><b>Graus de liberdade (n-1)</b><strong>${summary.grausLiberdade}</strong></div>
+        <div><b>VC de Chauvenet</b><strong>${formatNumber(summary.chauvenetCritico, 3)}</strong></div>
         <div><b>Limite superior (1,15 x media)</b><strong>${formatNumber(summary.arbitrioSuperior)}</strong></div>
         <div><b>Limite inferior (0,85 x media)</b><strong>${formatNumber(summary.arbitrioInferior)}</strong></div>
         <div><b>t-valor critico (conf. 80%)</b><strong>${formatNumber(summary.tCritico, 3)}</strong></div>
@@ -943,7 +944,6 @@ function renderSummary(summary) {
         <div><b>Limite superior IC</b><strong>${formatNumber(summary.icSuperior)}</strong></div>
         <div><b>Amplitude</b><strong>${formatNumber(summary.amplitudeIC)}</strong></div>
         <div><b>Amplitude percentual</b><strong>${formatNumber(summary.amplitudePercentual)}%</strong></div>
-        <div><b>Grau de fundamentacao</b><strong>${sampleGrade}</strong></div>
       </div>
     </article>
     <article class="summary-card summary-card-wide">
@@ -977,13 +977,15 @@ function renderSummary(summary) {
 function renderResults(lines) {
   const factorLabels = new Map(getVisibleFactors().map((factor) => [factor.id, factor.label]));
   const flaggedCount = lines.filter((line) => line.status === "REJEITAR").length;
-  const acceptedCount = lines.filter((line) => line.status === "ACEITO").length;
-  const sampleGrade = getSampleGrade(acceptedCount);
-  const worstFinalFactorGrade = getWorstFinalFactorGrade(lines);
+  const participatingCount = lines.filter(
+    (line) => line.papel === "DADO" && line.participa && line.valorHomogeneizado != null,
+  ).length;
+  const sampleGrade = getSampleGrade(participatingCount);
+  const worstFinalFactorGrade = getWorstFinalFactorGrade(lines, participatingCount);
   const gradeLabel =
     sampleGrade === "Sem enquadramento" ? sampleGrade : `Grau ${sampleGrade}`;
   el.resultHint.innerHTML = `
-    Quantidade minima de dados efetivamente usados: ${acceptedCount} dados - ${gradeLabel}.<br />
+    Quantidade minima de dados efetivamente usados: ${participatingCount} dados - ${gradeLabel}.<br />
     Intervalo admissivel de ajuste para o conjunto de fatores: ${worstFinalFactorGrade}.
   `;
   el.resultBody.innerHTML = lines
@@ -1106,6 +1108,7 @@ function exportWordReport() {
     ["Media saneada", formatNumber(summary.mediaSaneada)],
     ["Desvio padrao", formatNumber(summary.desvioSaneado)],
     ["Graus de liberdade (n-1)", summary.grausLiberdade],
+    ["VC de Chauvenet", formatNumber(summary.chauvenetCritico, 3)],
     ["Limite superior (1,15 x media)", formatNumber(summary.arbitrioSuperior)],
     ["Limite inferior (0,85 x media)", formatNumber(summary.arbitrioInferior)],
     ["t-valor critico (conf. 80%)", formatNumber(summary.tCritico, 3)],
@@ -1113,7 +1116,6 @@ function exportWordReport() {
     ["Limite superior IC", formatNumber(summary.icSuperior)],
     ["Amplitude", formatNumber(summary.amplitudeIC)],
     ["Amplitude percentual", `${formatNumber(summary.amplitudePercentual)}%`],
-    ["Grau de fundamentacao", summary.grauAmostra || getSampleGrade(summary.numeroDadosSaneados)],
   ];
   const calculatedValueRows = [
     ["Area avaliando (m²)", formatNumber(areaBase)],
@@ -1131,7 +1133,6 @@ function exportWordReport() {
     ["LS Campo de Arbitrio (+15%)", `R$ ${formatNumber(arbitrioSuperiorTotal)}`],
     ["LI Intervalo de Confianca 80%", `R$ ${formatNumber(icInferiorTotal)}`],
     ["LS Intervalo de Confianca 80%", `R$ ${formatNumber(icSuperiorTotal)}`],
-    ["Grau de fundamentacao", summary.grauAmostra || getSampleGrade(summary.numeroDadosSaneados)],
   ];
 
   function table(headers, rows) {
@@ -1320,6 +1321,7 @@ function exportPdfReport() {
     ["Media saneada", formatNumber(summary.mediaSaneada)],
     ["Desvio padrao", formatNumber(summary.desvioSaneado)],
     ["Graus de liberdade (n-1)", summary.grausLiberdade],
+    ["VC de Chauvenet", formatNumber(summary.chauvenetCritico, 3)],
     ["Limite superior (1,15 x media)", formatNumber(summary.arbitrioSuperior)],
     ["Limite inferior (0,85 x media)", formatNumber(summary.arbitrioInferior)],
     ["t-valor critico (conf. 80%)", formatNumber(summary.tCritico, 3)],
@@ -1501,6 +1503,12 @@ function getFinalFactorGrade(value) {
   return "Fora da faixa";
 }
 
+function isFinalFactorWithinRange(value, sampleCount) {
+  if (value == null) return false;
+  const range = getFinalFactorRange(sampleCount);
+  return value >= range.min && value <= range.max;
+}
+
 function getFinalFactorGradeClass(grade) {
   if (grade === "III") return "grau-iii";
   if (grade === "II") return "grau-ii";
@@ -1508,10 +1516,18 @@ function getFinalFactorGradeClass(grade) {
   return "grau-fora";
 }
 
-function getWorstFinalFactorGrade(lines) {
-  const grades = lines
-    .filter((line) => line.papel === "DADO" && line.participa && line.fatorFinal != null)
-    .map((line) => getFinalFactorGrade(line.fatorFinal));
+function getWorstFinalFactorGrade(lines, sampleCount) {
+  const participatingLines = lines.filter(
+    (line) => line.papel === "DADO" && line.participa && line.fatorFinal != null,
+  );
+  const grades = participatingLines.map((line) => getFinalFactorGrade(line.fatorFinal));
+
+  if (sampleCount < 5) {
+    const hasOutOfStrictRange = participatingLines.some(
+      (line) => !isFinalFactorWithinRange(line.fatorFinal, sampleCount),
+    );
+    return hasOutOfStrictRange ? "Fora da faixa" : "Grau III";
+  }
 
   if (grades.includes("Fora da faixa")) return "Fora da faixa";
   if (grades.includes("I")) return "Grau I";
@@ -1626,38 +1642,50 @@ function calculate() {
               (initialValues.length - 1),
           )
         : 0;
-    const grausChauvenet = Math.max(initialValues.length - 1, 2);
+    const participatingLines = lines.filter(
+      (line) => line.papel === "DADO" && line.participa && line.valorHomogeneizado != null,
+    );
+    const participatingValues = participatingLines.map((line) => line.valorHomogeneizado);
+    const participatingCount = participatingValues.length;
+    const grausChauvenet = Math.max(participatingCount - 1, 2);
     const chauvenetCritico = CHAUVENET[grausChauvenet] ?? 2.31;
+    const mediaSelecionada =
+      participatingCount > 0
+        ? participatingValues.reduce((sum, value) => sum + value, 0) / participatingCount
+        : 0;
+    const desvioSelecionado =
+      participatingCount > 1
+        ? Math.sqrt(
+            participatingValues.reduce(
+              (sum, value) => sum + (value - mediaSelecionada) ** 2,
+              0,
+            ) /
+              (participatingCount - 1),
+          )
+        : 0;
 
     lines.forEach((line) => {
       if (line.papel !== "DADO" || line.valorHomogeneizado == null) return;
-      line.zScore = desvioInicial ? Math.abs((line.valorHomogeneizado - mediaInicial) / desvioInicial) : 0;
       if (!line.participa) {
+        line.zScore = null;
         line.status = "REJEITADO";
         return;
       }
+      line.zScore = desvioSelecionado
+        ? Math.abs((line.valorHomogeneizado - mediaSelecionada) / desvioSelecionado)
+        : 0;
       line.status = line.zScore > chauvenetCritico ? "REJEITAR" : "ACEITO";
     });
 
-    const acceptedLines = lines.filter(
-      (line) => line.status === "ACEITO" && line.valorHomogeneizado != null,
-    );
-    const saneados = acceptedLines.map((line) => line.valorHomogeneizado);
-
-    if (saneados.length === 0) {
+    if (participatingValues.length === 0) {
       setError("Inclua ao menos um dado marcado para participar do modelo.");
       return;
     }
 
-    const mediaSaneada = saneados.reduce((sum, value) => sum + value, 0) / saneados.length;
+    const mediaSaneada = mediaSelecionada;
     const desvioSaneado =
-      saneados.length > 1
-        ? Math.sqrt(
-            saneados.reduce((sum, value) => sum + (value - mediaSaneada) ** 2, 0) /
-              (saneados.length - 1),
-          )
-        : 0;
-    const quantidadeUsada = saneados.length;
+      participatingCount > 1 ? desvioSelecionado : 0;
+    const quantidadeUsada = participatingCount;
     const grausLiberdade = Math.max(quantidadeUsada - 1, 1);
     const tCritico = T_STUDENT_80[grausLiberdade] ?? 1.319;
     const denominadorIC = Math.sqrt(Math.max(quantidadeUsada - 1, 1));
@@ -1675,7 +1703,7 @@ function calculate() {
       limiteSuperiorInicial: mediaInicial * 1.15,
       limiteInferiorInicial: mediaInicial * 0.85,
       coeficienteVariacaoInicial: mediaInicial ? (desvioInicial / mediaInicial) * 100 : 0,
-      numeroDadosSaneados: saneados.length,
+      numeroDadosSaneados: participatingCount,
       mediaSaneada,
       desvioSaneado,
       valorEstimado,
@@ -1694,8 +1722,8 @@ function calculate() {
       margemIC: margem,
       amplitudeIC: icSuperior - icInferior,
       amplitudePercentual: mediaSaneada ? ((icSuperior - icInferior) / mediaSaneada) * 100 : 0,
-      amostras: `${saneados.length} de ${initialValues.length}`,
-      grauAmostra: getSampleGrade(saneados.length),
+      amostras: `${participatingCount} de ${initialValues.length}`,
+      grauAmostra: getSampleGrade(participatingCount),
     };
     renderSummary(summary);
     renderResults(lines);
