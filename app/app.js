@@ -52,6 +52,14 @@ const BASE_DICTIONARIES = {
     "id>50_ rep. simp.": 0.15,
     "id>50_ rep. imp.": 0.1,
   },
+  conservacao_simplificada: {
+    "Em construcao ou na planta": 1.0,
+    "Bom (aparencia de novo)": 0.95,
+    "Bom (aparencia de usado)": 0.8,
+    "Regular (reparos simples)": 0.65,
+    "Regular (reparos importantes)": 0.4,
+    Ruim: 0.2,
+  },
   padrao_construtivo: {
     "popular res": 1.0,
     "baixo res": 1.15,
@@ -63,6 +71,15 @@ const BASE_DICTIONARIES = {
     "normal com": 1.15,
     "alto com": 1.25,
     "luxo com": 1.4,
+  },
+  padrao_simplificado: {
+    "Minimo": 1.0,
+    "Baixo": 1.15,
+    "Normal (c/ aspectos de baixo)": 1.23,
+    "Normal (forte predominancia)": 1.3,
+    "Normal (c/ aspectos de alto)": 1.38,
+    "Alto (por predominancia)": 1.48,
+    "Alto (superior, luxo)": 1.6,
   },
   andar: {
     Terreo: 1.0,
@@ -157,7 +174,9 @@ const FACTORS = [
   { id: "aproveitamento", label: "Aproveitamento", kind: "option", appliesTo: ["terreno", "gleba", "predio"] },
   { id: "acessibilidade", label: "Acessibilidade", kind: "option", appliesTo: ["terreno", "gleba", "casa", "loja", "predio"] },
   { id: "idade_conservacao", label: "Idade e conservacao", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio"] },
+  { id: "conservacao_simplificada", label: "Conservacao simplificada", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio"] },
   { id: "padrao_construtivo", label: "Padrao construtivo", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio"] },
+  { id: "padrao_simplificado", label: "Padrao simplificado", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio"] },
   { id: "vaga", label: "Vagas", kind: "number", appliesTo: ["apartamento", "sala", "casa", "loja"] },
   { id: "andar", label: "Andar", kind: "option", appliesTo: ["apartamento", "sala", "loja"] },
 ];
@@ -165,11 +184,11 @@ const FACTORS = [
 const DEFAULT_FACTORS = {
   terreno: ["localizacao", "area_territorial", "topografia", "relevo", "superficie"],
   gleba: ["localizacao", "area_territorial", "topografia", "relevo", "superficie"],
-  apartamento: ["localizacao", "area_construida", "padrao_construtivo", "vaga", "andar"],
-  sala: ["localizacao", "area_construida", "padrao_construtivo", "vaga", "andar"],
-  casa: ["localizacao", "area_construida", "area_territorial", "padrao_construtivo", "idade_conservacao"],
-  loja: ["localizacao", "area_construida", "padrao_construtivo", "vaga", "acessibilidade"],
-  predio: ["localizacao", "area_construida", "area_territorial", "padrao_construtivo", "aproveitamento"],
+  apartamento: ["localizacao", "area_construida", "padrao_simplificado", "vaga", "andar"],
+  sala: ["localizacao", "area_construida", "padrao_simplificado", "vaga", "andar"],
+  casa: ["localizacao", "area_construida", "area_territorial", "padrao_simplificado", "conservacao_simplificada"],
+  loja: ["localizacao", "area_construida", "padrao_simplificado", "vaga", "acessibilidade"],
+  predio: ["localizacao", "area_construida", "area_territorial", "padrao_simplificado", "aproveitamento"],
 };
 
 const APARTMENT_CAROL_DEMO = {
@@ -1006,6 +1025,9 @@ function buildResultInfoButton(key, message) {
 
 function getFinalFactorExplanation(value, grade) {
   if (value == null || grade === "-" || grade === "III") return "";
+  if (grade === "Fora da faixa") {
+    return `Fora da faixa porque, com menos de 5 dados, o fator final ${formatNumber(value, 4)} precisa ficar entre 0,8 e 1,25.`;
+  }
   if (grade === "II") {
     return `Grau II porque o fator final ${formatNumber(value, 4)} saiu da faixa do Grau III (0,8 a 1,25), mas permaneceu entre 0,5 e 2,0.`;
   }
@@ -1049,7 +1071,7 @@ function renderResults(lines, summary = state.lastCalculation?.summary) {
   el.resultBody.innerHTML = lines
     .map(
       (line, index) => {
-        const finalFactorGrade = getFinalFactorGrade(line.fatorFinal);
+        const finalFactorGrade = getFinalFactorGrade(line.fatorFinal, participatingCount);
         const finalFactorInfo = buildResultInfoButton(
           `fator-final-${line.id}`,
           line.papel === "DADO" ? getFinalFactorExplanation(line.fatorFinal, finalFactorGrade) : "",
@@ -1141,6 +1163,7 @@ function exportWordReport() {
   }
 
   const visibleFactors = getVisibleFactors();
+  const factorLabels = new Map(visibleFactors.map((factor) => [factor.id, factor.label]));
   const step2Headers = ["Papel", "Endereco", "Valor total", "fon", "Incluir", ...visibleFactors.map((factor) => factor.label)];
   const step2Rows = state.rows.map((row, index) => [
     index === 0 ? "Avaliando" : "Dado",
@@ -1151,7 +1174,7 @@ function exportWordReport() {
     ...visibleFactors.map((factor) => row.campos[factor.id] ?? ""),
   ]);
 
-  const step3Headers = ["Linha", "Papel", "VU", "VU * fon", "Fator final", "VU homogenizado", "Z-score", "Status"];
+  const step3Headers = ["Linha", "Papel", "VU", "VU * fon", "Fator final", "VU homogenizado", "Z-score", "Status", "Fatores"];
   const step3Rows = state.lastCalculation.lines.map((line) => [
     line.id,
     line.papel,
@@ -1161,6 +1184,9 @@ function exportWordReport() {
     formatNumber(line.valorHomogeneizado),
     formatNumber(line.zScore, 4),
     line.status,
+    Object.entries(line.coeficientes)
+      .map(([key, value]) => `${factorLabels.get(key) || key}: ${formatNumber(value, 4)}`)
+      .join(" | "),
   ]);
 
   const summary = state.lastCalculation.summary;
@@ -1594,8 +1620,12 @@ function getFinalFactorRange(sampleCount) {
   return { min: 0.4, max: 2.5, grade: "I" };
 }
 
-function getFinalFactorGrade(value) {
+function getFinalFactorGrade(value, sampleCount = null) {
   if (value == null) return "-";
+  if (sampleCount != null && sampleCount < 5) {
+    if (value >= 0.8 && value <= 1.25) return "III";
+    return "Fora da faixa";
+  }
   if (value >= 0.8 && value <= 1.25) return "III";
   if (value >= 0.5 && value <= 2.0) return "II";
   if (value >= 0.4 && value <= 2.5) return "I";
@@ -1619,7 +1649,7 @@ function getWorstFinalFactorGrade(lines, sampleCount) {
   const participatingLines = lines.filter(
     (line) => line.papel === "DADO" && line.participa && line.fatorFinal != null,
   );
-  const grades = participatingLines.map((line) => getFinalFactorGrade(line.fatorFinal));
+  const grades = participatingLines.map((line) => getFinalFactorGrade(line.fatorFinal, sampleCount));
 
   if (sampleCount < 5) {
     const hasOutOfStrictRange = participatingLines.some(
