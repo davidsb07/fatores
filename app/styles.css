@@ -751,20 +751,29 @@ th {
 }
 
 .info-chip {
-  width: 18px;
-  min-width: 18px;
-  height: 18px;
-  min-height: 18px;
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  min-height: 20px;
   padding: 0;
-  border: 1px solid #b8c7d6;
+  border: 1px solid #8fa6bc;
   border-radius: 999px;
-  background: #fff;
-  color: #526577;
+  background: linear-gradient(180deg, #fefefe, #eaf1f7);
+  color: #1f3a5f;
   font-family: "JetBrains Mono", monospace;
-  font-size: 0.68rem;
-  font-weight: 700;
+  font-size: 0.72rem;
+  font-weight: 800;
   line-height: 1;
-  box-shadow: none;
+  box-shadow:
+    0 3px 10px rgba(31, 58, 95, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.info-chip:hover,
+.info-chip:focus-visible {
+  border-color: #1f3a5f;
+  background: linear-gradient(180deg, #ffffff, #dfe8f2);
+  color: #162a44;
 }
 
 .info-popover {
@@ -888,6 +897,35 @@ td:nth-child(4),
 
 .technical-wrap {
   margin-top: 18px;
+}
+
+.report-preview {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.report-preview-content {
+  display: grid;
+  gap: 16px;
+}
+
+.report-preview-block {
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #fcfdfe, #f7fafc);
+  padding: 14px 16px;
+}
+
+.report-preview-block h3 {
+  margin: 0 0 10px;
+  color: var(--accent-strong);
+  font-family: "Sora", sans-serif;
+  font-size: 0.88rem;
+}
+
+.report-preview-block table {
+  margin-top: 0;
 }
 
 .dictionary-row input {

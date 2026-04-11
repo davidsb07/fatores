@@ -291,8 +291,11 @@ const el = {
   addRowButton: document.querySelector("#addRowButton"),
   calculateButton: document.querySelector("#calculateButton"),
   saveWorkButton: document.querySelector("#saveWorkButton"),
+  previewReportButton: document.querySelector("#previewReportButton"),
   exportWordButton: document.querySelector("#exportWordButton"),
   exportReportButton: document.querySelector("#exportReportButton"),
+  reportPreviewWrap: document.querySelector("#reportPreviewWrap"),
+  reportPreviewContent: document.querySelector("#reportPreviewContent"),
   errorBox: document.querySelector("#errorBox"),
   processingOverlay: document.querySelector("#processingOverlay"),
   processingLabel: document.querySelector("#processingLabel"),
@@ -619,11 +622,104 @@ function resetResults() {
 function renderSavedCalculation() {
   if (!state.lastCalculation) {
     resetResults();
+    el.reportPreviewWrap.classList.add("hidden");
+    el.reportPreviewContent.innerHTML = "";
     return;
   }
   renderSummary(state.lastCalculation.summary);
   renderResults(state.lastCalculation.lines, state.lastCalculation.summary);
   bindResultEvents();
+}
+
+function renderReportPreview() {
+  if (!state.lastCalculation) {
+    setError("Execute um calculo antes de visualizar o relatorio.");
+    return;
+  }
+
+  const visibleFactors = getVisibleFactors();
+  const factorLabels = new Map(visibleFactors.map((factor) => [factor.id, factor.label]));
+  const summary = state.lastCalculation.summary;
+  const areaBase =
+    summary.areaAvaliando ??
+    (summary.mediaSaneada && summary.valorEstimado ? summary.valorEstimado / summary.mediaSaneada : null);
+  const arbitrioInferiorTotal =
+    summary.arbitrioInferiorTotal ?? (areaBase != null ? summary.arbitrioInferior * areaBase : null);
+  const arbitrioSuperiorTotal =
+    summary.arbitrioSuperiorTotal ?? (areaBase != null ? summary.arbitrioSuperior * areaBase : null);
+  const icInferiorTotal =
+    summary.icInferiorTotal ?? (areaBase != null ? summary.icInferior * areaBase : null);
+  const icSuperiorTotal =
+    summary.icSuperiorTotal ?? (areaBase != null ? summary.icSuperior * areaBase : null);
+
+  const marketHeaders = ["Papel", "Endereco", "Valor total", "FON", "Incluir", ...visibleFactors.map((factor) => factor.label)];
+  const marketRows = state.rows.map((row, index) => [
+    index === 0 ? "Avaliando" : "Dado",
+    row.endereco || "",
+    row.valor_total || "",
+    row.fon || "",
+    index === 0 ? "Nao" : row.incluir ? "Sim" : "Nao",
+    ...visibleFactors.map((factor) => row.campos[factor.id] ?? ""),
+  ]);
+
+  const homogHeaders = ["Linha", "Papel", "VU", "VU * FON", "Fator final", "VU homogenizado", "Z-score", "Status", "Fatores"];
+  const homogRows = state.lastCalculation.lines.map((line) => [
+    line.id,
+    line.papel,
+    formatNumber(line.valorUnitario),
+    formatNumber(line.valorUnitarioFon),
+    formatNumber(line.fatorFinal, 4),
+    formatNumber(line.valorHomogeneizado),
+    formatNumber(line.zScore, 4),
+    line.status,
+    Object.entries(line.coeficientes).map(([key, value]) => `${factorLabels.get(key) || key}: ${formatNumber(value, 4)}`).join(" | "),
+  ]);
+
+  const summaryRows = [
+    ["Numero de dados utilizados", summary.numeroDadosSaneados],
+    ["Media saneada", formatNumber(summary.mediaSaneada)],
+    ["Desvio padrao", formatNumber(summary.desvioSaneado)],
+    ["VC de Chauvenet", formatNumber(summary.chauvenetCritico, 3)],
+    ["t-valor critico (conf. 80%)", formatNumber(summary.tCritico, 3)],
+    ["LI IC 80%", formatNumber(summary.icInferior)],
+    ["LS IC 80%", formatNumber(summary.icSuperior)],
+    ["Valor estimado", `R$ ${formatNumber(summary.valorEstimado)}`],
+    ["LI Campo de Arbitrio", `R$ ${formatNumber(arbitrioInferiorTotal)}`],
+    ["LS Campo de Arbitrio", `R$ ${formatNumber(arbitrioSuperiorTotal)}`],
+    ["LI IC 80% total", `R$ ${formatNumber(icInferiorTotal)}`],
+    ["LS IC 80% total", `R$ ${formatNumber(icSuperiorTotal)}`],
+  ];
+
+  function previewTable(headers, rows) {
+    return `
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>${headers.map((header) => `<th>${header}</th>`).join("")}</tr>
+          </thead>
+          <tbody>
+            ${rows.map((row) => `<tr>${row.map((cell) => `<td>${cell}</td>`).join("")}</tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  el.reportPreviewContent.innerHTML = `
+    <div class="report-preview-block">
+      <h3>Planilha de dados de mercado</h3>
+      ${previewTable(marketHeaders, marketRows)}
+    </div>
+    <div class="report-preview-block">
+      <h3>Homogeneizacao</h3>
+      ${previewTable(homogHeaders, homogRows)}
+    </div>
+    <div class="report-preview-block">
+      <h3>Resumo do relatorio</h3>
+      ${previewTable(["Indicador", "Valor"], summaryRows)}
+    </div>
+  `;
+  el.reportPreviewWrap.classList.remove("hidden");
 }
 
 function getSerializedState() {
@@ -1960,6 +2056,9 @@ function bindTopControls() {
       saveWorkFile();
     }),
   );
+  el.previewReportButton.addEventListener("click", () => {
+    renderReportPreview();
+  });
   el.exportWordButton.addEventListener("click", () =>
     withProcessing("Gerando Word...", async () => {
       exportWordReport();

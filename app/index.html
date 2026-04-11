@@ -348,8 +348,9 @@
         <div class="panel-body" data-panel-body="step-7">
           <div class="section-tools">
             <button id="saveWorkButton" type="button" class="secondary">Salvar trabalho</button>
-            <button id="exportWordButton" type="button" class="secondary">Exportar Word</button>
-            <button id="exportReportButton" type="button" class="secondary">Exportar relatorio</button>
+            <button id="previewReportButton" type="button" class="secondary">Visualizar relatorio</button>
+            <button id="exportWordButton" type="button" class="secondary">Exportar .doc</button>
+            <button id="exportReportButton" type="button" class="secondary">Exportar .pdf</button>
           </div>
           <div class="actions">
             <label class="dictionary-picker">
@@ -358,6 +359,15 @@
             </label>
           </div>
           <p class="muted">O trabalho e salvo em arquivo <code>.fat</code> usando o nome informado neste passo.</p>
+          <div id="reportPreviewWrap" class="report-preview hidden">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow small">Previa</p>
+                <h2>Conferencia do relatorio</h2>
+              </div>
+            </div>
+            <div id="reportPreviewContent" class="report-preview-content"></div>
+          </div>
         </div>
       </section>
     </main>
