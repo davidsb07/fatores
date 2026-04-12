@@ -43,7 +43,7 @@ Este projeto está preparado para um Space `static`.
 
 Configuração atual do workflow:
 
-- Space alvo: `ESJL/fatores`
+- Space alvo: `DavidSB/Fatores`
 - segredo esperado no GitHub: `HF_TOKEN`
 
 Se o nome final do seu Space for outro, ajuste em:

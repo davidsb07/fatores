@@ -220,9 +220,17 @@
         <div class="panel-body" data-panel-body="step-3">
         <div class="section-tools">
           <button id="addRowButton" type="button" class="secondary">Adicionar linha</button>
+          <button
+            id="toggleEditorTableButton"
+            type="button"
+            class="secondary"
+            aria-expanded="false"
+          >
+            Abrir planilha toda
+          </button>
         </div>
         <p id="errorBox" class="error hidden"></p>
-        <div class="table-wrap table-wrap-editor">
+        <div id="editorTableWrap" class="table-wrap table-wrap-editor table-wrap-limited">
           <table>
             <thead id="editorHead"></thead>
             <tbody id="editorBody"></tbody>
@@ -246,7 +254,17 @@
         </div>
         <div class="panel-body" data-panel-body="step-4">
         <p id="resultHint" class="result-hint muted"></p>
-        <div class="table-wrap table-wrap-results">
+        <div class="section-tools section-tools-inline">
+          <button
+            id="toggleResultsTableButton"
+            type="button"
+            class="secondary"
+            aria-expanded="false"
+          >
+            Abrir planilha toda
+          </button>
+        </div>
+        <div id="resultsTableWrap" class="table-wrap table-wrap-results table-wrap-limited">
           <table>
             <thead>
               <tr>

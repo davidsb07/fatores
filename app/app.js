@@ -253,6 +253,10 @@ const state = {
   lastCalculation: null,
   customFactors: [],
   collapsedSteps: {},
+  expandedTables: {
+    editor: false,
+    results: false,
+  },
 };
 
 const el = {
@@ -287,6 +291,10 @@ const el = {
   technicalSummaryBody: document.querySelector("#technicalSummaryBody"),
   resultBody: document.querySelector("#resultBody"),
   resultHint: document.querySelector("#resultHint"),
+  editorTableWrap: document.querySelector("#editorTableWrap"),
+  resultsTableWrap: document.querySelector("#resultsTableWrap"),
+  toggleEditorTableButton: document.querySelector("#toggleEditorTableButton"),
+  toggleResultsTableButton: document.querySelector("#toggleResultsTableButton"),
   recalculateButton: document.querySelector("#recalculateButton"),
   addRowButton: document.querySelector("#addRowButton"),
   calculateButton: document.querySelector("#calculateButton"),
@@ -428,6 +436,28 @@ function renderContextNotices() {
     ? `Este trabalho usa ajustes proprios: ${adjustmentCount} alteracao(oes) em dicionarios/fatores.`
     : "";
   el.dictionaryStatus.classList.toggle("hidden", !adjustmentCount);
+}
+
+function renderExpandableTables() {
+  const editorExpanded = Boolean(state.expandedTables.editor);
+  const resultsExpanded = Boolean(state.expandedTables.results);
+
+  el.editorTableWrap?.classList.toggle("is-expanded", editorExpanded);
+  el.resultsTableWrap?.classList.toggle("is-expanded", resultsExpanded);
+
+  if (el.toggleEditorTableButton) {
+    el.toggleEditorTableButton.textContent = editorExpanded
+      ? "Voltar para rolagem"
+      : "Abrir planilha toda";
+    el.toggleEditorTableButton.setAttribute("aria-expanded", String(editorExpanded));
+  }
+
+  if (el.toggleResultsTableButton) {
+    el.toggleResultsTableButton.textContent = resultsExpanded
+      ? "Voltar para rolagem"
+      : "Abrir planilha toda";
+    el.toggleResultsTableButton.setAttribute("aria-expanded", String(resultsExpanded));
+  }
 }
 
 function getStepIds() {
@@ -1996,6 +2026,16 @@ function bindTopControls() {
     bindEditorEvents();
   });
 
+  el.toggleEditorTableButton.addEventListener("click", () => {
+    state.expandedTables.editor = !state.expandedTables.editor;
+    renderExpandableTables();
+  });
+
+  el.toggleResultsTableButton.addEventListener("click", () => {
+    state.expandedTables.results = !state.expandedTables.results;
+    renderExpandableTables();
+  });
+
   el.referenceConstruida.addEventListener("click", () => {
     state.referenceMode = "Construida";
     renderSelectors();
@@ -2255,6 +2295,7 @@ function renderAll() {
   renderFactors();
   renderEditor();
   renderDictionaries();
+  renderExpandableTables();
   el.dictionaryPanel.classList.toggle("hidden", !state.dictionariesOpen);
   el.toggleDictionariesButton.textContent = state.dictionariesOpen
     ? "Ocultar coeficientes"
