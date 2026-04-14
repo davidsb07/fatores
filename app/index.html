@@ -98,9 +98,6 @@
         </div>
         <div class="panel-body" data-panel-body="step-2">
           <div class="section-tools">
-            <button id="toggleDictionariesButton" type="button" class="secondary">
-              Ajustar coeficientes
-            </button>
             <div class="reference-switch">
               <span class="muted">Area para o calculo</span>
               <div class="reference-options">
@@ -108,6 +105,9 @@
                 <button id="referenceTerreno" type="button" class="reference-option">Area territorial</button>
               </div>
             </div>
+            <button id="toggleDictionariesButton" type="button" class="secondary">
+              Ajustar coeficientes
+            </button>
             <p class="muted" id="factorHint"></p>
           </div>
           <p id="dictionaryStatus" class="dictionary-status hidden"></p>
@@ -118,12 +118,23 @@
               <p class="eyebrow small">Ajuste Opcional</p>
               <h2>Dicionarios e coeficientes</h2>
             </div>
-            <div class="actions">
-              <label class="dictionary-picker">
-                <span class="muted">Tabela ativa</span>
-                <select id="dictionarySelect"></select>
-              </label>
-            </div>
+          </div>
+          <div class="dictionary-toolbar">
+            <label class="dictionary-picker">
+              <span class="muted">Tabela ativa</span>
+              <select id="dictionarySelect"></select>
+            </label>
+          </div>
+          <div class="table-wrap dictionary-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Opcao</th>
+                  <th>Coeficiente</th>
+                </tr>
+              </thead>
+              <tbody id="dictionaryBody"></tbody>
+            </table>
           </div>
           <div class="formula-box">
             <p class="formula-title">Metodos de calculo fixos</p>
@@ -167,17 +178,6 @@
               </div>
             </div>
             <p class="muted">Essas formulas sao fixas no motor de calculo. O que pode ser alterado aqui sao os dicionarios e coeficientes tabelados.</p>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Opcao</th>
-                  <th>Coeficiente</th>
-                </tr>
-              </thead>
-              <tbody id="dictionaryBody"></tbody>
-            </table>
           </div>
           <div class="custom-factor-box">
             <div class="section-head">
