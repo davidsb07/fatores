@@ -1228,7 +1228,7 @@ function renderResults(lines, summary = state.lastCalculation?.summary) {
   const gradeLabel =
     sampleGrade === "Sem enquadramento" ? sampleGrade : `Grau ${sampleGrade}`;
   el.resultHint.innerHTML = `
-    Quantidade minima de dados efetivamente usados: ${participatingCount} dados - ${gradeLabel}.<br />
+    Quantidade de dados efetivamente utilizados: ${participatingCount} dados - ${gradeLabel}.<br />
     Intervalo admissivel de ajuste para o conjunto de fatores: ${worstFinalFactorGrade}.
   `;
   el.resultBody.innerHTML = lines
