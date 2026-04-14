@@ -1,11 +1,11 @@
 :root {
   color-scheme: light;
   font-family: "Nunito Sans", sans-serif;
-  --bg-0: #f5f7f8;
-  --bg-1: #edeff2;
+  --bg-0: #f3f5f7;
+  --bg-1: #e7ecf0;
   --ink-0: #1f2933;
-  --ink-1: #3e4c59;
-  --ink-2: #6b7c93;
+  --ink-1: #374654;
+  --ink-2: #627488;
   --accent: #1f3a5f;
   --accent-strong: #162a44;
   --gold: #b38a3d;
@@ -13,8 +13,8 @@
   --gold-line: #d6bf8a;
   --ok: #2d6a4f;
   --danger: #a63a3a;
-  --border: #d9e2ec;
-  --border-soft: #eaf0f6;
+  --border: #d1dbe6;
+  --border-soft: #e1e8f0;
   --shadow-sm: 0 3px 10px rgba(20, 28, 36, 0.06);
   --shadow-md: 0 10px 26px rgba(20, 28, 36, 0.1);
   --radius-lg: 16px;
@@ -649,12 +649,12 @@ textarea {
 }
 
 .editor-field-fon {
-  width: 116px;
-  min-width: 116px;
+  width: 154px;
+  min-width: 154px;
 }
 
 .editor-col-fon {
-  width: 132px;
+  width: 170px;
 }
 
 .editor-col-andar select,
@@ -924,12 +924,16 @@ td:nth-child(4),
 
 .adopted-grid {
   display: grid;
-  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  grid-template-columns: minmax(240px, 320px) minmax(360px, 1fr);
   gap: 14px;
 }
 
 .full-line {
   grid-column: 1 / -1;
+}
+
+.adopted-grid textarea {
+  min-height: 88px;
 }
 
 .technical-wrap {

@@ -53,12 +53,11 @@ const BASE_DICTIONARIES = {
     "id>50_ rep. imp.": 0.1,
   },
   conservacao_simplificada: {
-    "Em construcao ou na planta": 1.0,
-    "Bom (aparencia de novo)": 0.95,
-    "Bom (aparencia de usado)": 0.8,
-    "Regular (reparos simples)": 0.65,
-    "Regular (reparos importantes)": 0.4,
-    Ruim: 0.2,
+    "Bom (aparencia de novo)": 1.0,
+    "Bom (aparencia de usado)": 0.8421,
+    "Regular (reparos simples)": 0.6842,
+    "Regular (reparos importantes)": 0.4211,
+    Ruim: 0.2105,
   },
   padrao_construtivo: {
     "popular res": 1.0,
@@ -195,21 +194,21 @@ const T_STUDENT_80 = {
 };
 
 const FACTORS = [
-  { id: "localizacao", label: "Localizacao", kind: "number", appliesTo: ["terreno", "gleba", "apartamento", "sala", "casa", "loja", "predio"] },
-  { id: "area_construida", label: "Area construida", kind: "number", appliesTo: ["apartamento", "sala", "casa", "loja", "predio"] },
-  { id: "area_territorial", label: "Area territorial", kind: "number", appliesTo: ["terreno", "gleba", "casa", "predio"] },
-  { id: "testada", label: "Testada", kind: "number", appliesTo: ["terreno", "gleba", "casa", "predio"] },
-  { id: "prof_equivalente", label: "Prof. equivalente", kind: "number", appliesTo: ["terreno", "gleba", "casa", "predio"] },
-  { id: "topografia", label: "Topografia", kind: "option", appliesTo: ["terreno", "gleba", "casa", "predio"] },
-  { id: "relevo", label: "Relevo", kind: "option", appliesTo: ["terreno", "gleba", "casa", "predio"] },
-  { id: "superficie", label: "Superficie", kind: "option", appliesTo: ["terreno", "gleba", "casa", "predio"] },
-  { id: "aproveitamento", label: "Aproveitamento", kind: "option", appliesTo: ["terreno", "gleba", "predio"] },
-  { id: "acessibilidade", label: "Acessibilidade", kind: "option", appliesTo: ["terreno", "gleba", "casa", "loja", "predio"] },
-  { id: "idade_conservacao", label: "Idade e conservacao", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio"] },
-  { id: "conservacao_simplificada", label: "Conservacao simplificada", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio"] },
-  { id: "padrao_construtivo", label: "Padrao construtivo", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio"] },
-  { id: "padrao_simplificado", label: "Padrao simplificado", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio"] },
-  { id: "cub_simplificado", label: "CUB simplificado", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio"] },
+  { id: "localizacao", label: "Localizacao", kind: "number", appliesTo: ["terreno", "gleba", "apartamento", "sala", "casa", "loja", "predio", "galpao"] },
+  { id: "area_construida", label: "Area construida", kind: "number", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
+  { id: "area_territorial", label: "Area territorial", kind: "number", appliesTo: ["terreno", "gleba", "casa", "predio", "galpao"] },
+  { id: "testada", label: "Testada", kind: "number", appliesTo: ["terreno", "gleba", "casa", "predio", "galpao"] },
+  { id: "prof_equivalente", label: "Prof. equivalente", kind: "number", appliesTo: ["terreno", "gleba", "casa", "predio", "galpao"] },
+  { id: "topografia", label: "Topografia", kind: "option", appliesTo: ["terreno", "gleba", "casa", "predio", "galpao"] },
+  { id: "relevo", label: "Relevo", kind: "option", appliesTo: ["terreno", "gleba", "casa", "predio", "galpao"] },
+  { id: "superficie", label: "Superficie", kind: "option", appliesTo: ["terreno", "gleba", "casa", "predio", "galpao"] },
+  { id: "aproveitamento", label: "Aproveitamento", kind: "option", appliesTo: ["terreno", "gleba", "predio", "galpao"] },
+  { id: "acessibilidade", label: "Acessibilidade", kind: "option", appliesTo: ["terreno", "gleba", "casa", "loja", "predio", "galpao"] },
+  { id: "idade_conservacao", label: "Idade e conservacao", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
+  { id: "conservacao_simplificada", label: "Conservacao simplificada", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
+  { id: "padrao_construtivo", label: "Padrao construtivo", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
+  { id: "padrao_simplificado", label: "Padrao simplificado", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
+  { id: "cub_simplificado", label: "CUB simplificado", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
   { id: "cub_res", label: "CUB - res", kind: "option", appliesTo: ["apartamento", "casa", "predio"] },
   { id: "cub_com", label: "CUB - com", kind: "option", appliesTo: ["sala", "loja", "predio"] },
   { id: "vaga", label: "Vagas", kind: "number", appliesTo: ["apartamento", "sala", "casa", "loja"] },
@@ -224,6 +223,7 @@ const DEFAULT_FACTORS = {
   casa: ["localizacao", "area_construida", "area_territorial", "padrao_simplificado", "conservacao_simplificada"],
   loja: ["localizacao", "area_construida", "padrao_simplificado", "vaga", "acessibilidade"],
   predio: ["localizacao", "area_construida", "area_territorial", "padrao_simplificado", "aproveitamento"],
+  galpao: ["localizacao", "area_construida", "area_territorial", "padrao_simplificado", "conservacao_simplificada"],
 };
 
 const APARTMENT_CAROL_DEMO = {
@@ -458,6 +458,7 @@ function getAssetTypeLabel(value) {
     casa: "Casa",
     loja: "Loja",
     predio: "Predio",
+    galpao: "Galpao",
   }[value] || value;
 }
 
@@ -904,6 +905,7 @@ function renderSelectors() {
     <option value="casa">Casa</option>
     <option value="loja">Loja</option>
     <option value="predio">Predio</option>
+    <option value="galpao">Galpao</option>
   `;
   el.assetType.value = state.assetType;
   el.referenceConstruida.classList.toggle("active", state.referenceMode === "Construida");
@@ -2366,7 +2368,7 @@ function saveCustomFactor() {
 
   const appliesTo =
     appliesToMode === "all"
-      ? ["terreno", "gleba", "apartamento", "sala", "casa", "loja", "predio"]
+      ? ["terreno", "gleba", "apartamento", "sala", "casa", "loja", "predio", "galpao"]
       : [state.assetType];
 
   const lines = optionsText.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
