@@ -933,7 +933,9 @@ td:nth-child(4),
 }
 
 .adopted-grid textarea {
-  min-height: 88px;
+  min-height: 44px;
+  height: 44px;
+  resize: vertical;
 }
 
 .technical-wrap {
