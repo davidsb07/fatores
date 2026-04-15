@@ -314,6 +314,7 @@ const el = {
   workName: document.querySelector("#workName"),
   wordOrientation: document.querySelector("#wordOrientation"),
   adoptedValue: document.querySelector("#adoptedValue"),
+  adoptedValueExtenso: document.querySelector("#adoptedValueExtenso"),
   adoptedJustification: document.querySelector("#adoptedJustification"),
   assetType: document.querySelector("#assetType"),
   factorHint: document.querySelector("#factorHint"),
@@ -399,6 +400,120 @@ function formatEditableDecimal(value, digits = 2) {
   const numericValue = toNumber(value);
   if (numericValue == null) return value ?? "";
   return numericValue.toFixed(digits);
+}
+
+function numberToPortugueseBelowThousand(value) {
+  const units = [
+    "zero",
+    "um",
+    "dois",
+    "três",
+    "quatro",
+    "cinco",
+    "seis",
+    "sete",
+    "oito",
+    "nove",
+    "dez",
+    "onze",
+    "doze",
+    "treze",
+    "quatorze",
+    "quinze",
+    "dezesseis",
+    "dezessete",
+    "dezoito",
+    "dezenove",
+  ];
+  const tens = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
+  const hundreds = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
+
+  if (value === 0) return "zero";
+  if (value < 20) return units[value];
+  if (value < 100) {
+    const ten = Math.floor(value / 10);
+    const unit = value % 10;
+    return unit ? `${tens[ten]} e ${units[unit]}` : tens[ten];
+  }
+  if (value === 100) return "cem";
+  const hundred = Math.floor(value / 100);
+  const remainder = value % 100;
+  return remainder ? `${hundreds[hundred]} e ${numberToPortugueseBelowThousand(remainder)}` : hundreds[hundred];
+}
+
+function joinPortugueseNumberParts(parts, lastChunkValue) {
+  if (!parts.length) return "";
+  if (parts.length === 1) return parts[0];
+  const head = parts.slice(0, -1);
+  const tail = parts[parts.length - 1];
+  const separator = lastChunkValue > 0 && lastChunkValue < 100 ? " e " : ", ";
+  return `${head.join(", ")}${separator}${tail}`;
+}
+
+function numberToPortugueseInteger(value) {
+  if (!Number.isInteger(value) || value < 0) return "";
+  if (value === 0) return "zero";
+
+  const scales = [
+    { singular: "", plural: "" },
+    { singular: "mil", plural: "mil" },
+    { singular: "milhão", plural: "milhões" },
+    { singular: "bilhão", plural: "bilhões" },
+    { singular: "trilhão", plural: "trilhões" },
+  ];
+
+  const parts = [];
+  const chunks = [];
+  let remaining = value;
+  while (remaining > 0) {
+    chunks.push(remaining % 1000);
+    remaining = Math.floor(remaining / 1000);
+  }
+
+  for (let index = chunks.length - 1; index >= 0; index -= 1) {
+    const chunk = chunks[index];
+    if (!chunk) continue;
+    if (index === 0) {
+      parts.push(numberToPortugueseBelowThousand(chunk));
+      continue;
+    }
+    if (index === 1) {
+      parts.push(chunk === 1 ? "mil" : `${numberToPortugueseBelowThousand(chunk)} mil`);
+      continue;
+    }
+    const scaleLabel = chunk === 1 ? scales[index].singular : scales[index].plural;
+    parts.push(`${numberToPortugueseBelowThousand(chunk)} ${scaleLabel}`);
+  }
+
+  return joinPortugueseNumberParts(parts, chunks[0] || 0);
+}
+
+function numberToCurrencyWords(value) {
+  if (value == null || !Number.isFinite(value) || value < 0) return "";
+
+  const rounded = Math.round(value * 100);
+  const integerPart = Math.floor(rounded / 100);
+  const centsPart = rounded % 100;
+  const moneyParts = [];
+
+  if (integerPart > 0 || centsPart === 0) {
+    const integerWords = numberToPortugueseInteger(integerPart);
+    moneyParts.push(`${integerWords} ${integerPart === 1 ? "real" : "reais"}`);
+  }
+
+  if (centsPart > 0) {
+    const centsWords = numberToPortugueseInteger(centsPart);
+    moneyParts.push(`${centsWords} ${centsPart === 1 ? "centavo" : "centavos"}`);
+  }
+
+  return moneyParts.join(" e ");
+}
+
+function renderAdoptedValueWords() {
+  const numericValue = toNumber(state.adoptedValue);
+  const words = numberToCurrencyWords(numericValue);
+  el.adoptedValueExtenso.textContent = words ? `Por extenso: ${words}.` : "";
+  el.adoptedValueExtenso.classList.toggle("hidden", !words);
 }
 
 function setError(message = "") {
@@ -758,6 +873,8 @@ function buildReportData() {
     summary.icSuperiorTotal ?? (areaBase != null ? summary.icSuperior * areaBase : null);
   const adoptedValueFormatted =
     toNumber(state.adoptedValue) != null ? `R$ ${formatNumber(toNumber(state.adoptedValue))}` : "-";
+  const adoptedValueExtenso =
+    toNumber(state.adoptedValue) != null ? numberToCurrencyWords(toNumber(state.adoptedValue)) : "-";
   const adoptedJustification = state.adoptedJustification || "-";
   const exportedAt = new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
@@ -837,6 +954,7 @@ function buildReportData() {
     visibleFactors,
     exportedAt,
     adoptedValueFormatted,
+    adoptedValueExtenso,
     adoptedJustification,
     marketHeaders,
     marketRows,
@@ -922,6 +1040,7 @@ function renderReportPreview() {
       <h3>Valor adotado</h3>
       ${previewTable(["Campo", "Conteúdo"], [
         ["Valor adotado", report.adoptedValueFormatted],
+        ["Valor adotado por extenso", report.adoptedValueExtenso],
         ["Justificativa", report.adoptedJustification],
       ])}
     </div>
@@ -1041,6 +1160,7 @@ function renderSelectors() {
   el.wordOrientation.value = state.wordOrientation;
   el.adoptedValue.value = state.adoptedValue;
   el.adoptedJustification.value = state.adoptedJustification;
+  renderAdoptedValueWords();
   el.assetType.innerHTML = `
     <option value="apartamento">Apartamento</option>
     <option value="terreno">Terreno</option>
@@ -1522,6 +1642,8 @@ function exportWordReport() {
     summary.icSuperiorTotal ?? (areaBase != null ? summary.icSuperior * areaBase : null);
   const adoptedValueFormatted =
     toNumber(state.adoptedValue) != null ? `R$ ${formatNumber(toNumber(state.adoptedValue))}` : "-";
+  const adoptedValueExtenso =
+    toNumber(state.adoptedValue) != null ? numberToCurrencyWords(toNumber(state.adoptedValue)) : "-";
   const adoptedJustification = state.adoptedJustification || "-";
   const exportedAt = new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
@@ -1683,6 +1805,7 @@ function exportWordReport() {
             ["Campo", "Conteúdo"],
             [
               ["Valor adotado", report.adoptedValueFormatted],
+              ["Valor adotado por extenso", adoptedValueExtenso],
               ["Justificativa", report.adoptedJustification],
             ],
           )}
@@ -1756,6 +1879,8 @@ function exportPdfReport() {
     summary.icSuperiorTotal ?? (areaBase != null ? summary.icSuperior * areaBase : null);
   const adoptedValueFormatted =
     toNumber(state.adoptedValue) != null ? `R$ ${formatNumber(toNumber(state.adoptedValue))}` : "-";
+  const adoptedValueExtenso =
+    toNumber(state.adoptedValue) != null ? numberToCurrencyWords(toNumber(state.adoptedValue)) : "-";
   const adoptedJustification = state.adoptedJustification || "-";
   const exportedAt = new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
@@ -1899,6 +2024,7 @@ function exportPdfReport() {
     head: [["Campo", "Conteúdo"]],
     body: [
       ["Valor adotado", report.adoptedValueFormatted],
+      ["Valor adotado por extenso", adoptedValueExtenso],
       ["Justificativa", report.adoptedJustification],
     ],
     styles: { fontSize: 8, cellPadding: 2 },
@@ -2226,6 +2352,7 @@ function bindTopControls() {
 
   el.adoptedValue.addEventListener("input", (event) => {
     state.adoptedValue = event.target.value;
+    renderAdoptedValueWords();
   });
 
   el.adoptedJustification.addEventListener("input", (event) => {
