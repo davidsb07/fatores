@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Avaliacao por Fatores</title>
+    <title>Avaliação por Fatores</title>
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Nunito+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap"
@@ -19,9 +19,9 @@
         <strong id="processingLabel">Processando...</strong>
       </div>
     </div>
-    <aside class="side-dots" aria-label="Navegacao dos passos">
-      <button type="button" class="side-dot active" data-step-target="step-1" data-step-label="Inicio" aria-label="Passo 1 - Inicio">1</button>
-      <button type="button" class="side-dot" data-step-target="step-2" data-step-label="Selecao de fatores" aria-label="Passo 2 - Selecao de fatores">2</button>
+    <aside class="side-dots" aria-label="Navegação dos passos">
+      <button type="button" class="side-dot active" data-step-target="step-1" data-step-label="Início" aria-label="Passo 1 - Início">1</button>
+      <button type="button" class="side-dot" data-step-target="step-2" data-step-label="Seleção de fatores" aria-label="Passo 2 - Seleção de fatores">2</button>
       <button type="button" class="side-dot" data-step-target="step-3" data-step-label="Linhas de dados" aria-label="Passo 3 - Linhas de dados">3</button>
       <button type="button" class="side-dot" data-step-target="step-4" data-step-label="Resultado por linha" aria-label="Passo 4 - Resultado por linha">4</button>
       <button type="button" class="side-dot" data-step-target="step-5" data-step-label="Resumo consolidado" aria-label="Passo 5 - Resumo consolidado">5</button>
@@ -43,7 +43,7 @@
         <div class="section-head">
           <div>
             <p class="eyebrow small">Passo 1</p>
-            <h2>Inicio</h2>
+            <h2>Início</h2>
           </div>
           <div class="actions">
             <button type="button" class="secondary panel-toggle" data-panel-toggle="step-1" aria-expanded="true" aria-label="Recolher passo 1"></button>
@@ -53,14 +53,14 @@
         <input id="loadModelInput" type="file" accept=".fat,application/json" hidden />
         <div class="start-grid">
           <div class="start-item">
-            <p class="start-label">Elaborar avaliacao</p>
+            <p class="start-label">Elaborar avaliação</p>
             <label>
               <select id="assetType"></select>
             </label>
           </div>
 
           <div class="start-item">
-            <p class="start-label">Carregar avaliacao</p>
+            <p class="start-label">Carregar avaliação</p>
             <button id="loadModelButton" type="button" class="secondary">Carregar modelo</button>
           </div>
 
@@ -90,7 +90,7 @@
         <div class="section-head">
           <div>
             <p class="eyebrow small">Passo 2</p>
-            <h2>Selecao de fatores</h2>
+            <h2>Seleção de fatores</h2>
           </div>
           <div class="actions">
             <button type="button" class="secondary panel-toggle" data-panel-toggle="step-2" aria-expanded="true" aria-label="Recolher passo 2"></button>
@@ -99,10 +99,10 @@
         <div class="panel-body" data-panel-body="step-2">
           <div class="section-tools">
             <div class="reference-switch">
-              <span class="muted">Area para o calculo</span>
+              <span class="muted">Área para o cálculo</span>
               <div class="reference-options">
-                <button id="referenceConstruida" type="button" class="reference-option">Area construida</button>
-                <button id="referenceTerreno" type="button" class="reference-option">Area territorial</button>
+                <button id="referenceConstruida" type="button" class="reference-option">Área construída</button>
+                <button id="referenceTerreno" type="button" class="reference-option">Área territorial</button>
               </div>
             </div>
             <button id="toggleDictionariesButton" type="button" class="secondary">
@@ -116,7 +116,7 @@
           <div class="section-head">
             <div>
               <p class="eyebrow small">Ajuste Opcional</p>
-              <h2>Dicionarios e coeficientes</h2>
+              <h2>Dicionários e coeficientes</h2>
             </div>
           </div>
           <div class="dictionary-toolbar">
@@ -129,7 +129,7 @@
             <table>
               <thead>
                 <tr>
-                  <th>Opcao</th>
+                  <th>Opção</th>
                   <th>Coeficiente</th>
                 </tr>
               </thead>
@@ -137,20 +137,20 @@
             </table>
           </div>
           <div class="formula-box">
-            <p class="formula-title">Metodos de calculo fixos</p>
+            <p class="formula-title">Métodos de cálculo fixos</p>
             <div class="formula-grid">
               <div class="formula-item">
-                <strong>Area construida / Area territorial</strong>
-                <p>O fator de area usa a razao entre amostra e avaliando.</p>
+                <strong>Área construída / Área territorial</strong>
+                <p>O fator de área usa a razão entre amostra e avaliando.</p>
                 <p><code>fator = (maior / menor)^expoente</code></p>
                 <p><code>expoente = 0,25</code> quando a diferenca estiver ate 30%.</p>
                 <p><code>expoente = 0,125</code> quando a diferenca ultrapassar 30%.</p>
               </div>
               <div class="formula-item">
-                <strong>Localizacao</strong>
-                <p>Usa a relacao direta entre os coeficientes informados para o avaliando e para o dado.</p>
+                <strong>Localização</strong>
+                <p>Usa a relação direta entre os coeficientes informados para o avaliando e para o dado.</p>
                 <p><code>fator = coef_avaliando / coef_dado</code></p>
-                <p>Se o dado estiver em localizacao superior, o fator tende a reduzir o valor unitario homogenizado.</p>
+                <p>Se o dado estiver em localização superior, o fator tende a reduzir o valor unitário homogeneizado.</p>
               </div>
               <div class="formula-item">
                 <strong>Vagas</strong>
@@ -161,23 +161,23 @@
               <div class="formula-item">
                 <strong>CUB - res</strong>
                 <p>Usa coeficientes derivados do CUB residencial do Sinduscon/RS.</p>
-                <p>Os valores foram calculados pela media de 24 meses, de abril/2024 a marco/2026, e convertidos em razoes com base no menor padrao residencial do grupo.</p>
+                <p>Os valores foram calculados pela média de 24 meses, de abril/2024 a março/2026, e convertidos em razões com base no menor padrão residencial do grupo.</p>
               </div>
               <div class="formula-item">
                 <strong>CUB - com</strong>
                 <p>Usa coeficientes derivados do CUB comercial do Sinduscon/RS.</p>
-                <p>Os valores foram calculados pela media de 24 meses, de abril/2024 a marco/2026, e convertidos em razoes com base no menor padrao comercial do grupo.</p>
+                <p>Os valores foram calculados pela média de 24 meses, de abril/2024 a março/2026, e convertidos em razões com base no menor padrão comercial do grupo.</p>
               </div>
               <div class="formula-item">
                 <strong>Prof. equivalente</strong>
-                <p>Primeiro o motor precisa obter a profundidade equivalente de cada linha. Se ela nao for informada, tenta calcular por area territorial dividida pela testada.</p>
-                <p><code>prof = area_territorial / testada</code> quando a profundidade nao vier preenchida.</p>
-                <p>Com essa profundidade, o app determina um coeficiente proprio para cada imovel, em faixas: <code>sqrt(prof/20)</code> abaixo de 20 m; <code>1</code> entre 20 m e 33 m; <code>sqrt(33/prof)</code> entre 33 m e 90 m; e <code>0,6</code> acima disso.</p>
+                <p>Primeiro o motor precisa obter a profundidade equivalente de cada linha. Se ela não for informada, tenta calcular por área territorial dividida pela testada.</p>
+                <p><code>prof = area_territorial / testada</code> quando a profundidade não vier preenchida.</p>
+                <p>Com essa profundidade, o app determina um coeficiente próprio para cada imóvel, em faixas: <code>sqrt(prof/20)</code> abaixo de 20 m; <code>1</code> entre 20 m e 33 m; <code>sqrt(33/prof)</code> entre 33 m e 90 m; e <code>0,6</code> acima disso.</p>
                 <p>Para grandes areas, quando a area territorial ultrapassa 5.000 m2 e a profundidade passa de 90 m, entra a formula especial <code>4,8 x testada² x area^-0,4</code>.</p>
-                <p>O fator de homogeneizacao final nao e a profundidade em si, mas <code>coef_avaliando / coef_dado</code>.</p>
+                <p>O fator de homogeneização final não é a profundidade em si, mas <code>coef_avaliando / coef_dado</code>.</p>
               </div>
             </div>
-            <p class="muted">Essas formulas sao fixas no motor de calculo. O que pode ser alterado aqui sao os dicionarios e coeficientes tabelados.</p>
+            <p class="muted">Essas fórmulas são fixas no motor de cálculo. O que pode ser alterado aqui são os dicionários e coeficientes tabelados.</p>
           </div>
           <div class="custom-factor-box">
             <div class="section-head">
@@ -203,7 +203,7 @@
                 <textarea
                   id="customFactorOptions"
                   rows="5"
-                  placeholder="Uma linha por opcao, no formato: Nome=1.05"
+                  placeholder="Uma linha por opção, no formato: Nome=1.05"
                 ></textarea>
               </label>
             </div>
@@ -292,13 +292,13 @@
             </thead>
             <tbody id="resultBody">
               <tr>
-                <td colspan="10" class="empty-cell">Nenhum calculo executado ainda.</td>
+                <td colspan="10" class="empty-cell">Nenhum cálculo executado ainda.</td>
               </tr>
             </tbody>
           </table>
         </div>
         <div class="table-actions">
-          <button id="recalculateButton" type="button">Recalcular com selecao atual</button>
+          <button id="recalculateButton" type="button">Recalcular com seleção atual</button>
         </div>
         </div>
       </section>
@@ -327,7 +327,7 @@
             </thead>
             <tbody id="technicalSummaryBody">
               <tr>
-                <td colspan="2" class="empty-cell">Nenhum calculo executado ainda.</td>
+                <td colspan="2" class="empty-cell">Nenhum cálculo executado ainda.</td>
               </tr>
             </tbody>
           </table>
@@ -376,7 +376,7 @@
         <div class="panel-body" data-panel-body="step-7">
           <div class="section-tools">
             <button id="saveWorkButton" type="button" class="secondary">Salvar trabalho</button>
-            <button id="previewReportButton" type="button" class="secondary">Visualizar relatorio</button>
+            <button id="previewReportButton" type="button" class="secondary">Visualizar relatório</button>
             <button id="exportWordButton" type="button" class="secondary">Exportar .doc</button>
             <button id="exportReportButton" type="button" class="secondary">Exportar .pdf</button>
           </div>
@@ -398,10 +398,10 @@
             <div class="section-head">
               <div>
                 <p class="eyebrow small">Previa</p>
-                <h2>Conferencia do relatorio</h2>
+                <h2>Conferência do relatório</h2>
               </div>
               <div class="actions">
-                <button id="hideReportPreviewButton" type="button" class="secondary">Ocultar relatorio</button>
+                <button id="hideReportPreviewButton" type="button" class="secondary">Ocultar relatório</button>
               </div>
             </div>
             <div id="reportPreviewContent" class="report-preview-content"></div>
@@ -413,3 +413,4 @@
     <script src="./app.js"></script>
   </body>
 </html>
+

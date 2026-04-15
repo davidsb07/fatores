@@ -194,20 +194,20 @@ const T_STUDENT_80 = {
 };
 
 const FACTORS = [
-  { id: "localizacao", label: "Localizacao", kind: "number", appliesTo: ["terreno", "gleba", "apartamento", "sala", "casa", "loja", "predio", "galpao"] },
-  { id: "area_construida", label: "Area construida", kind: "number", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
-  { id: "area_territorial", label: "Area territorial", kind: "number", appliesTo: ["terreno", "gleba", "casa", "predio", "galpao"] },
+  { id: "localizacao", label: "Localização", kind: "number", appliesTo: ["terreno", "gleba", "apartamento", "sala", "casa", "loja", "predio", "galpao"] },
+  { id: "area_construida", label: "Área construída", kind: "number", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
+  { id: "area_territorial", label: "Área territorial", kind: "number", appliesTo: ["terreno", "gleba", "casa", "predio", "galpao"] },
   { id: "testada", label: "Testada", kind: "number", appliesTo: ["terreno", "gleba", "casa", "predio", "galpao"] },
   { id: "prof_equivalente", label: "Prof. equivalente", kind: "number", appliesTo: ["terreno", "gleba", "casa", "predio", "galpao"] },
   { id: "topografia", label: "Topografia", kind: "option", appliesTo: ["terreno", "gleba", "casa", "predio", "galpao"] },
   { id: "relevo", label: "Relevo", kind: "option", appliesTo: ["terreno", "gleba", "casa", "predio", "galpao"] },
-  { id: "superficie", label: "Superficie", kind: "option", appliesTo: ["terreno", "gleba", "casa", "predio", "galpao"] },
+  { id: "superficie", label: "Superfície", kind: "option", appliesTo: ["terreno", "gleba", "casa", "predio", "galpao"] },
   { id: "aproveitamento", label: "Aproveitamento", kind: "option", appliesTo: ["terreno", "gleba", "predio", "galpao"] },
   { id: "acessibilidade", label: "Acessibilidade", kind: "option", appliesTo: ["terreno", "gleba", "casa", "loja", "predio", "galpao"] },
-  { id: "idade_conservacao", label: "Idade e conservacao", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
-  { id: "conservacao_simplificada", label: "Conservacao simplificada", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
-  { id: "padrao_construtivo", label: "Padrao construtivo", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
-  { id: "padrao_simplificado", label: "Padrao simplificado", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
+  { id: "idade_conservacao", label: "Idade e conservação", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
+  { id: "conservacao_simplificada", label: "Conservação simplificada", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
+  { id: "padrao_construtivo", label: "Padrão construtivo", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
+  { id: "padrao_simplificado", label: "Padrão simplificado", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
   { id: "cub_simplificado", label: "CUB simplificado", kind: "option", appliesTo: ["apartamento", "sala", "casa", "loja", "predio", "galpao"] },
   { id: "cub_res", label: "CUB - res", kind: "option", appliesTo: ["apartamento", "casa", "predio"] },
   { id: "cub_com", label: "CUB - com", kind: "option", appliesTo: ["sala", "loja", "predio"] },
@@ -487,8 +487,8 @@ function getAssetTypeLabel(value) {
     sala: "Sala",
     casa: "Casa",
     loja: "Loja",
-    predio: "Predio",
-    galpao: "Galpao",
+    predio: "Prédio",
+    galpao: "Galpão",
   }[value] || value;
 }
 
@@ -499,7 +499,7 @@ function renderContextNotices() {
   el.loadedModelNotice.classList.toggle("hidden", !state.loadedModelName);
   const adjustmentCount = getDictionaryAdjustmentCount();
   el.dictionaryStatus.textContent = adjustmentCount
-    ? `Este trabalho usa ajustes proprios: ${adjustmentCount} alteracao(oes) em dicionarios/fatores.`
+    ? `Este trabalho usa ajustes próprios: ${adjustmentCount} alteração(ões) em dicionários/fatores.`
     : "";
   el.dictionaryStatus.classList.toggle("hidden", !adjustmentCount);
 }
@@ -708,7 +708,7 @@ function resetResults() {
   setReportPreviewVisible(false);
   el.summaryGrid.className = "summary-grid empty-block";
   el.summaryGrid.textContent = "Preencha a grade e clique em calcular.";
-  el.resultHint.textContent = "Calcule para revisar os fatores e decidir a selecao final dos dados.";
+  el.resultHint.textContent = "Calcule para revisar os fatores e decidir a seleção final dos dados.";
   el.technicalSummaryWrap.classList.add("hidden");
   el.technicalSummaryBody.innerHTML = `
     <tr>
@@ -736,7 +736,7 @@ function renderSavedCalculation() {
 
 function setReportPreviewVisible(visible) {
   el.reportPreviewWrap.classList.toggle("hidden", !visible);
-  el.previewReportButton.textContent = visible ? "Ocultar relatorio" : "Visualizar relatorio";
+  el.previewReportButton.textContent = visible ? "Ocultar relatório" : "Visualizar relatório";
 }
 
 function buildReportData() {
@@ -772,7 +772,7 @@ function buildReportData() {
     row.valor_total || "",
     row.fonTipo || "",
     row.fon || "",
-    index === 0 ? "Nao" : row.incluir ? "Sim" : "Nao",
+    index === 0 ? "Não" : row.incluir ? "Sim" : "Não",
     ...visibleFactors.map((factor) => row.campos[factor.id] ?? ""),
   ]);
 
@@ -790,46 +790,47 @@ function buildReportData() {
   ]);
 
   const initialStatsRows = [
-    ["Numero de dados", summary.numeroDadosInicial],
-    ["Media", formatNumber(summary.mediaInicial)],
+    ["Número de dados", summary.numeroDadosInicial],
+    ["Média", formatNumber(summary.mediaInicial)],
     ["Graus de liberdade (n-1)", Math.max(summary.numeroDadosInicial - 1, 1)],
-    ["Valor maximo", formatNumber(summary.valorMaximoInicial)],
-    ["Valor minimo", formatNumber(summary.valorMinimoInicial)],
-    ["Limite superior (1,15 x media)", formatNumber(summary.limiteSuperiorInicial)],
-    ["Limite inferior (0,85 x media)", formatNumber(summary.limiteInferiorInicial)],
-    ["Desvio padrao", formatNumber(summary.desvioInicial)],
-    ["Coeficiente de variacao", `${formatNumber(summary.coeficienteVariacaoInicial)}%`],
+    ["Valor máximo", formatNumber(summary.valorMaximoInicial)],
+    ["Valor mínimo", formatNumber(summary.valorMinimoInicial)],
+    ["Limite superior (1,15 x média)", formatNumber(summary.limiteSuperiorInicial)],
+    ["Limite inferior (0,85 x média)", formatNumber(summary.limiteInferiorInicial)],
+    ["Desvio padrão", formatNumber(summary.desvioInicial)],
+    ["Coeficiente de variação", `${formatNumber(summary.coeficienteVariacaoInicial)}%`],
   ];
   const sanitizedStatsRows = [
-    ["Numero de dados utilizados", summary.numeroDadosSaneados],
-    ["Media saneada", formatNumber(summary.mediaSaneada)],
-    ["Desvio padrao", formatNumber(summary.desvioSaneado)],
+    ["Número de dados utilizados", summary.numeroDadosSaneados],
+    ["Média saneada", formatNumber(summary.mediaSaneada)],
+    ["Desvio padrão", formatNumber(summary.desvioSaneado)],
     ["Graus de liberdade (n-1)", summary.grausLiberdade],
     ["VC de Chauvenet", formatNumber(summary.chauvenetCritico, 3)],
-    ["Limite superior (1,15 x media)", formatNumber(summary.arbitrioSuperior)],
-    ["Limite inferior (0,85 x media)", formatNumber(summary.arbitrioInferior)],
-    ["t-valor critico (conf. 80%)", formatNumber(summary.tCritico, 3)],
+    ["Limite superior (1,15 x média)", formatNumber(summary.arbitrioSuperior)],
+    ["Limite inferior (0,85 x média)", formatNumber(summary.arbitrioInferior)],
+    ["t-valor crítico (conf. 80%)", formatNumber(summary.tCritico, 3)],
     ["Limite inferior IC", formatNumber(summary.icInferior)],
     ["Limite superior IC", formatNumber(summary.icSuperior)],
     ["Amplitude", formatNumber(summary.amplitudeIC)],
     ["Amplitude percentual", `${formatNumber(summary.amplitudePercentual)}%`],
+    ["Precisão", getPrecisionGradeLabel(getPrecisionGrade(summary.amplitudePercentual))],
   ];
   const calculatedValueRows = [
-    ["Area avaliando (m²)", formatNumber(areaBase)],
+    ["Área avaliando (m²)", formatNumber(areaBase)],
     ["", ""],
-    ["Valores Unitarios (R$/m²)", ""],
-    ["Medio estimado", formatNumber(summary.mediaSaneada)],
+    ["Valores unitários (R$/m²)", ""],
+    ["Médio estimado", formatNumber(summary.mediaSaneada)],
     ["LI Campo de Arbitrio (-15%)", formatNumber(summary.arbitrioInferior)],
     ["LS Campo de Arbitrio (+15%)", formatNumber(summary.arbitrioSuperior)],
-    ["LI Intervalo de Confianca 80%", formatNumber(summary.icInferior)],
-    ["LS Intervalo de Confianca 80%", formatNumber(summary.icSuperior)],
+    ["LI Intervalo de Confiança 80%", formatNumber(summary.icInferior)],
+    ["LS Intervalo de Confiança 80%", formatNumber(summary.icSuperior)],
     ["", ""],
     ["Valores Totais (R$)", ""],
-    ["Medio estimado", `R$ ${formatNumber(summary.valorEstimado)}`],
+    ["Médio estimado", `R$ ${formatNumber(summary.valorEstimado)}`],
     ["LI Campo de Arbitrio (-15%)", `R$ ${formatNumber(arbitrioInferiorTotal)}`],
     ["LS Campo de Arbitrio (+15%)", `R$ ${formatNumber(arbitrioSuperiorTotal)}`],
-    ["LI Intervalo de Confianca 80%", `R$ ${formatNumber(icInferiorTotal)}`],
-    ["LS Intervalo de Confianca 80%", `R$ ${formatNumber(icSuperiorTotal)}`],
+    ["LI Intervalo de Confiança 80%", `R$ ${formatNumber(icInferiorTotal)}`],
+    ["LS Intervalo de Confiança 80%", `R$ ${formatNumber(icSuperiorTotal)}`],
   ];
 
   return {
@@ -850,7 +851,7 @@ function buildReportData() {
 function renderReportPreview() {
   const report = buildReportData();
   if (!report) {
-    setError("Execute um calculo antes de visualizar o relatorio.");
+    setError("Execute um cálculo antes de visualizar o relatório.");
     return;
   }
 
@@ -888,7 +889,7 @@ function renderReportPreview() {
               ${rows
                 .map(([label, value]) => {
                   if (!label && !value) return '<tr class="report-preview-separator"><td colspan="2"></td></tr>';
-                  if (label.includes("Valores Unitarios") || label.includes("Valores Totais")) {
+                  if (label.includes("Valores unitários") || label.includes("Valores Totais")) {
                     return `<tr class="report-preview-section"><td colspan="2">${label}</td></tr>`;
                   }
                   return `<tr><td>${label}</td><td>${value}</td></tr>`;
@@ -902,6 +903,10 @@ function renderReportPreview() {
   }
 
   el.reportPreviewContent.innerHTML = `
+    <div class="report-preview-heading">
+      <h2>Relatório da Avaliação</h2>
+      <p>${state.workName || "Trabalho sem nome"}</p>
+    </div>
     <div class="report-preview-block">
       <h3>Planilha de dados de mercado</h3>
       ${previewTable(report.marketHeaders, report.marketRows)}
@@ -910,12 +915,12 @@ function renderReportPreview() {
       <h3>Homogeneizacao</h3>
       ${previewTable(report.homogHeaders, report.homogRows)}
     </div>
-    ${previewTechnicalTable("Estatisticas iniciais", report.initialStatsRows)}
-    ${previewTechnicalTable("Estatisticas apos o saneamento", report.sanitizedStatsRows)}
+    ${previewTechnicalTable("Estatísticas iniciais", report.initialStatsRows)}
+    ${previewTechnicalTable("Estatísticas após o saneamento", report.sanitizedStatsRows)}
     ${previewCalculatedValues(report.calculatedValueRows)}
     <div class="report-preview-block">
       <h3>Valor adotado</h3>
-      ${previewTable(["Campo", "Conteudo"], [
+      ${previewTable(["Campo", "Conteúdo"], [
         ["Valor adotado", report.adoptedValueFormatted],
         ["Justificativa", report.adoptedJustification],
       ])}
@@ -1043,8 +1048,8 @@ function renderSelectors() {
     <option value="sala">Sala</option>
     <option value="casa">Casa</option>
     <option value="loja">Loja</option>
-    <option value="predio">Predio</option>
-    <option value="galpao">Galpao</option>
+    <option value="predio">Prédio</option>
+    <option value="galpao">Galpão</option>
   `;
   el.assetType.value = state.assetType;
   el.referenceConstruida.classList.toggle("active", state.referenceMode === "Construida");
@@ -1164,7 +1169,7 @@ function renderEditor() {
           <td>
             <label class="checkbox-cell">
               <input type="checkbox" data-row-id="${row.id}" data-basic="incluir" ${row.incluir ? "checked" : ""} ${index === 0 ? "disabled" : ""} />
-              <span>${index === 0 ? "Nao" : "Sim"}</span>
+              <span>${index === 0 ? "Não" : "Sim"}</span>
             </label>
           </td>
           ${cells}
@@ -1249,63 +1254,66 @@ function renderSummary(summary) {
   const icSuperiorTotal =
     summary.icSuperiorTotal ?? (areaBase != null ? summary.icSuperior * areaBase : null);
   const sampleGrade = summary.grauAmostra || getSampleGrade(summary.numeroDadosSaneados);
+  const precisionGrade = getPrecisionGrade(summary.amplitudePercentual);
+  const precisionGradeLabel = getPrecisionGradeLabel(precisionGrade);
 
   el.summaryGrid.className = "summary-grid";
   el.technicalSummaryWrap.classList.add("hidden");
   el.summaryGrid.innerHTML = `
     <article class="summary-card summary-card-wide">
-      <span>Estatisticas iniciais</span>
+      <span>Estatísticas iniciais</span>
       <div class="summary-list">
-        <div><b>Numero de dados</b><strong>${summary.numeroDadosInicial}</strong></div>
-        <div><b>Media</b><strong>${formatNumber(summary.mediaInicial)}</strong></div>
+        <div><b>Número de dados</b><strong>${summary.numeroDadosInicial}</strong></div>
+        <div><b>Média</b><strong>${formatNumber(summary.mediaInicial)}</strong></div>
         <div><b>Graus de liberdade (n-1)</b><strong>${Math.max(summary.numeroDadosInicial - 1, 1)}</strong></div>
         <div><b>Valor maximo</b><strong>${formatNumber(summary.valorMaximoInicial)}</strong></div>
         <div><b>Valor minimo</b><strong>${formatNumber(summary.valorMinimoInicial)}</strong></div>
-        <div><b>Limite superior (1,15 x media)</b><strong>${formatNumber(summary.limiteSuperiorInicial)}</strong></div>
-        <div><b>Limite inferior (0,85 x media)</b><strong>${formatNumber(summary.limiteInferiorInicial)}</strong></div>
-        <div><b>Desvio padrao</b><strong>${formatNumber(summary.desvioInicial)}</strong></div>
-        <div><b>Coeficiente de variacao</b><strong>${formatNumber(summary.coeficienteVariacaoInicial)}%</strong></div>
+        <div><b>Limite superior (1,15 x média)</b><strong>${formatNumber(summary.limiteSuperiorInicial)}</strong></div>
+        <div><b>Limite inferior (0,85 x média)</b><strong>${formatNumber(summary.limiteInferiorInicial)}</strong></div>
+        <div><b>Desvio padrão</b><strong>${formatNumber(summary.desvioInicial)}</strong></div>
+        <div><b>Coeficiente de variação</b><strong>${formatNumber(summary.coeficienteVariacaoInicial)}%</strong></div>
       </div>
     </article>
     <article class="summary-card summary-card-wide">
-      <span>Estatisticas apos o saneamento</span>
+      <span>Estatísticas após o saneamento</span>
       <div class="summary-list">
-        <div><b>Numero de dados utilizados</b><strong>${summary.numeroDadosSaneados}</strong></div>
-        <div><b>Media saneada</b><strong>${formatNumber(summary.mediaSaneada)}</strong></div>
-        <div><b>Desvio padrao</b><strong>${formatNumber(summary.desvioSaneado)}</strong></div>
+        <div><b>Número de dados utilizados</b><strong>${summary.numeroDadosSaneados}</strong></div>
+        <div><b>Média saneada</b><strong>${formatNumber(summary.mediaSaneada)}</strong></div>
+        <div><b>Desvio padrão</b><strong>${formatNumber(summary.desvioSaneado)}</strong></div>
         <div><b>Graus de liberdade (n-1)</b><strong>${summary.grausLiberdade}</strong></div>
         <div><b>VC de Chauvenet</b><strong>${formatNumber(summary.chauvenetCritico, 3)}</strong></div>
-        <div><b>Limite superior (1,15 x media)</b><strong>${formatNumber(summary.arbitrioSuperior)}</strong></div>
-        <div><b>Limite inferior (0,85 x media)</b><strong>${formatNumber(summary.arbitrioInferior)}</strong></div>
-        <div><b>t-valor critico (conf. 80%)</b><strong>${formatNumber(summary.tCritico, 3)}</strong></div>
+        <div><b>Limite superior (1,15 x média)</b><strong>${formatNumber(summary.arbitrioSuperior)}</strong></div>
+        <div><b>Limite inferior (0,85 x média)</b><strong>${formatNumber(summary.arbitrioInferior)}</strong></div>
+        <div><b>t-valor crítico (conf. 80%)</b><strong>${formatNumber(summary.tCritico, 3)}</strong></div>
         <div><b>Limite inferior IC</b><strong>${formatNumber(summary.icInferior)}</strong></div>
         <div><b>Limite superior IC</b><strong>${formatNumber(summary.icSuperior)}</strong></div>
         <div><b>Amplitude</b><strong>${formatNumber(summary.amplitudeIC)}</strong></div>
         <div><b>Amplitude percentual</b><strong>${formatNumber(summary.amplitudePercentual)}%</strong></div>
+        <div><b>Precisão</b><strong><span class="factor-final-grade ${getFinalFactorGradeClass(precisionGrade)}">${precisionGradeLabel}</span></strong></div>
       </div>
     </article>
     <article class="summary-card summary-card-wide">
       <span>Valores calculados</span>
       <div class="summary-subsection">
-        <div><b>Area avaliando (m²)</b><strong>${formatNumber(areaBase)}</strong></div>
+        <div><b>Área avaliando (m²)</b><strong>${formatNumber(areaBase)}</strong></div>
       </div>
       <div class="summary-divider"></div>
-      <div class="summary-subtitle">Valores Unitarios (R$/m²)</div>
+      <div class="summary-subtitle">Valores unitários (R$/m²)</div>
       <div class="summary-list">
-        <div class="summary-highlight-aged-gold"><b>Medio estimado</b><strong>${formatNumber(summary.mediaSaneada)}</strong></div>
+        <div class="summary-highlight-aged-gold"><b>Médio estimado</b><strong>${formatNumber(summary.mediaSaneada)}</strong></div>
         <div><b>LI Campo de Arbitrio (-15%)</b><strong>${formatNumber(summary.arbitrioInferior)}</strong></div>
         <div><b>LS Campo de Arbitrio (+15%)</b><strong>${formatNumber(summary.arbitrioSuperior)}</strong></div>
-        <div><b>LI Intervalo de Confianca 80%</b><strong>${formatNumber(summary.icInferior)}</strong></div>
-        <div><b>LS Intervalo de Confianca 80%</b><strong>${formatNumber(summary.icSuperior)}</strong></div>
+        <div><b>LI Intervalo de Confiança 80%</b><strong>${formatNumber(summary.icInferior)}</strong></div>
+        <div><b>LS Intervalo de Confiança 80%</b><strong>${formatNumber(summary.icSuperior)}</strong></div>
       </div>
       <div class="summary-divider"></div>
       <div class="summary-subtitle">Valores Totais (R$)</div>
       <div class="summary-list">
-        <div class="summary-highlight-aged-gold"><b>Medio estimado</b><strong>R$ ${formatNumber(summary.valorEstimado)}</strong></div>
+        <div class="summary-highlight-aged-gold"><b>Médio estimado</b><strong>R$ ${formatNumber(summary.valorEstimado)}</strong></div>
         <div><b>LI Campo de Arbitrio (-15%)</b><strong>R$ ${formatNumber(arbitrioInferiorTotal)}</strong></div>
         <div><b>LS Campo de Arbitrio (+15%)</b><strong>R$ ${formatNumber(arbitrioSuperiorTotal)}</strong></div>
-        <div><b>LI Intervalo de Confianca 80%</b><strong>R$ ${formatNumber(icInferiorTotal)}</strong></div>
-        <div><b>LS Intervalo de Confianca 80%</b><strong>R$ ${formatNumber(icSuperiorTotal)}</strong></div>
+        <div><b>LI Intervalo de Confiança 80%</b><strong>R$ ${formatNumber(icInferiorTotal)}</strong></div>
+        <div><b>LS Intervalo de Confiança 80%</b><strong>R$ ${formatNumber(icSuperiorTotal)}</strong></div>
       </div>
     </article>
   `;
@@ -1345,13 +1353,13 @@ function getFinalFactorExplanation(value, grade) {
 function getStatusExplanation(line, chauvenetCritico) {
   if (line.status === "REJEITAR") {
     if (chauvenetCritico != null && line.zScore != null) {
-      return `Rejeitar porque o z-score ${formatNumber(line.zScore, 4)} ficou maior que o valor critico ${formatNumber(chauvenetCritico, 3)} do VC de Chauvenet.`;
+      return `Rejeitar porque o z-score ${formatNumber(line.zScore, 4)} ficou maior que o valor crítico ${formatNumber(chauvenetCritico, 3)} do VC de Chauvenet.`;
     }
     return "Rejeitar por exceder o limite estatistico adotado.";
   }
   if (line.status === "REJEITADO") {
     if (chauvenetCritico != null && line.zScore != null) {
-      return `Rejeitado porque o z-score ${formatNumber(line.zScore, 4)} ficou maior que o valor critico ${formatNumber(chauvenetCritico, 3)} do VC de Chauvenet.`;
+      return `Rejeitado porque o z-score ${formatNumber(line.zScore, 4)} ficou maior que o valor crítico ${formatNumber(chauvenetCritico, 3)} do VC de Chauvenet.`;
     }
     return "Rejeitado por exceder o limite estatistico adotado.";
   }
@@ -1438,7 +1446,7 @@ function renderResults(lines, summary = state.lastCalculation?.summary) {
           <td>
             <label class="checkbox-cell">
               <input type="checkbox" data-result-include-id="${line.id}" ${line.papel === "DADO" && line.participa ? "checked" : ""} ${line.papel === "AVALIANDO" ? "disabled" : ""} />
-              <span>${line.papel === "AVALIANDO" ? "Nao" : line.participa ? "Sim" : "Nao"}</span>
+              <span>${line.papel === "AVALIANDO" ? "Não" : line.participa ? "Sim" : "Não"}</span>
             </label>
           </td>
           <td>${formatNumber(line.valorUnitario)}</td>
@@ -1464,7 +1472,7 @@ function renderResults(lines, summary = state.lastCalculation?.summary) {
 function exportWordReport() {
   const report = buildReportData();
   if (!report) {
-    setError("Execute um calculo antes de exportar o relatorio.");
+    setError("Execute um cálculo antes de exportar o relatório.");
     return;
   }
   const wordOrientation = state.wordOrientation === "portrait" ? "portrait" : "landscape";
@@ -1481,7 +1489,7 @@ function exportWordReport() {
     row.endereco || "",
     row.valor_total || "",
     row.fon || "",
-    index === 0 ? "Nao" : row.incluir ? "Sim" : "Nao",
+    index === 0 ? "Não" : row.incluir ? "Sim" : "Não",
     ...visibleFactors.map((factor) => row.campos[factor.id] ?? ""),
   ]);
 
@@ -1520,7 +1528,7 @@ function exportWordReport() {
     timeStyle: "short",
   }).format(new Date());
   const reportHighlights = [
-    ["Media saneada", `R$ ${formatNumber(summary.mediaSaneada)}`],
+    ["Média saneada", `R$ ${formatNumber(summary.mediaSaneada)}`],
     ["Valor estimado total", `R$ ${formatNumber(summary.valorEstimado)}`],
     ["Valor adotado", adoptedValueFormatted],
     ["Campo de arbitrio total", `R$ ${formatNumber(arbitrioInferiorTotal)} a R$ ${formatNumber(arbitrioSuperiorTotal)}`],
@@ -1529,46 +1537,47 @@ function exportWordReport() {
     ["Dados aceitos", summary.amostras],
   ];
   const initialStatsRows = [
-    ["Numero de dados", summary.numeroDadosInicial],
-    ["Media", formatNumber(summary.mediaInicial)],
+    ["Número de dados", summary.numeroDadosInicial],
+    ["Média", formatNumber(summary.mediaInicial)],
     ["Graus de liberdade (n-1)", Math.max(summary.numeroDadosInicial - 1, 1)],
-    ["Valor maximo", formatNumber(summary.valorMaximoInicial)],
-    ["Valor minimo", formatNumber(summary.valorMinimoInicial)],
-    ["Limite superior (1,15 x media)", formatNumber(summary.limiteSuperiorInicial)],
-    ["Limite inferior (0,85 x media)", formatNumber(summary.limiteInferiorInicial)],
-    ["Desvio padrao", formatNumber(summary.desvioInicial)],
-    ["Coeficiente de variacao", `${formatNumber(summary.coeficienteVariacaoInicial)}%`],
+    ["Valor máximo", formatNumber(summary.valorMaximoInicial)],
+    ["Valor mínimo", formatNumber(summary.valorMinimoInicial)],
+    ["Limite superior (1,15 x média)", formatNumber(summary.limiteSuperiorInicial)],
+    ["Limite inferior (0,85 x média)", formatNumber(summary.limiteInferiorInicial)],
+    ["Desvio padrão", formatNumber(summary.desvioInicial)],
+    ["Coeficiente de variação", `${formatNumber(summary.coeficienteVariacaoInicial)}%`],
   ];
   const sanitizedStatsRows = [
-    ["Numero de dados utilizados", summary.numeroDadosSaneados],
-    ["Media saneada", formatNumber(summary.mediaSaneada)],
-    ["Desvio padrao", formatNumber(summary.desvioSaneado)],
+    ["Número de dados utilizados", summary.numeroDadosSaneados],
+    ["Média saneada", formatNumber(summary.mediaSaneada)],
+    ["Desvio padrão", formatNumber(summary.desvioSaneado)],
     ["Graus de liberdade (n-1)", summary.grausLiberdade],
     ["VC de Chauvenet", formatNumber(summary.chauvenetCritico, 3)],
-    ["Limite superior (1,15 x media)", formatNumber(summary.arbitrioSuperior)],
-    ["Limite inferior (0,85 x media)", formatNumber(summary.arbitrioInferior)],
-    ["t-valor critico (conf. 80%)", formatNumber(summary.tCritico, 3)],
+    ["Limite superior (1,15 x média)", formatNumber(summary.arbitrioSuperior)],
+    ["Limite inferior (0,85 x média)", formatNumber(summary.arbitrioInferior)],
+    ["t-valor crítico (conf. 80%)", formatNumber(summary.tCritico, 3)],
     ["Limite inferior IC", formatNumber(summary.icInferior)],
     ["Limite superior IC", formatNumber(summary.icSuperior)],
     ["Amplitude", formatNumber(summary.amplitudeIC)],
     ["Amplitude percentual", `${formatNumber(summary.amplitudePercentual)}%`],
+    ["Precisão", getPrecisionGradeLabel(getPrecisionGrade(summary.amplitudePercentual))],
   ];
   const calculatedValueRows = [
-    ["Area avaliando (m²)", formatNumber(areaBase)],
+    ["Área avaliando (m²)", formatNumber(areaBase)],
     ["", ""],
-    ["Valores Unitarios (R$/m²)", ""],
-    ["Medio estimado", formatNumber(summary.mediaSaneada)],
+    ["Valores unitários (R$/m²)", ""],
+    ["Médio estimado", formatNumber(summary.mediaSaneada)],
     ["LI Campo de Arbitrio (-15%)", formatNumber(summary.arbitrioInferior)],
     ["LS Campo de Arbitrio (+15%)", formatNumber(summary.arbitrioSuperior)],
-    ["LI Intervalo de Confianca 80%", formatNumber(summary.icInferior)],
-    ["LS Intervalo de Confianca 80%", formatNumber(summary.icSuperior)],
+    ["LI Intervalo de Confiança 80%", formatNumber(summary.icInferior)],
+    ["LS Intervalo de Confiança 80%", formatNumber(summary.icSuperior)],
     ["", ""],
     ["Valores Totais (R$)", ""],
-    ["Medio estimado", `R$ ${formatNumber(summary.valorEstimado)}`],
+    ["Médio estimado", `R$ ${formatNumber(summary.valorEstimado)}`],
     ["LI Campo de Arbitrio (-15%)", `R$ ${formatNumber(arbitrioInferiorTotal)}`],
     ["LS Campo de Arbitrio (+15%)", `R$ ${formatNumber(arbitrioSuperiorTotal)}`],
-    ["LI Intervalo de Confianca 80%", `R$ ${formatNumber(icInferiorTotal)}`],
-    ["LS Intervalo de Confianca 80%", `R$ ${formatNumber(icSuperiorTotal)}`],
+    ["LI Intervalo de Confiança 80%", `R$ ${formatNumber(icInferiorTotal)}`],
+    ["LS Intervalo de Confiança 80%", `R$ ${formatNumber(icSuperiorTotal)}`],
   ];
 
   function table(headers, rows) {
@@ -1591,7 +1600,7 @@ function exportWordReport() {
     <html lang="pt-BR">
       <head>
         <meta charset="UTF-8" />
-        <title>${state.workName ? `${state.workName} - ` : ""}Tratamento por Fatores</title>
+        <title>${state.workName ? `${state.workName} - ` : ""}Relatório da Avaliação</title>
         <style>
           @page WordSection1 {
             size: ${wordPageSize};
@@ -1601,6 +1610,8 @@ function exportWordReport() {
           div.WordSection1 { page: WordSection1; }
           body { font-family: Arial, sans-serif; margin: 18px; color: #1f2933; }
           h1, h2 { margin-bottom: 8px; }
+          .report-title { margin-bottom: 2px; }
+          .report-subtitle { margin: 0 0 14px; color: #526577; font-size: 13pt; font-weight: 700; }
           p { margin: 4px 0 14px; }
           section { margin-bottom: 28px; }
           .report-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
@@ -1621,11 +1632,12 @@ function exportWordReport() {
       </head>
       <body>
         <div class="WordSection1">
-        <h1>${state.workName || "Tratamento por Fatores"}</h1>
-        <p>Metodo Comparativo Direto de Dados de Mercado - Tratamento por Fatores</p>
+        <h1 class="report-title">Relatório da Avaliação</h1>
+        <h2 class="report-subtitle">${state.workName || "Trabalho sem nome"}</h2>
+        <p>Método Comparativo Direto de Dados de Mercado - Tratamento por Fatores</p>
         <p>NBR 14.653-2 - item 8.2.1.4.2</p>
         <p>Tipologia: ${getAssetTypeLabel(state.assetType)}</p>
-        <p>Area de calculo: ${state.referenceMode === "Terreno" ? "Area territorial" : "Area construida"}</p>
+        <p>Área de cálculo: ${state.referenceMode === "Terreno" ? "Área territorial" : "Área construída"}</p>
         <p>Fatores ativos: ${report.visibleFactors.map((factor) => factor.label).join(", ")}</p>
         <p>Emitido em: ${report.exportedAt}</p>
         <section>
@@ -1640,11 +1652,11 @@ function exportWordReport() {
           <h2>Resultados</h2>
           <div class="summary-report">
             <div class="summary-report-card">
-              <h3>Estatisticas iniciais</h3>
+              <h3>Estatísticas iniciais</h3>
               ${table(["Indicador", "Valor"], report.initialStatsRows)}
             </div>
             <div class="summary-report-card">
-              <h3>Estatisticas apos o saneamento</h3>
+              <h3>Estatísticas após o saneamento</h3>
               ${table(["Indicador", "Valor"], report.sanitizedStatsRows)}
             </div>
             <div class="summary-report-card">
@@ -1654,7 +1666,7 @@ function exportWordReport() {
                   ${report.calculatedValueRows
                     .map(([label, value]) => {
                       if (!label && !value) return '<tr class="separator"><td colspan="2"></td></tr>';
-                      if (label.includes("Valores Unitarios") || label.includes("Valores Totais")) {
+                      if (label.includes("Valores unitários") || label.includes("Valores Totais")) {
                         return `<tr class="section"><td colspan="2">${label}</td></tr>`;
                       }
                       return `<tr><td>${label}</td><td>${value}</td></tr>`;
@@ -1668,7 +1680,7 @@ function exportWordReport() {
         <section>
           <h2>Valor adotado</h2>
           ${table(
-            ["Campo", "Conteudo"],
+            ["Campo", "Conteúdo"],
             [
               ["Valor adotado", report.adoptedValueFormatted],
               ["Justificativa", report.adoptedJustification],
@@ -1689,13 +1701,13 @@ function exportWordReport() {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-  setAppNotice(`Relatorio exportado: ${sanitizeFileName(state.workName || "trabalho")}-relatorio.doc`);
+  setAppNotice(`Relatório exportado: ${sanitizeFileName(state.workName || "trabalho")}-relatorio.doc`);
 }
 
 function exportPdfReport() {
   const report = buildReportData();
   if (!report) {
-    setError("Execute um calculo antes de exportar o relatorio.");
+    setError("Execute um cálculo antes de exportar o relatório.");
     return;
   }
   if (!window.jspdf?.jsPDF) {
@@ -1713,7 +1725,7 @@ function exportPdfReport() {
     row.valor_total || "",
     row.fonTipo || "",
     row.fon || "",
-    index === 0 ? "Nao" : row.incluir ? "Sim" : "Nao",
+    index === 0 ? "Não" : row.incluir ? "Sim" : "Não",
     ...visibleFactors.map((factor) => row.campos[factor.id] ?? ""),
   ]);
 
@@ -1750,44 +1762,45 @@ function exportPdfReport() {
     timeStyle: "short",
   }).format(new Date());
   const initialStatsRows = [
-    ["Numero de dados", summary.numeroDadosInicial],
-    ["Media", formatNumber(summary.mediaInicial)],
+    ["Número de dados", summary.numeroDadosInicial],
+    ["Média", formatNumber(summary.mediaInicial)],
     ["Graus de liberdade (n-1)", Math.max(summary.numeroDadosInicial - 1, 1)],
     ["Valor maximo", formatNumber(summary.valorMaximoInicial)],
     ["Valor minimo", formatNumber(summary.valorMinimoInicial)],
-    ["Limite superior (1,15 x media)", formatNumber(summary.limiteSuperiorInicial)],
-    ["Limite inferior (0,85 x media)", formatNumber(summary.limiteInferiorInicial)],
-    ["Desvio padrao", formatNumber(summary.desvioInicial)],
+    ["Limite superior (1,15 x média)", formatNumber(summary.limiteSuperiorInicial)],
+    ["Limite inferior (0,85 x média)", formatNumber(summary.limiteInferiorInicial)],
+    ["Desvio padrão", formatNumber(summary.desvioInicial)],
     ["Coeficiente de variacao", `${formatNumber(summary.coeficienteVariacaoInicial)}%`],
   ];
   const sanitizedStatsRows = [
-    ["Numero de dados utilizados", summary.numeroDadosSaneados],
-    ["Media saneada", formatNumber(summary.mediaSaneada)],
-    ["Desvio padrao", formatNumber(summary.desvioSaneado)],
+    ["Número de dados utilizados", summary.numeroDadosSaneados],
+    ["Média saneada", formatNumber(summary.mediaSaneada)],
+    ["Desvio padrão", formatNumber(summary.desvioSaneado)],
     ["Graus de liberdade (n-1)", summary.grausLiberdade],
     ["VC de Chauvenet", formatNumber(summary.chauvenetCritico, 3)],
-    ["Limite superior (1,15 x media)", formatNumber(summary.arbitrioSuperior)],
-    ["Limite inferior (0,85 x media)", formatNumber(summary.arbitrioInferior)],
-    ["t-valor critico (conf. 80%)", formatNumber(summary.tCritico, 3)],
+    ["Limite superior (1,15 x média)", formatNumber(summary.arbitrioSuperior)],
+    ["Limite inferior (0,85 x média)", formatNumber(summary.arbitrioInferior)],
+    ["t-valor crítico (conf. 80%)", formatNumber(summary.tCritico, 3)],
     ["Limite inferior IC", formatNumber(summary.icInferior)],
     ["Limite superior IC", formatNumber(summary.icSuperior)],
     ["Amplitude", formatNumber(summary.amplitudeIC)],
     ["Amplitude percentual", `${formatNumber(summary.amplitudePercentual)}%`],
+    ["Precisão", getPrecisionGradeLabel(getPrecisionGrade(summary.amplitudePercentual))],
   ];
   const calculatedValueRows = [
-    ["Area avaliando (m²)", formatNumber(areaBase)],
-    ["Valores Unitarios (R$/m²)", ""],
-    ["Medio estimado", formatNumber(summary.mediaSaneada)],
+    ["Área avaliando (m²)", formatNumber(areaBase)],
+    ["Valores unitários (R$/m²)", ""],
+    ["Médio estimado", formatNumber(summary.mediaSaneada)],
     ["LI Campo de Arbitrio (-15%)", formatNumber(summary.arbitrioInferior)],
     ["LS Campo de Arbitrio (+15%)", formatNumber(summary.arbitrioSuperior)],
-    ["LI Intervalo de Confianca 80%", formatNumber(summary.icInferior)],
-    ["LS Intervalo de Confianca 80%", formatNumber(summary.icSuperior)],
+    ["LI Intervalo de Confiança 80%", formatNumber(summary.icInferior)],
+    ["LS Intervalo de Confiança 80%", formatNumber(summary.icSuperior)],
     ["Valores Totais (R$)", ""],
-    ["Medio estimado", `R$ ${formatNumber(summary.valorEstimado)}`],
+    ["Médio estimado", `R$ ${formatNumber(summary.valorEstimado)}`],
     ["LI Campo de Arbitrio (-15%)", `R$ ${formatNumber(arbitrioInferiorTotal)}`],
     ["LS Campo de Arbitrio (+15%)", `R$ ${formatNumber(arbitrioSuperiorTotal)}`],
-    ["LI Intervalo de Confianca 80%", `R$ ${formatNumber(icInferiorTotal)}`],
-    ["LS Intervalo de Confianca 80%", `R$ ${formatNumber(icSuperiorTotal)}`],
+    ["LI Intervalo de Confiança 80%", `R$ ${formatNumber(icInferiorTotal)}`],
+    ["LS Intervalo de Confiança 80%", `R$ ${formatNumber(icSuperiorTotal)}`],
   ];
 
   const { jsPDF } = window.jspdf;
@@ -1797,20 +1810,22 @@ function exportPdfReport() {
   function addTitleBlock() {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
-    doc.text(state.workName || "Tratamento por Fatores", 14, 14);
+    doc.text("Relatório da Avaliação", 14, 14);
+    doc.setFontSize(11);
+    doc.text(state.workName || "Trabalho sem nome", 14, 20);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.text(
       [
-        "Metodo Comparativo Direto de Dados de Mercado - Tratamento por Fatores",
+        "Método Comparativo Direto de Dados de Mercado - Tratamento por Fatores",
         "NBR 14.653-2 - item 8.2.1.4.2",
         `Tipologia: ${getAssetTypeLabel(state.assetType)}`,
-        `Area de calculo: ${state.referenceMode === "Terreno" ? "Area territorial" : "Area construida"}`,
+        `Área de cálculo: ${state.referenceMode === "Terreno" ? "Área territorial" : "Área construída"}`,
         `Fatores ativos: ${report.visibleFactors.map((factor) => factor.label).join(", ")}`,
         `Emitido em: ${report.exportedAt}`,
       ],
       14,
-      21,
+      27,
     );
   }
 
@@ -1821,9 +1836,9 @@ function exportPdfReport() {
   }
 
   addTitleBlock();
-  addSectionTitle("Planilha de dados de mercado", 52);
+  addSectionTitle("Planilha de dados de mercado", 58);
   doc.autoTable({
-    startY: 55,
+    startY: 61,
     head: [report.marketHeaders],
     body: report.marketRows,
     styles: { fontSize: 7.5, cellPadding: 1.8, overflow: "linebreak" },
@@ -1848,7 +1863,7 @@ function exportPdfReport() {
   addSectionTitle("Resumo tecnico", currentY);
   doc.autoTable({
     startY: currentY + 3,
-    head: [["Estatisticas iniciais", "Valor"]],
+    head: [["Estatísticas iniciais", "Valor"]],
     body: report.initialStatsRows,
     styles: { fontSize: 8, cellPadding: 2 },
     headStyles: { fillColor: [31, 58, 95] },
@@ -1870,7 +1885,7 @@ function exportPdfReport() {
   addSectionTitle("Valores calculados", currentY);
   doc.autoTable({
     startY: currentY + 3,
-    head: [["Campo", "Conteudo"]],
+    head: [["Campo", "Conteúdo"]],
     body: report.calculatedValueRows,
     styles: { fontSize: 8, cellPadding: 2 },
     headStyles: { fillColor: [31, 58, 95] },
@@ -1881,7 +1896,7 @@ function exportPdfReport() {
   addSectionTitle("Valor adotado", currentY);
   doc.autoTable({
     startY: currentY + 3,
-    head: [["Campo", "Conteudo"]],
+    head: [["Campo", "Conteúdo"]],
     body: [
       ["Valor adotado", report.adoptedValueFormatted],
       ["Justificativa", report.adoptedJustification],
@@ -1893,7 +1908,7 @@ function exportPdfReport() {
 
   const fileName = `${sanitizeFileName(state.workName || "trabalho")}-relatorio.pdf`;
   doc.save(fileName);
-  setAppNotice(`Relatorio exportado: ${fileName}`);
+  setAppNotice(`Relatório exportado: ${fileName}`);
 }
 
 function depthCoefficient(area, testada, profEquivalente) {
@@ -1949,6 +1964,20 @@ function getFinalFactorGrade(value, sampleCount = null) {
   if (value >= 0.5 && value <= 2.0) return "II";
   if (value >= 0.4 && value <= 2.5) return "I";
   return "Fora da faixa";
+}
+
+function getPrecisionGrade(amplitudePercentual) {
+  if (amplitudePercentual == null) return "-";
+  if (amplitudePercentual <= 30) return "III";
+  if (amplitudePercentual <= 40) return "II";
+  if (amplitudePercentual <= 50) return "I";
+  return "Fora da faixa";
+}
+
+function getPrecisionGradeLabel(grade) {
+  if (grade === "III" || grade === "II" || grade === "I") return `Grau ${grade}`;
+  if (grade === "Fora da faixa") return "Sem enquadramento quanto à precisão";
+  return "-";
 }
 
 function isFinalFactorWithinRange(value, sampleCount) {
@@ -2524,7 +2553,7 @@ function saveCustomFactor() {
     .replace(/^_+|_+$/g, "");
 
   if (!id) {
-    setError("Nao foi possivel gerar um identificador para o fator.");
+    setError("Não foi possível gerar um identificador para o fator.");
     return;
   }
 
