@@ -349,7 +349,8 @@
         <div class="adopted-grid">
           <label>
             <span>Valor adotado</span>
-            <input id="adoptedValue" type="number" step="0.01" placeholder="Ex.: 850000,00" />
+            <input id="adoptedValue" type="text" inputmode="decimal" placeholder="Ex.: 850000,00" />
+            <p id="adoptedValueExtenso" class="muted adopted-amount-words hidden"></p>
           </label>
           <label>
             <span>Justificativa</span>
@@ -359,7 +360,6 @@
               placeholder="Descreva a justificativa para o valor adotado."
             ></textarea>
           </label>
-          <p id="adoptedValueExtenso" class="muted full-line adopted-amount-words hidden"></p>
         </div>
         </div>
       </section>

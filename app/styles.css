@@ -975,7 +975,7 @@ td:nth-child(4),
 }
 
 .adopted-amount-words {
-  margin: -2px 0 0;
+  margin: 8px 0 0;
   padding: 10px 12px;
   border: 1px solid var(--border-soft);
   border-radius: 12px;
