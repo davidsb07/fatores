@@ -21,7 +21,7 @@
     </div>
     <aside class="side-dots" aria-label="Navegacao dos passos">
       <button type="button" class="side-dot active" data-step-target="step-1" data-step-label="Inicio" aria-label="Passo 1 - Inicio">1</button>
-      <button type="button" class="side-dot" data-step-target="step-2" data-step-label="Fatores ativos" aria-label="Passo 2 - Fatores ativos">2</button>
+      <button type="button" class="side-dot" data-step-target="step-2" data-step-label="Selecao de fatores" aria-label="Passo 2 - Selecao de fatores">2</button>
       <button type="button" class="side-dot" data-step-target="step-3" data-step-label="Linhas de dados" aria-label="Passo 3 - Linhas de dados">3</button>
       <button type="button" class="side-dot" data-step-target="step-4" data-step-label="Resultado por linha" aria-label="Passo 4 - Resultado por linha">4</button>
       <button type="button" class="side-dot" data-step-target="step-5" data-step-label="Resumo consolidado" aria-label="Passo 5 - Resumo consolidado">5</button>
@@ -53,7 +53,7 @@
         <input id="loadModelInput" type="file" accept=".fat,application/json" hidden />
         <div class="start-grid">
           <div class="start-item">
-            <p class="start-label">Nova avaliacao</p>
+            <p class="start-label">Elaborar avaliacao</p>
             <label>
               <select id="assetType"></select>
             </label>
@@ -90,7 +90,7 @@
         <div class="section-head">
           <div>
             <p class="eyebrow small">Passo 2</p>
-            <h2>Fatores ativos</h2>
+            <h2>Selecao de fatores</h2>
           </div>
           <div class="actions">
             <button type="button" class="secondary panel-toggle" data-panel-toggle="step-2" aria-expanded="true" aria-label="Recolher passo 2"></button>
@@ -236,7 +236,7 @@
             class="secondary"
             aria-expanded="false"
           >
-            Abrir planilha toda
+            Visualizar planilha inteira
           </button>
         </div>
         <p id="errorBox" class="error hidden"></p>
@@ -271,7 +271,7 @@
             class="secondary"
             aria-expanded="false"
           >
-            Abrir planilha toda
+            Visualizar planilha inteira
           </button>
         </div>
         <div id="resultsTableWrap" class="table-wrap table-wrap-results table-wrap-limited">
@@ -284,7 +284,7 @@
                 <th>VU</th>
                 <th>VU * fon</th>
                 <th>Fator final</th>
-                <th>VU homogenizado</th>
+                <th>VU homogeneizado</th>
                 <th>Z-score</th>
                 <th>Status</th>
                 <th>Fatores</th>
@@ -385,6 +385,13 @@
               <span class="muted">Nome do trabalho</span>
               <input id="workName" type="text" placeholder="Ex.: apto-centro" />
             </label>
+            <label class="dictionary-picker">
+              <span class="muted">Orientacao do Word</span>
+              <select id="wordOrientation">
+                <option value="landscape">Paisagem</option>
+                <option value="portrait">Retrato</option>
+              </select>
+            </label>
           </div>
           <p class="muted">O trabalho e salvo em arquivo <code>.fat</code> usando o nome informado neste passo.</p>
           <div id="reportPreviewWrap" class="report-preview hidden">
@@ -392,6 +399,9 @@
               <div>
                 <p class="eyebrow small">Previa</p>
                 <h2>Conferencia do relatorio</h2>
+              </div>
+              <div class="actions">
+                <button id="hideReportPreviewButton" type="button" class="secondary">Ocultar relatorio</button>
               </div>
             </div>
             <div id="reportPreviewContent" class="report-preview-content"></div>

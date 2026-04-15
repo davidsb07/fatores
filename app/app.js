@@ -275,6 +275,7 @@ const TERRAIN_CAROL_DEMO = {
 
 const state = {
   workName: "",
+  wordOrientation: "landscape",
   loadedModelName: "",
   adoptedValue: "",
   adoptedJustification: "",
@@ -294,8 +295,24 @@ const state = {
   },
 };
 
+const CUB_RES_OPTION_ORDER = [
+  "PIS - Projeto de interesse social",
+  "RP1Q - Residencia popular",
+  "R 1-B - Residencia unifamiliar padrao baixo",
+  "R 1-N - Residencia unifamiliar padrao normal",
+  "R 1-A - Residencia unifamiliar padrao alto",
+  "PP 4-B - Predio popular padrao baixo",
+  "PP 4-N - Predio popular padrao normal",
+  "R 8-B - Residencia multifamiliar padrao baixo",
+  "R 8-N - Residencia multifamiliar padrao normal",
+  "R 8-A - Residencia multifamiliar padrao alto",
+  "R 16-N - Residencia multifamiliar padrao normal",
+  "R 16-A - Residencia multifamiliar padrao alto",
+];
+
 const el = {
   workName: document.querySelector("#workName"),
+  wordOrientation: document.querySelector("#wordOrientation"),
   adoptedValue: document.querySelector("#adoptedValue"),
   adoptedJustification: document.querySelector("#adoptedJustification"),
   assetType: document.querySelector("#assetType"),
@@ -335,6 +352,7 @@ const el = {
   calculateButton: document.querySelector("#calculateButton"),
   saveWorkButton: document.querySelector("#saveWorkButton"),
   previewReportButton: document.querySelector("#previewReportButton"),
+  hideReportPreviewButton: document.querySelector("#hideReportPreviewButton"),
   exportWordButton: document.querySelector("#exportWordButton"),
   exportReportButton: document.querySelector("#exportReportButton"),
   reportPreviewWrap: document.querySelector("#reportPreviewWrap"),
@@ -349,6 +367,18 @@ const el = {
 
 function clone(obj) {
   return JSON.parse(JSON.stringify(obj));
+}
+
+function getOrderedDictionaryOptions(factorId) {
+  const options = Object.keys(state.dictionaries[factorId] || {});
+  if (factorId !== "cub_res") return options;
+  const orderIndex = new Map(CUB_RES_OPTION_ORDER.map((label, index) => [label, index]));
+  return [...options].sort((left, right) => {
+    const leftIndex = orderIndex.has(left) ? orderIndex.get(left) : Number.MAX_SAFE_INTEGER;
+    const rightIndex = orderIndex.has(right) ? orderIndex.get(right) : Number.MAX_SAFE_INTEGER;
+    if (leftIndex !== rightIndex) return leftIndex - rightIndex;
+    return left.localeCompare(right, "pt-BR");
+  });
 }
 
 function formatNumber(value, digits = 2) {
@@ -484,14 +514,14 @@ function renderExpandableTables() {
   if (el.toggleEditorTableButton) {
     el.toggleEditorTableButton.textContent = editorExpanded
       ? "Voltar para rolagem"
-      : "Abrir planilha toda";
+      : "Visualizar planilha inteira";
     el.toggleEditorTableButton.setAttribute("aria-expanded", String(editorExpanded));
   }
 
   if (el.toggleResultsTableButton) {
     el.toggleResultsTableButton.textContent = resultsExpanded
       ? "Voltar para rolagem"
-      : "Abrir planilha toda";
+      : "Visualizar planilha inteira";
     el.toggleResultsTableButton.setAttribute("aria-expanded", String(resultsExpanded));
   }
 }
@@ -559,6 +589,10 @@ function bindStepNavigation() {
   updateActiveSideDot();
 }
 
+function getDefaultFonType(index) {
+  return index === 0 ? "Transacao" : "Oferta";
+}
+
 function makeRow(index) {
   const row = {
     id: String(index + 1),
@@ -566,8 +600,8 @@ function makeRow(index) {
     endereco: index === 0 ? "Imovel avaliando" : "",
     origem: "",
     valor_total: "",
-    fonTipo: "Transacao",
-    fon: "1",
+    fonTipo: getDefaultFonType(index),
+    fon: "",
     incluir: index !== 0,
     campos: {},
   };
@@ -581,6 +615,7 @@ function resetRows() {
 
 function resetAppState() {
   state.workName = "";
+  state.wordOrientation = "landscape";
   state.loadedModelName = "";
   state.adoptedValue = "";
   state.adoptedJustification = "";
@@ -602,6 +637,7 @@ function resetAppState() {
 
 function applyDemoScenario(demo) {
   state.loadedModelName = "";
+  state.wordOrientation = "landscape";
   state.adoptedValue = "";
   state.adoptedJustification = "";
   state.assetType = demo.assetType;
@@ -669,6 +705,7 @@ function getVisibleFactors() {
 
 function resetResults() {
   state.lastCalculation = null;
+  setReportPreviewVisible(false);
   el.summaryGrid.className = "summary-grid empty-block";
   el.summaryGrid.textContent = "Preencha a grade e clique em calcular.";
   el.resultHint.textContent = "Calcule para revisar os fatores e decidir a selecao final dos dados.";
@@ -688,7 +725,7 @@ function resetResults() {
 function renderSavedCalculation() {
   if (!state.lastCalculation) {
     resetResults();
-    el.reportPreviewWrap.classList.add("hidden");
+    setReportPreviewVisible(false);
     el.reportPreviewContent.innerHTML = "";
     return;
   }
@@ -697,11 +734,13 @@ function renderSavedCalculation() {
   bindResultEvents();
 }
 
-function renderReportPreview() {
-  if (!state.lastCalculation) {
-    setError("Execute um calculo antes de visualizar o relatorio.");
-    return;
-  }
+function setReportPreviewVisible(visible) {
+  el.reportPreviewWrap.classList.toggle("hidden", !visible);
+  el.previewReportButton.textContent = visible ? "Ocultar relatorio" : "Visualizar relatorio";
+}
+
+function buildReportData() {
+  if (!state.lastCalculation) return null;
 
   const visibleFactors = getVisibleFactors();
   const factorLabels = new Map(visibleFactors.map((factor) => [factor.id, factor.label]));
@@ -717,18 +756,27 @@ function renderReportPreview() {
     summary.icInferiorTotal ?? (areaBase != null ? summary.icInferior * areaBase : null);
   const icSuperiorTotal =
     summary.icSuperiorTotal ?? (areaBase != null ? summary.icSuperior * areaBase : null);
+  const adoptedValueFormatted =
+    toNumber(state.adoptedValue) != null ? `R$ ${formatNumber(toNumber(state.adoptedValue))}` : "-";
+  const adoptedJustification = state.adoptedJustification || "-";
+  const exportedAt = new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(new Date());
 
-  const marketHeaders = ["Papel", "Endereco", "Valor total", "FON", "Incluir", ...visibleFactors.map((factor) => factor.label)];
+  const marketHeaders = ["Papel", "Endereco", "Origem do anuncio", "Valor total", "Tipo FON", "FON", "Incluir", ...visibleFactors.map((factor) => factor.label)];
   const marketRows = state.rows.map((row, index) => [
     index === 0 ? "Avaliando" : "Dado",
     row.endereco || "",
+    row.origem || "",
     row.valor_total || "",
+    row.fonTipo || "",
     row.fon || "",
     index === 0 ? "Nao" : row.incluir ? "Sim" : "Nao",
     ...visibleFactors.map((factor) => row.campos[factor.id] ?? ""),
   ]);
 
-  const homogHeaders = ["Linha", "Papel", "VU", "VU * FON", "Fator final", "VU homogenizado", "Z-score", "Status", "Fatores"];
+  const homogHeaders = ["Linha", "Papel", "VU", "VU * FON", "Fator final", "VU homogeneizado", "Z-score", "Status", "Fatores"];
   const homogRows = state.lastCalculation.lines.map((line) => [
     line.id,
     line.papel,
@@ -741,20 +789,70 @@ function renderReportPreview() {
     Object.entries(line.coeficientes).map(([key, value]) => `${factorLabels.get(key) || key}: ${formatNumber(value, 4)}`).join(" | "),
   ]);
 
-  const summaryRows = [
+  const initialStatsRows = [
+    ["Numero de dados", summary.numeroDadosInicial],
+    ["Media", formatNumber(summary.mediaInicial)],
+    ["Graus de liberdade (n-1)", Math.max(summary.numeroDadosInicial - 1, 1)],
+    ["Valor maximo", formatNumber(summary.valorMaximoInicial)],
+    ["Valor minimo", formatNumber(summary.valorMinimoInicial)],
+    ["Limite superior (1,15 x media)", formatNumber(summary.limiteSuperiorInicial)],
+    ["Limite inferior (0,85 x media)", formatNumber(summary.limiteInferiorInicial)],
+    ["Desvio padrao", formatNumber(summary.desvioInicial)],
+    ["Coeficiente de variacao", `${formatNumber(summary.coeficienteVariacaoInicial)}%`],
+  ];
+  const sanitizedStatsRows = [
     ["Numero de dados utilizados", summary.numeroDadosSaneados],
     ["Media saneada", formatNumber(summary.mediaSaneada)],
     ["Desvio padrao", formatNumber(summary.desvioSaneado)],
+    ["Graus de liberdade (n-1)", summary.grausLiberdade],
     ["VC de Chauvenet", formatNumber(summary.chauvenetCritico, 3)],
+    ["Limite superior (1,15 x media)", formatNumber(summary.arbitrioSuperior)],
+    ["Limite inferior (0,85 x media)", formatNumber(summary.arbitrioInferior)],
     ["t-valor critico (conf. 80%)", formatNumber(summary.tCritico, 3)],
-    ["LI IC 80%", formatNumber(summary.icInferior)],
-    ["LS IC 80%", formatNumber(summary.icSuperior)],
-    ["Valor estimado", `R$ ${formatNumber(summary.valorEstimado)}`],
-    ["LI Campo de Arbitrio", `R$ ${formatNumber(arbitrioInferiorTotal)}`],
-    ["LS Campo de Arbitrio", `R$ ${formatNumber(arbitrioSuperiorTotal)}`],
-    ["LI IC 80% total", `R$ ${formatNumber(icInferiorTotal)}`],
-    ["LS IC 80% total", `R$ ${formatNumber(icSuperiorTotal)}`],
+    ["Limite inferior IC", formatNumber(summary.icInferior)],
+    ["Limite superior IC", formatNumber(summary.icSuperior)],
+    ["Amplitude", formatNumber(summary.amplitudeIC)],
+    ["Amplitude percentual", `${formatNumber(summary.amplitudePercentual)}%`],
   ];
+  const calculatedValueRows = [
+    ["Area avaliando (m²)", formatNumber(areaBase)],
+    ["", ""],
+    ["Valores Unitarios (R$/m²)", ""],
+    ["Medio estimado", formatNumber(summary.mediaSaneada)],
+    ["LI Campo de Arbitrio (-15%)", formatNumber(summary.arbitrioInferior)],
+    ["LS Campo de Arbitrio (+15%)", formatNumber(summary.arbitrioSuperior)],
+    ["LI Intervalo de Confianca 80%", formatNumber(summary.icInferior)],
+    ["LS Intervalo de Confianca 80%", formatNumber(summary.icSuperior)],
+    ["", ""],
+    ["Valores Totais (R$)", ""],
+    ["Medio estimado", `R$ ${formatNumber(summary.valorEstimado)}`],
+    ["LI Campo de Arbitrio (-15%)", `R$ ${formatNumber(arbitrioInferiorTotal)}`],
+    ["LS Campo de Arbitrio (+15%)", `R$ ${formatNumber(arbitrioSuperiorTotal)}`],
+    ["LI Intervalo de Confianca 80%", `R$ ${formatNumber(icInferiorTotal)}`],
+    ["LS Intervalo de Confianca 80%", `R$ ${formatNumber(icSuperiorTotal)}`],
+  ];
+
+  return {
+    visibleFactors,
+    exportedAt,
+    adoptedValueFormatted,
+    adoptedJustification,
+    marketHeaders,
+    marketRows,
+    homogHeaders,
+    homogRows,
+    initialStatsRows,
+    sanitizedStatsRows,
+    calculatedValueRows,
+  };
+}
+
+function renderReportPreview() {
+  const report = buildReportData();
+  if (!report) {
+    setError("Execute um calculo antes de visualizar o relatorio.");
+    return;
+  }
 
   function previewTable(headers, rows) {
     return `
@@ -771,27 +869,66 @@ function renderReportPreview() {
     `;
   }
 
+  function previewTechnicalTable(title, rows) {
+    return `
+      <div class="report-preview-block">
+        <h3>${title}</h3>
+        ${previewTable(["Indicador", "Valor"], rows)}
+      </div>
+    `;
+  }
+
+  function previewCalculatedValues(rows) {
+    return `
+      <div class="report-preview-block">
+        <h3>Valores calculados</h3>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              ${rows
+                .map(([label, value]) => {
+                  if (!label && !value) return '<tr class="report-preview-separator"><td colspan="2"></td></tr>';
+                  if (label.includes("Valores Unitarios") || label.includes("Valores Totais")) {
+                    return `<tr class="report-preview-section"><td colspan="2">${label}</td></tr>`;
+                  }
+                  return `<tr><td>${label}</td><td>${value}</td></tr>`;
+                })
+                .join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }
+
   el.reportPreviewContent.innerHTML = `
     <div class="report-preview-block">
       <h3>Planilha de dados de mercado</h3>
-      ${previewTable(marketHeaders, marketRows)}
+      ${previewTable(report.marketHeaders, report.marketRows)}
     </div>
     <div class="report-preview-block">
       <h3>Homogeneizacao</h3>
-      ${previewTable(homogHeaders, homogRows)}
+      ${previewTable(report.homogHeaders, report.homogRows)}
     </div>
+    ${previewTechnicalTable("Estatisticas iniciais", report.initialStatsRows)}
+    ${previewTechnicalTable("Estatisticas apos o saneamento", report.sanitizedStatsRows)}
+    ${previewCalculatedValues(report.calculatedValueRows)}
     <div class="report-preview-block">
-      <h3>Resumo do relatorio</h3>
-      ${previewTable(["Indicador", "Valor"], summaryRows)}
+      <h3>Valor adotado</h3>
+      ${previewTable(["Campo", "Conteudo"], [
+        ["Valor adotado", report.adoptedValueFormatted],
+        ["Justificativa", report.adoptedJustification],
+      ])}
     </div>
   `;
-  el.reportPreviewWrap.classList.remove("hidden");
+  setReportPreviewVisible(true);
 }
 
 function getSerializedState() {
   return {
     version: 1,
     workName: state.workName,
+    wordOrientation: state.wordOrientation,
     adoptedValue: state.adoptedValue,
     adoptedJustification: state.adoptedJustification,
     assetType: state.assetType,
@@ -841,6 +978,7 @@ function loadWorkFile(file) {
       try {
         const payload = JSON.parse(String(reader.result || "{}"));
         state.workName = payload.workName || "";
+        state.wordOrientation = payload.wordOrientation === "portrait" ? "portrait" : "landscape";
         state.loadedModelName = payload.workName || file.name.replace(/\.fat$/i, "");
         state.adoptedValue = payload.adoptedValue ?? "";
         state.adoptedJustification = payload.adoptedJustification || "";
@@ -863,8 +1001,8 @@ function loadWorkFile(file) {
                 endereco: row.endereco || "",
                 origem: row.origem || "",
                 valor_total: row.valor_total ?? "",
-                fonTipo: inferFonType(row),
-                fon: row.fon ?? "1",
+                fonTipo: row.fonTipo || (row.fon != null ? inferFonType(row) : getDefaultFonType(index)),
+                fon: row.fon ?? "",
                 incluir: index === 0 ? false : Boolean(row.incluir),
                 campos: row.campos || {},
               };
@@ -895,6 +1033,7 @@ function loadWorkFile(file) {
 
 function renderSelectors() {
   el.workName.value = state.workName;
+  el.wordOrientation.value = state.wordOrientation;
   el.adoptedValue.value = state.adoptedValue;
   el.adoptedJustification.value = state.adoptedJustification;
   el.assetType.innerHTML = `
@@ -952,7 +1091,7 @@ function renderEditor() {
   const fonOptions = Object.entries(state.dictionaries.fon || {});
   el.editorHead.innerHTML = `
     <tr>
-      <th>Linha</th>
+      <th class="editor-sticky-line">Linha</th>
       <th>Papel</th>
       <th>Endereco</th>
       <th>Origem do anuncio</th>
@@ -985,7 +1124,7 @@ function renderEditor() {
           const compactField = ["localizacao", "area_construida", "area_territorial", "vaga", "testada", "prof_equivalente"].includes(factor.id);
           const integerField = factor.id === "vaga";
           if (factor.kind === "option") {
-            const options = Object.keys(state.dictionaries[factor.id] || {});
+            const options = getOrderedDictionaryOptions(factor.id);
             return `
               <td class="${factor.id === "andar" ? "editor-col-andar" : ""}">
                 <select class="${factor.id === "andar" ? "editor-field-andar" : ""}" data-row-id="${row.id}" data-factor-id="${factor.id}">
@@ -1010,7 +1149,7 @@ function renderEditor() {
 
       return `
         <tr class="${rowClass}">
-          <td class="line-index">${index === 0 ? "-" : index}</td>
+          <td class="line-index editor-sticky-line-cell">${index === 0 ? "-" : index}</td>
           <td>${roleBadge}</td>
           <td><input data-row-id="${row.id}" data-basic="endereco" value="${row.endereco}" /></td>
           <td><input data-row-id="${row.id}" data-basic="origem" value="${row.origem || ""}" ${index === 0 ? "disabled" : ""} /></td>
@@ -1082,7 +1221,10 @@ function renderDictionaries() {
     )
     .join("");
 
-  el.dictionaryBody.innerHTML = Object.entries(state.dictionaries[state.selectedDictionary])
+  const dictionaryOptions = getOrderedDictionaryOptions(state.selectedDictionary)
+    .map((label) => [label, state.dictionaries[state.selectedDictionary][label]]);
+
+  el.dictionaryBody.innerHTML = dictionaryOptions
     .map(
       ([label, coefficient]) => `
         <tr class="dictionary-row">
@@ -1150,7 +1292,7 @@ function renderSummary(summary) {
       <div class="summary-divider"></div>
       <div class="summary-subtitle">Valores Unitarios (R$/m²)</div>
       <div class="summary-list">
-        <div><b>Medio estimado</b><strong>${formatNumber(summary.mediaSaneada)}</strong></div>
+        <div class="summary-highlight-aged-gold"><b>Medio estimado</b><strong>${formatNumber(summary.mediaSaneada)}</strong></div>
         <div><b>LI Campo de Arbitrio (-15%)</b><strong>${formatNumber(summary.arbitrioInferior)}</strong></div>
         <div><b>LS Campo de Arbitrio (+15%)</b><strong>${formatNumber(summary.arbitrioSuperior)}</strong></div>
         <div><b>LI Intervalo de Confianca 80%</b><strong>${formatNumber(summary.icInferior)}</strong></div>
@@ -1159,7 +1301,7 @@ function renderSummary(summary) {
       <div class="summary-divider"></div>
       <div class="summary-subtitle">Valores Totais (R$)</div>
       <div class="summary-list">
-        <div><b>Medio estimado</b><strong>R$ ${formatNumber(summary.valorEstimado)}</strong></div>
+        <div class="summary-highlight-aged-gold"><b>Medio estimado</b><strong>R$ ${formatNumber(summary.valorEstimado)}</strong></div>
         <div><b>LI Campo de Arbitrio (-15%)</b><strong>R$ ${formatNumber(arbitrioInferiorTotal)}</strong></div>
         <div><b>LS Campo de Arbitrio (+15%)</b><strong>R$ ${formatNumber(arbitrioSuperiorTotal)}</strong></div>
         <div><b>LI Intervalo de Confianca 80%</b><strong>R$ ${formatNumber(icInferiorTotal)}</strong></div>
@@ -1320,10 +1462,16 @@ function renderResults(lines, summary = state.lastCalculation?.summary) {
 }
 
 function exportWordReport() {
-  if (!state.lastCalculation) {
+  const report = buildReportData();
+  if (!report) {
     setError("Execute um calculo antes de exportar o relatorio.");
     return;
   }
+  const wordOrientation = state.wordOrientation === "portrait" ? "portrait" : "landscape";
+  const wordPageSize =
+    wordOrientation === "portrait"
+      ? "595.35pt 841.95pt"
+      : "841.95pt 595.35pt";
 
   const visibleFactors = getVisibleFactors();
   const factorLabels = new Map(visibleFactors.map((factor) => [factor.id, factor.label]));
@@ -1337,7 +1485,7 @@ function exportWordReport() {
     ...visibleFactors.map((factor) => row.campos[factor.id] ?? ""),
   ]);
 
-  const step3Headers = ["Linha", "Papel", "VU", "VU * fon", "Fator final", "VU homogenizado", "Z-score", "Status", "Fatores"];
+  const step3Headers = ["Linha", "Papel", "VU", "VU * fon", "Fator final", "VU homogeneizado", "Z-score", "Status", "Fatores"];
   const step3Rows = state.lastCalculation.lines.map((line) => [
     line.id,
     line.papel,
@@ -1445,7 +1593,12 @@ function exportWordReport() {
         <meta charset="UTF-8" />
         <title>${state.workName ? `${state.workName} - ` : ""}Tratamento por Fatores</title>
         <style>
-          @page { size: A4 landscape; margin: 1.2cm; }
+          @page WordSection1 {
+            size: ${wordPageSize};
+            mso-page-orientation: ${wordOrientation};
+            margin: 1.2cm;
+          }
+          div.WordSection1 { page: WordSection1; }
           body { font-family: Arial, sans-serif; margin: 18px; color: #1f2933; }
           h1, h2 { margin-bottom: 8px; }
           p { margin: 4px 0 14px; }
@@ -1467,37 +1620,38 @@ function exportWordReport() {
         </style>
       </head>
       <body>
+        <div class="WordSection1">
         <h1>${state.workName || "Tratamento por Fatores"}</h1>
         <p>Metodo Comparativo Direto de Dados de Mercado - Tratamento por Fatores</p>
         <p>NBR 14.653-2 - item 8.2.1.4.2</p>
         <p>Tipologia: ${getAssetTypeLabel(state.assetType)}</p>
         <p>Area de calculo: ${state.referenceMode === "Terreno" ? "Area territorial" : "Area construida"}</p>
-        <p>Fatores ativos: ${visibleFactors.map((factor) => factor.label).join(", ")}</p>
-        <p>Emitido em: ${exportedAt}</p>
+        <p>Fatores ativos: ${report.visibleFactors.map((factor) => factor.label).join(", ")}</p>
+        <p>Emitido em: ${report.exportedAt}</p>
         <section>
           <h2>Planilha de dados de mercado</h2>
-          ${table(step2Headers, step2Rows)}
+          ${table(report.marketHeaders, report.marketRows)}
         </section>
         <section>
           <h2>Homogeneizacao</h2>
-          ${table(step3Headers, step3Rows)}
+          ${table(report.homogHeaders, report.homogRows)}
         </section>
         <section>
           <h2>Resultados</h2>
           <div class="summary-report">
             <div class="summary-report-card">
               <h3>Estatisticas iniciais</h3>
-              ${table(["Indicador", "Valor"], initialStatsRows)}
+              ${table(["Indicador", "Valor"], report.initialStatsRows)}
             </div>
             <div class="summary-report-card">
               <h3>Estatisticas apos o saneamento</h3>
-              ${table(["Indicador", "Valor"], sanitizedStatsRows)}
+              ${table(["Indicador", "Valor"], report.sanitizedStatsRows)}
             </div>
             <div class="summary-report-card">
               <h3>Valores calculados</h3>
               <table>
                 <tbody>
-                  ${calculatedValueRows
+                  ${report.calculatedValueRows
                     .map(([label, value]) => {
                       if (!label && !value) return '<tr class="separator"><td colspan="2"></td></tr>';
                       if (label.includes("Valores Unitarios") || label.includes("Valores Totais")) {
@@ -1516,11 +1670,12 @@ function exportWordReport() {
           ${table(
             ["Campo", "Conteudo"],
             [
-              ["Valor adotado", adoptedValueFormatted],
-              ["Justificativa", adoptedJustification],
+              ["Valor adotado", report.adoptedValueFormatted],
+              ["Justificativa", report.adoptedJustification],
             ],
           )}
         </section>
+        </div>
       </body>
     </html>
   `;
@@ -1538,7 +1693,8 @@ function exportWordReport() {
 }
 
 function exportPdfReport() {
-  if (!state.lastCalculation) {
+  const report = buildReportData();
+  if (!report) {
     setError("Execute um calculo antes de exportar o relatorio.");
     return;
   }
@@ -1561,7 +1717,7 @@ function exportPdfReport() {
     ...visibleFactors.map((factor) => row.campos[factor.id] ?? ""),
   ]);
 
-  const step3Headers = ["Linha", "Papel", "VU", "VU * FON", "Fator final", "VU homogenizado", "Z-score", "Status", "Fatores"];
+  const step3Headers = ["Linha", "Papel", "VU", "VU * FON", "Fator final", "VU homogeneizado", "Z-score", "Status", "Fatores"];
   const step3Rows = state.lastCalculation.lines.map((line) => [
     line.id,
     line.papel,
@@ -1650,8 +1806,8 @@ function exportPdfReport() {
         "NBR 14.653-2 - item 8.2.1.4.2",
         `Tipologia: ${getAssetTypeLabel(state.assetType)}`,
         `Area de calculo: ${state.referenceMode === "Terreno" ? "Area territorial" : "Area construida"}`,
-        `Fatores ativos: ${visibleFactors.map((factor) => factor.label).join(", ")}`,
-        `Emitido em: ${exportedAt}`,
+        `Fatores ativos: ${report.visibleFactors.map((factor) => factor.label).join(", ")}`,
+        `Emitido em: ${report.exportedAt}`,
       ],
       14,
       21,
@@ -1668,8 +1824,8 @@ function exportPdfReport() {
   addSectionTitle("Planilha de dados de mercado", 52);
   doc.autoTable({
     startY: 55,
-    head: [step2Headers],
-    body: step2Rows,
+    head: [report.marketHeaders],
+    body: report.marketRows,
     styles: { fontSize: 7.5, cellPadding: 1.8, overflow: "linebreak" },
     headStyles: { fillColor: [31, 58, 95] },
     margin: { left: 14, right: 14 },
@@ -1680,8 +1836,8 @@ function exportPdfReport() {
   addSectionTitle("Homogeneizacao", currentY);
   doc.autoTable({
     startY: currentY + 3,
-    head: [step3Headers],
-    body: step3Rows,
+    head: [report.homogHeaders],
+    body: report.homogRows,
     styles: { fontSize: 7.5, cellPadding: 1.8, overflow: "linebreak" },
     headStyles: { fillColor: [31, 58, 95] },
     margin: { left: 14, right: 14 },
@@ -1693,7 +1849,7 @@ function exportPdfReport() {
   doc.autoTable({
     startY: currentY + 3,
     head: [["Estatisticas iniciais", "Valor"]],
-    body: initialStatsRows,
+    body: report.initialStatsRows,
     styles: { fontSize: 8, cellPadding: 2 },
     headStyles: { fillColor: [31, 58, 95] },
     margin: { left: 14, right: pageWidth / 2 + 4 },
@@ -1702,7 +1858,7 @@ function exportPdfReport() {
   doc.autoTable({
     startY: currentY + 3,
     head: [["Apos a homogeneizacao", "Valor"]],
-    body: sanitizedStatsRows,
+    body: report.sanitizedStatsRows,
     styles: { fontSize: 8, cellPadding: 2 },
     headStyles: { fillColor: [31, 58, 95] },
     margin: { left: pageWidth / 2 + 2, right: 14 },
@@ -1715,7 +1871,7 @@ function exportPdfReport() {
   doc.autoTable({
     startY: currentY + 3,
     head: [["Campo", "Conteudo"]],
-    body: calculatedValueRows,
+    body: report.calculatedValueRows,
     styles: { fontSize: 8, cellPadding: 2 },
     headStyles: { fillColor: [31, 58, 95] },
     margin: { left: 14, right: 14 },
@@ -1727,8 +1883,8 @@ function exportPdfReport() {
     startY: currentY + 3,
     head: [["Campo", "Conteudo"]],
     body: [
-      ["Valor adotado", adoptedValueFormatted],
-      ["Justificativa", adoptedJustification],
+      ["Valor adotado", report.adoptedValueFormatted],
+      ["Justificativa", report.adoptedJustification],
     ],
     styles: { fontSize: 8, cellPadding: 2 },
     headStyles: { fillColor: [31, 58, 95] },
@@ -2035,6 +2191,9 @@ function bindTopControls() {
   el.workName.addEventListener("input", (event) => {
     state.workName = event.target.value;
   });
+  el.wordOrientation.addEventListener("change", (event) => {
+    state.wordOrientation = event.target.value === "portrait" ? "portrait" : "landscape";
+  });
 
   el.adoptedValue.addEventListener("input", (event) => {
     state.adoptedValue = event.target.value;
@@ -2134,7 +2293,15 @@ function bindTopControls() {
     }),
   );
   el.previewReportButton.addEventListener("click", () => {
+    const previewVisible = !el.reportPreviewWrap.classList.contains("hidden");
+    if (previewVisible) {
+      setReportPreviewVisible(false);
+      return;
+    }
     renderReportPreview();
+  });
+  el.hideReportPreviewButton.addEventListener("click", () => {
+    setReportPreviewVisible(false);
   });
   el.exportWordButton.addEventListener("click", () =>
     withProcessing("Gerando Word...", async () => {
