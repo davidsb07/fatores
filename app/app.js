@@ -854,6 +854,10 @@ function setReportPreviewVisible(visible) {
   el.previewReportButton.textContent = visible ? "Ocultar relatório" : "Visualizar relatório";
 }
 
+function getReportDataNumber(index) {
+  return index === 0 ? "-" : index;
+}
+
 function buildReportData() {
   if (!state.lastCalculation) return null;
 
@@ -881,9 +885,9 @@ function buildReportData() {
     timeStyle: "short",
   }).format(new Date());
 
-  const marketHeaders = ["Papel", "Endereco", "Origem do anuncio", "Valor total", "Tipo FON", "FON", "Incluir", ...visibleFactors.map((factor) => factor.label)];
+  const marketHeaders = ["Dado", "Endereco", "Origem do anuncio", "Valor total", "Tipo FON", "FON", "Incluir", ...visibleFactors.map((factor) => factor.label)];
   const marketRows = state.rows.map((row, index) => [
-    index === 0 ? "Avaliando" : "Dado",
+    getReportDataNumber(index),
     row.endereco || "",
     row.origem || "",
     row.valor_total || "",
@@ -893,9 +897,9 @@ function buildReportData() {
     ...visibleFactors.map((factor) => row.campos[factor.id] ?? ""),
   ]);
 
-  const homogHeaders = ["Linha", "Papel", "VU", "VU * FON", "Fator final", "VU homogeneizado", "Z-score", "Status", "Fatores"];
-  const homogRows = state.lastCalculation.lines.map((line) => [
-    line.id,
+  const homogHeaders = ["Dado", "Papel", "VU", "VU * FON", "Fator final", "VU homogeneizado", "Z-score", "Status", "Fatores"];
+  const homogRows = state.lastCalculation.lines.map((line, index) => [
+    getReportDataNumber(index),
     line.papel,
     formatNumber(line.valorUnitario),
     formatNumber(line.valorUnitarioFon),
@@ -1603,9 +1607,9 @@ function exportWordReport() {
 
   const visibleFactors = getVisibleFactors();
   const factorLabels = new Map(visibleFactors.map((factor) => [factor.id, factor.label]));
-  const step2Headers = ["Papel", "Endereco", "Valor total", "fon", "Incluir", ...visibleFactors.map((factor) => factor.label)];
+  const step2Headers = ["Dado", "Endereco", "Valor total", "fon", "Incluir", ...visibleFactors.map((factor) => factor.label)];
   const step2Rows = state.rows.map((row, index) => [
-    index === 0 ? "Avaliando" : "Dado",
+    getReportDataNumber(index),
     row.endereco || "",
     row.valor_total || "",
     row.fon || "",
@@ -1613,9 +1617,9 @@ function exportWordReport() {
     ...visibleFactors.map((factor) => row.campos[factor.id] ?? ""),
   ]);
 
-  const step3Headers = ["Linha", "Papel", "VU", "VU * fon", "Fator final", "VU homogeneizado", "Z-score", "Status", "Fatores"];
-  const step3Rows = state.lastCalculation.lines.map((line) => [
-    line.id,
+  const step3Headers = ["Dado", "Papel", "VU", "VU * fon", "Fator final", "VU homogeneizado", "Z-score", "Status", "Fatores"];
+  const step3Rows = state.lastCalculation.lines.map((line, index) => [
+    getReportDataNumber(index),
     line.papel,
     formatNumber(line.valorUnitario),
     formatNumber(line.valorUnitarioFon),
@@ -1840,9 +1844,9 @@ function exportPdfReport() {
 
   const visibleFactors = getVisibleFactors();
   const factorLabels = new Map(visibleFactors.map((factor) => [factor.id, factor.label]));
-  const step2Headers = ["Papel", "Endereco", "Origem do anuncio", "Valor total", "Tipo FON", "FON", "Incluir", ...visibleFactors.map((factor) => factor.label)];
+  const step2Headers = ["Dado", "Endereco", "Origem do anuncio", "Valor total", "Tipo FON", "FON", "Incluir", ...visibleFactors.map((factor) => factor.label)];
   const step2Rows = state.rows.map((row, index) => [
-    index === 0 ? "Avaliando" : "Dado",
+    getReportDataNumber(index),
     row.endereco || "",
     row.origem || "",
     row.valor_total || "",
@@ -1852,9 +1856,9 @@ function exportPdfReport() {
     ...visibleFactors.map((factor) => row.campos[factor.id] ?? ""),
   ]);
 
-  const step3Headers = ["Linha", "Papel", "VU", "VU * FON", "Fator final", "VU homogeneizado", "Z-score", "Status", "Fatores"];
-  const step3Rows = state.lastCalculation.lines.map((line) => [
-    line.id,
+  const step3Headers = ["Dado", "Papel", "VU", "VU * FON", "Fator final", "VU homogeneizado", "Z-score", "Status", "Fatores"];
+  const step3Rows = state.lastCalculation.lines.map((line, index) => [
+    getReportDataNumber(index),
     line.papel,
     formatNumber(line.valorUnitario),
     formatNumber(line.valorUnitarioFon),
