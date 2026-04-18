@@ -289,6 +289,7 @@ const state = {
   lastCalculation: null,
   customFactors: [],
   collapsedSteps: {},
+  activeStepId: "step-1",
   expandedTables: {
     editor: false,
     results: false,
@@ -650,6 +651,7 @@ function renderPanelStates() {
     const stepId = panel.dataset.stepPanel;
     const collapsed = Boolean(state.collapsedSteps[stepId]);
     panel.classList.toggle("is-collapsed", collapsed);
+    panel.classList.toggle("is-active-step", state.activeStepId === stepId);
   });
   el.panelToggles.forEach((button) => {
     const stepId = button.dataset.panelToggle;
@@ -672,10 +674,11 @@ function toggleStepPanel(stepId) {
 function scrollToStep(stepId) {
   const panel = el.stepPanels.find((item) => item.dataset.stepPanel === stepId);
   if (!panel) return;
+  state.activeStepId = stepId;
   if (state.collapsedSteps[stepId]) {
     state.collapsedSteps[stepId] = false;
-    renderPanelStates();
   }
+  renderPanelStates();
   panel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -688,6 +691,10 @@ function updateActiveSideDot() {
       activeStep = panel.dataset.stepPanel;
     }
   });
+  if (activeStep && state.activeStepId !== activeStep) {
+    state.activeStepId = activeStep;
+    renderPanelStates();
+  }
   el.sideDots.forEach((dot) => {
     dot.classList.toggle("active", dot.dataset.stepTarget === activeStep);
   });
