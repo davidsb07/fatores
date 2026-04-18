@@ -362,7 +362,8 @@ const el = {
   errorBox: document.querySelector("#errorBox"),
   processingOverlay: document.querySelector("#processingOverlay"),
   processingLabel: document.querySelector("#processingLabel"),
-  sideDots: Array.from(document.querySelectorAll(".side-dot")),
+  sideTopButton: document.querySelector(".side-dot-top"),
+  sideDots: Array.from(document.querySelectorAll(".side-dot[data-step-target]")),
   panelToggles: Array.from(document.querySelectorAll("[data-panel-toggle]")),
   stepPanels: Array.from(document.querySelectorAll("[data-step-panel]")),
 };
@@ -682,6 +683,15 @@ function scrollToStep(stepId) {
   panel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+function scrollToTop() {
+  state.activeStepId = getStepIds()[0] || "step-1";
+  renderPanelStates();
+  el.sideDots.forEach((dot) => {
+    dot.classList.toggle("active", dot.dataset.stepTarget === state.activeStepId);
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function updateActiveSideDot() {
   let activeStep = getStepIds()[0];
   const threshold = 180;
@@ -707,6 +717,7 @@ function bindStepNavigation() {
   el.sideDots.forEach((dot) => {
     dot.addEventListener("click", () => scrollToStep(dot.dataset.stepTarget));
   });
+  el.sideTopButton?.addEventListener("click", scrollToTop);
   window.addEventListener("scroll", updateActiveSideDot, { passive: true });
   updateActiveSideDot();
 }

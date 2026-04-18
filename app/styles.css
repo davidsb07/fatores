@@ -73,6 +73,33 @@ body {
   color: #fff;
 }
 
+.side-dot-top {
+  margin-top: 8px;
+  border-color: var(--accent-strong);
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent-strong) 100%);
+  color: #fff;
+  font-size: 0;
+  box-shadow:
+    0 8px 18px rgba(35, 70, 74, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.side-dot-top::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  display: block;
+  margin: 0 auto;
+  background: currentColor;
+  clip-path: path("M7 1 L13 6.3 H11.5 V13 H8.7 V9 H5.3 V13 H2.5 V6.3 H1 Z");
+}
+
+.side-dot-top:hover:not(:disabled),
+.side-dot-top:focus-visible {
+  border-color: var(--accent-strong);
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent-strong) 100%);
+}
+
 .side-dot::after {
   content: attr(data-step-label);
   position: absolute;
